@@ -45,19 +45,23 @@
 
 /* 3 — tube bloom. A radial gradient, deliberately NOT filter: blur(). A filter
  *     on a wrapper promotes the whole document to one composited layer, kills
- *     subpixel text rendering and destroys scroll performance on a phone. The
- *     per-element glow on the selected tile does the rest. */
+ *     subpixel text rendering and destroys scroll performance on a phone.
+ *
+ *     No mix-blend-mode: a light green over a light ground lightens under normal
+ *     compositing too, and screen bought a difference too small to see for the
+ *     cost of a fourth blended full-screen layer. Every blend layer forces the
+ *     whole stacking context to re-composite whenever anything beneath it moves,
+ *     and the ambient drift means something is always moving. */
 .l-bloom {
   background: radial-gradient(ellipse 62% 46% at 50% 40%,
-              rgb(155 188 15 / var(--bloom)), transparent 70%);
-  mix-blend-mode: screen;
+              rgb(178 208 60 / calc(var(--bloom) * 1.5)), transparent 70%);
 }
 
-/* 4 — vignette */
+/* 4 — vignette. Same reasoning: a dark green at the edge darkens toward green
+ *     with or without multiply. */
 .l-vig {
   background: radial-gradient(ellipse at center,
               transparent 55%, rgb(15 56 15 / var(--vignette)) 100%);
-  mix-blend-mode: multiply;
 }
 
 /* 5 — scanlines, over everything */

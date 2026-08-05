@@ -161,11 +161,17 @@ export function render() {
 }
 
 function enter() {
-  const tiles = track.querySelectorAll('.page:not([data-page-hidden]) [data-tile]');
   if (reduceMotion()) return;
+  /* Only the page you can actually see. Staggering all 30 tiles meant the last
+     one waited 1.1s and half the animations ran off-screen for nothing. */
+  const page = track.children[pageIndex];
+  if (!page) return;
+  const tiles = page.querySelectorAll('[data-tile]');
+  const step = parseFloat(
+    getComputedStyle(document.documentElement).getPropertyValue('--stagger')) || 38;
   tiles.forEach((t, i) => {
     t.classList.add('tile--in');
-    t.style.setProperty('--delay', `${i * parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--stagger') || 38)}ms`);
+    t.style.setProperty('--delay', `${i * step}ms`);
     t.addEventListener('animationend', () => {
       t.classList.remove('tile--in');
       t.style.removeProperty('--delay');

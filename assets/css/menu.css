@@ -183,9 +183,23 @@ a { color: inherit; }
   border-radius: var(--r-tile);
   box-shadow: var(--shadow-tile);
   cursor: pointer;
-  transition: transform var(--d-mid) var(--ease),
-              box-shadow var(--d-mid) var(--ease),
-              border-color var(--d-mid) var(--ease);
+  /* transform only. box-shadow and border-color are PAINT properties — animating
+     them repaints the tile every frame. The lift shadow and selection ring live
+     on ::after below and cross-fade with opacity, which the compositor handles
+     without ever touching the main thread. */
+  transition: transform var(--d-mid) var(--ease);
+}
+
+/* the hover state, pre-rendered and faded in */
+.tile::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  box-shadow: var(--shadow-lift), 0 0 0 3px var(--sel);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--d-mid) var(--ease);
 }
 
 .tile__art {
@@ -238,11 +252,9 @@ a { color: inherit; }
 }
 
 .tile:hover,
-.tile:focus-visible {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lift), 0 0 0 3px var(--sel);
-  border-color: var(--sel);
-}
+.tile:focus-visible { transform: translateY(-4px); }
+.tile:hover::after,
+.tile:focus-visible::after { opacity: 1; }
 .tile:hover .tile__start,
 .tile:focus-visible .tile__start { opacity: 1; transform: translateY(0); }
 .tile:active { transform: translateY(-1px); }
@@ -431,3 +443,24 @@ a { color: inherit; }
 }
 
 .noscript { max-width: 46rem; margin: 40px auto; padding: 0 20px; }
+
+/* ── frame-rate counter (opt-in, Display settings) ───────────────────────
+   Sits above the tint layers so its own text is never washed, and is
+   pointer-events:none so it can't intercept a click on a tile beneath it. */
+.fps {
+  position: fixed;
+  right: 10px; bottom: 10px;
+  z-index: 1200;
+  padding: 5px 9px;
+  font-family: var(--font-pix);
+  font-size: var(--fs-micro);
+  font-variant-numeric: tabular-nums;
+  color: #d8f0a8;
+  background: rgb(8 12 8 / .82);
+  border: 1px solid rgb(155 188 15 / .45);
+  border-radius: var(--r-sm);
+  pointer-events: none;
+  letter-spacing: .06em;
+}
+.fps[hidden] { display: none; }
+.fps.is-low { color: #ffc9a0; border-color: rgb(232 84 47 / .6); }

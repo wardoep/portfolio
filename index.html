@@ -289,6 +289,10 @@
       <label class="switch"><input type="checkbox" data-toggle-motion><span class="switch__ui" aria-hidden="true"></span><span>Animation</span></label>
       <p class="setting__note">Tile pop-in, hover lift, page slide, drifting background. Follows your system setting unless you change it here.</p>
     </div>
+    <div class="setting">
+      <label class="switch"><input type="checkbox" data-toggle-fps><span class="switch__ui" aria-hidden="true"></span><span>Frame-rate counter</span></label>
+      <p class="setting__note">Shows live frames per second in the corner. Should sit at 60 (or your display's refresh rate) while the menu is idle and while paging.</p>
+    </div>
   </div>
 </section>
 
@@ -331,6 +335,8 @@
 
 <!-- scanlines ride over everything, including panels -->
 <div id="crt-over" aria-hidden="true"><i class="l-scan"></i></div>
+
+<output class="fps" data-fps hidden aria-label="Frame rate"></output>
 
 <div class="sr-only" role="status" aria-live="polite" data-announce></div>
 

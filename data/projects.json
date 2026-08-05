@@ -769,6 +769,48 @@
       "title": "Backtester"
     },
     {
+      "ghId": "R_kgDOTujCEQ",
+      "id": "portfolio",
+      "renamedFrom": [],
+      "blurb": "This site. Hand-written, no framework, deployed by git push.",
+      "folder": "builds",
+      "icon": "code",
+      "featured": false,
+      "hidden": false,
+      "stack": [
+        "HTML",
+        "CSS",
+        "ES modules",
+        "GitHub Pages",
+        "gh CLI"
+      ],
+      "highlights": [
+        "Project data baked at build time from the GitHub CLI — no runtime API calls",
+        "Ten pre-flight checks gate every deploy, including WCAG contrast computed through the colour-tint blend",
+        "Keyboard-navigable tile grid with roving tabindex and router-driven focus restore"
+      ],
+      "linkLabel": "Read the source",
+      "note": "",
+      "order": 60,
+      "status": "live",
+      "firstSeen": "2026-08-05",
+      "gh": {
+        "name": "portfolio",
+        "description": "IT support and cybersecurity portfolio — a console-style channel menu backed by 18 hands-on labs",
+        "language": "HTML",
+        "stars": 0,
+        "pushedAt": "2026-08-05T09:38:20Z",
+        "createdAt": "2026-08-05T09:38:17Z",
+        "url": "https://github.com/wardoep/portfolio",
+        "homepageUrl": "",
+        "defaultBranch": "main",
+        "isArchived": false,
+        "topics": []
+      },
+      "lastSeen": "2026-08-05",
+      "title": "This Site"
+    },
+    {
       "ghId": "R_kgDOTGjhqw",
       "id": "wardoep",
       "renamedFrom": [],
