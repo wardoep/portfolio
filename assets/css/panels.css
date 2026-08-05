@@ -70,8 +70,11 @@
 
 /* ── prose ───────────────────────────────────────────────────────────── */
 .prose { max-width: 66ch; }
+/* `.prose p { margin: 0 }` is specificity (0,1,1) and was beating
+   `.prose > * + *` at (0,1,0), so every paragraph gap collapsed. Reset the
+   children first, then space them — same specificity, later rule wins. */
+.prose > * { margin: 0; }
 .prose > * + * { margin-top: 1em; }
-.prose p { margin: 0; }
 .prose .lead { font-size: var(--fs-lead); color: var(--ink); font-weight: 500; }
 .prose h3 {
   margin: 1.7em 0 0;
@@ -223,3 +226,10 @@
 /* date on the right of an experience entry */
 .facts dt { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .facts__when { font-weight: 400; color: var(--ink-3); font-size: var(--fs-small); font-variant-numeric: tabular-nums; }
+
+/* quiet attribution line — small, last, and not a headline */
+.fineprint {
+  margin-top: 26px; padding-top: 14px;
+  border-top: 1px solid var(--rule);
+  font-size: var(--fs-micro); line-height: 1.5; color: var(--ink-3);
+}

@@ -25,7 +25,7 @@ export function parse(hash) {
   if (head === 'project' && arg) return { name: 'project', arg };
   if (head === 'folder' && arg) return { name: 'folder', arg };
   if (head === 'page' && arg) return { name: 'page', arg };
-  if (['about', 'skills', 'resume', 'now', 'contact', 'settings', 'colophon'].includes(head)) {
+  if (['about', 'skills', 'resume', 'now', 'contact', 'settings'].includes(head)) {
     return { name: head, arg: null };
   }
   return { name: 'home', arg: null };

@@ -178,10 +178,6 @@
     <span class="dock__label">LinkedIn</span>
     <span class="sr-only">(opens in a new tab)</span>
   </a>
-  <button class="dock__btn" type="button" data-open="colophon">
-    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-code"/></svg>
-    <span class="dock__label">Colophon</span>
-  </button>
   <button class="dock__btn" type="button" data-open="settings">
     <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-gear"/></svg>
     <span class="dock__label">Display</span>
@@ -203,28 +199,12 @@
     <button class="panel__x" type="button" data-close aria-label="Close"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-close"/></svg></button>
   </div>
   <div class="panel__body prose">
-    <p class="lead">I'm Edward Penna — desktop and IT support, with a B.S. in Cybersecurity from the University at Albany.</p>
-    <p>I've supported end users in a hospital, reviewed access controls at a financial-technology firm, and I run a self-hosted Linux server that keeps a fleet of always-on services alive. That last part is where most of what I know actually came from: not from tutorials, but from things breaking at inconvenient times and having to read logs until I understood why.</p>
-    <p>The labs on this site are built the same way. Each one is a system I stood up, broke on purpose, fixed, and documented well enough that I could rebuild it from the notes. The code matters less than the operational habit: keep it running, know why when it isn't, and write it down so someone else can take it over.</p>
-
-    <h3>Experience</h3>
-    <dl class="facts">
-      <dt>Stony Brook Hospital <span class="facts__when">06/2023 – 08/2023</span></dt>
-      <dd>IT Support Volunteer — resolved login, system-access, hardware and software issues for clinical and administrative staff, tracked through tickets.</dd>
-      <dt>Broadridge <span class="facts__when">05/2024 – 08/2024</span></dt>
-      <dd>Summer Consultant, Information Security — user access reviews, audit preparation, risk analysis and process validation.</dd>
-      <dt>Lowe's <span class="facts__when">05/2022 – 08/2022</span></dt>
-      <dd>Sales Associate — direct customer service, Zebra devices for inventory lookup and restocking workflows.</dd>
-    </dl>
-
-    <h3>Education</h3>
-    <dl class="facts">
-      <dt>University at Albany, SUNY <span class="facts__when">09/2021 – 05/2025</span></dt>
-      <dd>B.S. Cybersecurity. Member of the UAlbany Cyber Defense Organization, 2022–2025.</dd>
-    </dl>
-
-    <h3>Right now</h3>
-    <p>CompTIA Network+ is scheduled for July 2026. I'm looking for a first full-time role in desktop support, helpdesk or IT support.</p>
+    <p class="lead">Hi — I'm Edward.</p>
+    <p>I like the part of this work most people find annoying: something is broken, nobody knows why, and you have to work backwards until it makes sense. That instinct turned into a cybersecurity degree from the University at Albany, a summer on the front line of a hospital help desk, and a Linux server at home that I have been quietly keeping alive for a couple of years.</p>
+    <p>That server is where most of what I actually know came from. Not from tutorials — from a backup that didn't restore, a service that died quietly and stayed dead for two days before I noticed, a certificate that expired at the worst possible moment. Everything on this site is built the same way: stand it up, break it on purpose, fix it, then write it down well enough that I could rebuild it from the notes.</p>
+    <p>The other half of the job is people. I'm patient with someone who is frustrated with their computer, I explain things without making anyone feel stupid, and I would rather ask a question than guess and be wrong twice.</p>
+    <p>Right now I'm looking for a first full-time role in desktop or IT support, and sitting CompTIA Network+ in July 2026.</p>
+    <p class="cta-row"><a class="btn btn--primary" href="resume.html">Read the résumé</a></p>
   </div>
 </section>
 
@@ -321,27 +301,7 @@
       <label class="switch"><input type="checkbox" data-toggle-fps><span class="switch__ui" aria-hidden="true"></span><span>Frame-rate counter</span></label>
       <p class="setting__note">Shows live frames per second in the corner. Should sit at 60 (or your display's refresh rate) while the menu is idle and while paging.</p>
     </div>
-  </div>
-</section>
-
-<section class="panel" id="p-colophon" role="dialog" aria-modal="true" aria-labelledby="h-colophon" tabindex="-1" hidden>
-  <div class="panel__bar">
-    <h2 id="h-colophon"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-code"/></svg>Colophon</h2>
-    <button class="panel__x" type="button" data-close aria-label="Close"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-close"/></svg></button>
-  </div>
-  <div class="panel__body prose">
-    <p class="lead">How this site is built, since that's part of the portfolio too.</p>
-    <ul class="beats">
-      <li><strong>No framework, no bundler, no build step.</strong> Hand-written HTML, CSS and ES modules. What you see in view-source is what I wrote.</li>
-      <li><strong>Project data is baked at build time.</strong> A script pulls my public repos through the GitHub CLI into a local JSON file — pinned to <code>--visibility public</code> so a private repo can never leak into it. No API calls at runtime, so nothing here is rate-limited or breaks when GitHub is slow.</li>
-      <li><strong>Hand-written copy is protected from the sync.</strong> Everything GitHub owns lives in one <code>gh</code> object the script replaces wholesale; the blurbs are joined by repo node ID, so renaming a repo can't silently destroy them.</li>
-      <li><strong>Deployed by <code>git push</code></strong> to GitHub Pages. The dev server mounts the site at the same subpath Pages uses, so path bugs surface locally instead of in production.</li>
-      <li><strong>Fonts are self-hosted</strong> — no third-party requests, so visiting this page tells nobody but GitHub.</li>
-    </ul>
-    <h3>Typefaces</h3>
-    <p>M PLUS Rounded 1c by The M+ FONTS PROJECT, and Departure Mono by Helena Zhang. Both licensed under the SIL Open Font License 1.1.</p>
-    <h3>Interface</h3>
-    <p>An original interface inspired by 2010s console home menus. Every icon and the avatar were drawn for this site. Not affiliated with, endorsed by, or connected to any console manufacturer.</p>
+    <p class="fineprint">An original interface inspired by 2010s console home menus. Not affiliated with, endorsed by, or connected to any console manufacturer. Type is M PLUS Rounded 1c and Departure Mono, both SIL Open Font License 1.1.</p>
   </div>
 </section>
 

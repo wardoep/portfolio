@@ -13,7 +13,6 @@ const CHANNELS = {
   resume:   { label: 'Résumé',    icon: 'i-doc',     cat: 'self',  blurb: 'Plain, printable, ATS-safe.' },
   now:      { label: 'Now',       icon: 'i-spark',   cat: 'self',  blurb: 'What I am studying right now.', badge: '1' },
   contact:  { label: 'Contact',   icon: 'i-chat',    cat: 'self',  blurb: 'Email, GitHub, LinkedIn.' },
-  colophon: { label: 'Colophon',  icon: 'i-code',    cat: 'self',  blurb: 'How this site is built.' },
 };
 
 const LINKS = {

@@ -215,19 +215,14 @@ COPY = {
         highlights=["Each repo carries a 'What I learned' section"],
         linkLabel="Open the profile",
     ),
-    # Self-referential, and reachable through the BUILDS folder rather than a
-    # page slot — the grid is deliberately full at 15 tiles per page.
+    # Hidden on purpose. The site talking about how the site was made reads as
+    # trying too hard on a page whose job is to talk about the person.
     "portfolio": dict(
-        folder="builds", icon="code", order=60,
-        blurb="This site. Hand-written, no framework, deployed by git push.",
-        stack=["HTML", "CSS", "ES modules", "GitHub Pages", "gh CLI"],
-        highlights=[
-            "Project data baked at build time from the GitHub CLI — no runtime API calls",
-            "Ten pre-flight checks gate every deploy, including WCAG contrast computed "
-            "through the colour-tint blend",
-            "Keyboard-navigable tile grid with roving tabindex and router-driven focus restore",
-        ],
-        linkLabel="Read the source",
+        folder="builds", icon="code", order=60, hidden=True,
+        blurb="The source for this site.",
+        stack=["HTML", "CSS", "JavaScript"],
+        highlights=[],
+        linkLabel="View the source",
     ),
 }
 
@@ -306,7 +301,7 @@ def main():
         p = by_id[pid]
         p.update(fields)
         p["title"] = TITLES.get(pid, pid)
-        p["hidden"] = False
+        p["hidden"] = bool(fields.get("hidden", False))
         p["status"] = "live"
 
     doc["layout"] = LAYOUT

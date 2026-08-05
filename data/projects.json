@@ -772,24 +772,18 @@
       "ghId": "R_kgDOTujCEQ",
       "id": "portfolio",
       "renamedFrom": [],
-      "blurb": "This site. Hand-written, no framework, deployed by git push.",
+      "blurb": "The source for this site.",
       "folder": "builds",
       "icon": "code",
       "featured": false,
-      "hidden": false,
+      "hidden": true,
       "stack": [
         "HTML",
         "CSS",
-        "ES modules",
-        "GitHub Pages",
-        "gh CLI"
+        "JavaScript"
       ],
-      "highlights": [
-        "Project data baked at build time from the GitHub CLI — no runtime API calls",
-        "Ten pre-flight checks gate every deploy, including WCAG contrast computed through the colour-tint blend",
-        "Keyboard-navigable tile grid with roving tabindex and router-driven focus restore"
-      ],
-      "linkLabel": "Read the source",
+      "highlights": [],
+      "linkLabel": "View the source",
       "note": "",
       "order": 60,
       "status": "live",
@@ -799,7 +793,7 @@
         "description": "IT support and cybersecurity portfolio — a console-style channel menu backed by 18 hands-on labs",
         "language": "HTML",
         "stars": 0,
-        "pushedAt": "2026-08-05T10:14:33Z",
+        "pushedAt": "2026-08-05T17:57:33Z",
         "createdAt": "2026-08-05T09:38:17Z",
         "url": "https://github.com/wardoep/portfolio",
         "homepageUrl": "",
