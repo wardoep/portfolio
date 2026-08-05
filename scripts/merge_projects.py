@@ -16,6 +16,12 @@ from datetime import date
 MACHINE_KEY = "gh"          # the only key this script is allowed to overwrite
 BLURB_MAX = 90
 
+# Fields that drift on their own and are never rendered. They are still written
+# so the file stays accurate, but --check must not call the data "stale" because
+# of them: pushing a commit to any repo moves `pushedAt`, which meant pushing
+# the site made the site's own deploy gate fail on a value nothing displays.
+VOLATILE = {"pushedAt", "createdAt", "stars"}
+
 HAND_WRITTEN_DEFAULTS = {
     "blurb": "",
     "folder": "unsorted",
@@ -85,7 +91,8 @@ def main():
     by_ghid = {p["ghId"]: p for p in projects if p.get("ghId")}
     by_id = {p["id"]: p for p in projects if p.get("id")}
 
-    changed = False
+    changed = False           # anything at all differs -> rewrite the file
+    material = False          # something a human would care about -> --check fails
     seen = set()
     notes = []
 
@@ -101,7 +108,7 @@ def main():
                      "order": (max((p.get("order", 0) for p in projects), default=0) + 10),
                      "status": "new", "firstSeen": today}
             projects.append(entry)
-            changed = True
+            changed = material = True
             notes.append(f"NEW:     {name} — hidden until you write a blurb")
         elif entry.get("id") != name:                       # renamed upstream
             old = entry["id"]
@@ -109,7 +116,7 @@ def main():
             if old not in entry["renamedFrom"]:
                 entry["renamedFrom"].append(old)
             entry["id"] = name
-            changed = True
+            changed = material = True
             notes.append(f"RENAMED: {old} -> {name} (old links still resolve)")
 
         entry["ghId"] = ghid
@@ -119,7 +126,11 @@ def main():
         entry.setdefault("firstSeen", today)
 
         new_gh = remote_gh(r)
-        if entry.get(MACHINE_KEY) != new_gh:
+        old_gh = entry.get(MACHINE_KEY)
+        if old_gh != new_gh:
+            stable = lambda d: {k: v for k, v in (d or {}).items() if k not in VOLATILE}
+            if stable(old_gh) != stable(new_gh):
+                material = True                             # a real content change
             entry[MACHINE_KEY] = new_gh                     # replace wholesale
             changed = True
         if entry.get("status") != "live" and entry.get("status") != "new":
@@ -130,7 +141,7 @@ def main():
     for p in projects:                                      # gone upstream
         if p.get("ghId") and p["ghId"] not in seen and p.get("status") != "missing":
             p["status"] = "missing"                         # never delete
-            changed = True
+            changed = material = True
             notes.append(f"MISSING: {p['id']} — kept, hidden from the grid")
 
     folder_order = {f["id"]: f.get("order", 99) for f in doc["folders"]}
@@ -156,7 +167,7 @@ def main():
         if problems:
             print("\n".join("  " + x for x in problems), file=sys.stderr)
             return 2
-        if changed:
+        if material:
             print("data/projects.json is stale — run sync-projects.sh", file=sys.stderr)
             return 1
         print(f"projects.json current: {len(projects)} repos")
