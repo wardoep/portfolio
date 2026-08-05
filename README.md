@@ -110,6 +110,18 @@ notes/              DESIGN.md · LEGAL.md
   live.
 - **Hash routing is required**, not stylistic. Pages has no rewrite rules, so a
   History API route would 404 on refresh and on every shared link.
+- **Do not trust `gh api …/pages/builds/latest --jq .commit`.** It has been
+  observed reporting the *previous* SHA for a build that had in fact deployed
+  the newest commit. Trust `.status`, then confirm by fetching the live page
+  with a cache-buster and grepping for a string only the new build contains.
+- **When testing over CDP, `Page.navigate` to a URL differing only by `#hash`
+  is a same-document navigation.** The document is never re-fetched, so an
+  edited CSS or JS file silently measures as the old one and a broken change
+  reports as passing. Navigate to `about:blank` first, then
+  `Page.reload({ignoreCache: true})`.
+- **Watch CSS specificity in `.prose`.** `.prose p` is (0,1,1) and beats
+  `.prose > * + *` at (0,1,0). That collapsed every paragraph gap and stayed
+  invisible until a panel had several consecutive paragraphs.
 
 ## Credits
 
