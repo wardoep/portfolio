@@ -1,0 +1,943 @@
+{
+  "syncVersion": 1,
+  "source": "gh repo list --visibility public --source --limit 200",
+  "folders": [
+    {
+      "id": "security",
+      "label": "SECURITY",
+      "order": 1,
+      "icon": "shield",
+      "blurb": "Detection, triage and hardening — run against systems I broke on purpose."
+    },
+    {
+      "id": "infra",
+      "label": "IT / INFRASTRUCTURE",
+      "order": 2,
+      "icon": "rack",
+      "blurb": "The plumbing: directory services, ticketing, monitoring, backups."
+    },
+    {
+      "id": "builds",
+      "label": "BUILDS",
+      "order": 3,
+      "icon": "wrench",
+      "blurb": "Things I built because I wanted them to exist."
+    },
+    {
+      "id": "unsorted",
+      "label": "UNSORTED",
+      "order": 9,
+      "icon": "box",
+      "blurb": "New repos land here, hidden, until a blurb is written."
+    }
+  ],
+  "projects": [
+    {
+      "ghId": "R_kgDOThgPhg",
+      "id": "soc-siem-lab",
+      "renamedFrom": [],
+      "blurb": "Ran attacks against my own VMs, then wrote the rules that caught them.",
+      "folder": "security",
+      "icon": "siem",
+      "featured": true,
+      "hidden": false,
+      "stack": [
+        "Wazuh",
+        "Sysmon",
+        "Windows Server",
+        "Ubuntu",
+        "Detection rules"
+      ],
+      "highlights": [
+        "Sysmon-instrumented Windows and Linux agents reporting into one Wazuh manager",
+        "Attack simulations I ran myself, then custom detection rules written to catch them",
+        "Incident write-ups in a repeatable format, so the analysis is reviewable"
+      ],
+      "linkLabel": "Read the write-ups",
+      "note": "",
+      "order": 10,
+      "status": "live",
+      "firstSeen": "2026-08-05",
+      "gh": {
+        "name": "soc-siem-lab",
+        "description": "SOC home lab on Wazuh SIEM: Sysmon-instrumented Windows + Linux agents, self-run attack simulations against my own VMs, custom detection rules, and IR write-ups",
+        "language": "PowerShell",
+        "stars": 0,
+        "pushedAt": "2026-07-24T05:20:20Z",
+        "createdAt": "2026-07-23T17:25:02Z",
+        "url": "https://github.com/wardoep/soc-siem-lab",
+        "homepageUrl": "",
+        "defaultBranch": "main",
+        "isArchived": false,
+        "topics": []
+      },
+      "lastSeen": "2026-08-05",
+      "title": "SIEM & Detection"
+    },
+    {
+      "ghId": "R_kgDOTqBZIQ",
+      "id": "phishing-analysis-lab",
+      "renamedFrom": [],
+      "blurb": "Full email triage: headers, SPF/DKIM/DMARC, IOC extraction, written verdict.",
+      "folder": "security",
+      "icon": "mail",
+      "featured": true,
+      "hidden": false,
+      "stack": [
+        "Python",
+        "SPF / DKIM / DMARC",
+        "IOC analysis",
+        "Email headers"
+      ],
+      "highlights": [
+        "Header analysis that walks the full Received chain back to the true origin",
+        "SPF, DKIM and DMARC evaluated together rather than one at a time",
+        "Python IOC extractor with defanged output, so a report can't be clicked by mistake",
+        "A repeatable verdict template — the tier-1 deliverable, not just the analysis"
+      ],
+      "linkLabel": "See the triage template",
+      "note": "",
+      "order": 20,
+      "status": "live",
+      "firstSeen": "2026-08-05",
+      "gh": {
+        "name": "phishing-analysis-lab",
+        "description": "SOC email-triage lab: full header/SPF-DKIM-DMARC analysis, a Python IOC extractor with defanged output, and a repeatable verdict/triage template for writing up phishing analyses",
+        "language": "Python",
+        "stars": 0,
+        "pushedAt": "2026-08-01T08:56:09Z",
+        "createdAt": "2026-08-01T08:56:07Z",
+        "url": "https://github.com/wardoep/phishing-analysis-lab",
+        "homepageUrl": "",
+        "defaultBranch": "main",
+        "isArchived": false,
+        "topics": []
+      },
+      "lastSeen": "2026-08-05",
+      "title": "Phishing Triage"
+    },
+    {
+      "ghId": "R_kgDOTnMEWA",
+      "id": "vuln-management-lab",
+      "renamedFrom": [],
+      "blurb": "The whole lifecycle: scan, triage by risk, remediate, rescan, report up.",
+      "folder": "security",
+      "icon": "scan",
+      "featured": true,
+      "hidden": false,
+      "stack": [
+        "Nessus Essentials",
+        "Ubuntu",
+        "Windows",
+        "Risk triage"
+      ],
+      "highlights": [
+        "Baseline scan, then triage by real risk rather than raw CVSS score",
+        "Remediation followed by a verification rescan that proves the finding is closed",
+        "A management-facing report — the step most labs skip"
+      ],
+      "linkLabel": "Read the report",
+      "note": "",
+      "order": 30,
+      "status": "live",
+      "firstSeen": "2026-08-05",
+      "gh": {
+        "name": "vuln-management-lab",
+        "description": "The full vulnerability-management lifecycle with Nessus Essentials: baseline scan, risk-based triage, remediation, verification rescan, and a management report",
+        "language": "Python",
+        "stars": 0,
+        "pushedAt": "2026-07-29T13:23:32Z",
+        "createdAt": "2026-07-29T13:23:28Z",
+        "url": "https://github.com/wardoep/vuln-management-lab",
+        "homepageUrl": "",
+        "defaultBranch": "main",
+        "isArchived": false,
+        "topics": []
+      },
+      "lastSeen": "2026-08-05",
+      "title": "Vulnerability Mgmt"
+    },
+    {
+      "ghId": "R_kgDOTjMmNQ",
+      "id": "linux-hardening-lab",
+      "renamedFrom": [],
+      "blurb": "CIS-inspired Ubuntu hardening, scored by Lynis before and after.",
+      "folder": "security",
+      "icon": "lock",
+      "featured": false,
+      "hidden": false,
+      "stack": [
+        "Ubuntu",
+        "Lynis",
+        "auditd",
+        "ufw",
+        "sysctl"
+      ],
+      "highlights": [
+        "Measured baseline score before touching anything",
+        "An idempotent harden.sh covering SSH, firewall, auditd and sysctl",
+        "Before/after Lynis delta, so the improvement is a number and not a claim"
+      ],
+      "linkLabel": "View on GitHub",
+      "note": "",
+      "order": 40,
+      "status": "live",
+      "firstSeen": "2026-08-05",
+      "gh": {
+        "name": "linux-hardening-lab",
+        "description": "CIS-inspired Ubuntu hardening measured with Lynis: baseline score, an idempotent harden.sh (SSH, firewall, auditd, sysctl), and a before/after score delta",
+        "language": "Shell",
+        "stars": 0,
+        "pushedAt": "2026-07-25T12:44:10Z",
+        "createdAt": "2026-07-25T12:44:07Z",
+        "url": "https://github.com/wardoep/linux-hardening-lab",
+        "homepageUrl": "",
+        "defaultBranch": "main",
+        "isArchived": false,
+        "topics": []
+      },
+      "lastSeen": "2026-08-05",
+      "title": "Linux Hardening"
+    },
+    {
+      "ghId": "R_kgDOToQUEQ",
+      "id": "honeypot-lab",
+      "renamedFrom": [],
+      "blurb": "A Cowrie SSH honeypot on an isolated VPS, and analysis of what it caught.",
+      "folder": "security",
+      "icon": "honeypot",
+      "featured": false,
+      "hidden": false,
+      "stack": [
+        "Cowrie",
+        "Python",
+        "VPS isolation",
+        "Log analysis"
+      ],
+      "highlights": [
+        "Deliberately isolated so a compromise stays contained",
+        "Python analyzer surfacing top credentials tried and source IPs",
+        "Attacker session replays turned into an attack-data report"
+      ],
+      "linkLabel": "View on GitHub",
+      "note": "",
+      "order": 50,
+      "status": "live",
+      "firstSeen": "2026-08-05",
+      "gh": {
+        "name": "honeypot-lab",
+        "description": "Cowrie SSH honeypot in an isolated VPS with a Python log analyzer: top credentials, source IPs, and attacker session replays turned into an attack-data report",
+        "language": "Python",
+        "stars": 0,
+        "pushedAt": "2026-07-30T13:06:33Z",
+        "createdAt": "2026-07-30T13:06:29Z",
+        "url": "https://github.com/wardoep/honeypot-lab",
+        "homepageUrl": "",
+        "defaultBranch": "main",
+        "isArchived": false,
+        "topics": []
+      },
+      "lastSeen": "2026-08-05",
+      "title": "SSH Honeypot"
+    },
+    {
+      "ghId": "R_kgDOTmEMXA",
+      "id": "helpdesk-ticketing-lab",
+      "renamedFrom": [],
+      "blurb": "A real helpdesk on osTicket: departments, SLAs, email piping, worked tickets.",
+      "folder": "infra",
+      "icon": "ticket",
+      "featured": true,
+      "hidden": false,
+      "stack": [
+        "osTicket",
+        "Docker",
+        "MySQL",
+        "SLAs"
+      ],
+      "highlights": [
+        "Departments, help topics and SLA targets configured the way a real desk runs",
+        "Email piping so a message becomes a ticket without anyone retyping it",
+        "Five worked tickets, each with the KB article it produced"
+      ],
+      "linkLabel": "See the worked tickets",
+      "note": "",
+      "order": 10,
+      "status": "live",
+      "firstSeen": "2026-08-05",
+      "gh": {
+        "name": "helpdesk-ticketing-lab",
+        "description": "A real helpdesk built on osTicket (Docker): departments, SLAs, help topics, email piping, plus five worked tickets with matching KB articles",
+        "language": "Dockerfile",
+        "stars": 0,
+        "pushedAt": "2026-07-28T12:58:32Z",
+        "createdAt": "2026-07-28T12:58:29Z",
+        "url": "https://github.com/wardoep/helpdesk-ticketing-lab",
+        "homepageUrl": "",
+        "defaultBranch": "main",
+        "isArchived": false,
+        "topics": []
+      },
+      "lastSeen": "2026-08-05",
+      "title": "Helpdesk"
+    },
+    {
+      "ghId": "R_kgDOTaAulA",
+      "id": "ad-network-lab",
+      "renamedFrom": [],
+      "blurb": "Active Directory and pfSense, written up as runbooks I can rebuild from.",
+      "folder": "infra",
+      "icon": "directory",
+      "featured": true,
+      "hidden": false,
+      "stack": [
+        "Active Directory",
+        "Group Policy",
+        "pfSense",
+        "PowerShell"
+      ],
+      "highlights": [
+        "Group Policy and AGDLP permission nesting done properly, not ad hoc",
+        "Helpdesk delegation, so a tier-1 tech can reset a password and nothing more",
+        "PowerShell user provisioning, plus break/fix drills against my own lab"
+      ],
+      "linkLabel": "Read the runbooks",
+      "note": "",
+      "order": 20,
+      "status": "live",
+      "firstSeen": "2026-08-05",
+      "gh": {
+        "name": "ad-network-lab",
+        "description": "Active Directory + pfSense homelab, documented as rebuildable runbooks: GPO, AGDLP, delegation, PowerShell provisioning",
+        "language": "PowerShell",
+        "stars": 0,
+        "pushedAt": "2026-07-25T05:19:11Z",
+        "createdAt": "2026-07-16T05:14:46Z",
+        "url": "https://github.com/wardoep/ad-network-lab",
+        "homepageUrl": "",
+        "defaultBranch": "master",
+        "isArchived": false,
+        "topics": []
+      },
+      "lastSeen": "2026-08-05",
+      "title": "Active Directory"
+    },
+    {
+      "ghId": "R_kgDOThgO2g",
+      "id": "powershell-admin-toolkit",
+      "renamedFrom": [],
+      "blurb": "PowerShell for the daily Windows and AD jobs, run against my own domain.",
+      "folder": "infra",
+      "icon": "terminal",
+      "featured": false,
+      "hidden": false,
+      "stack": [
+        "PowerShell",
+        "Active Directory",
+        "Windows Server"
+      ],
+      "highlights": [
+        "System inventory and health reports",
+        "Event-log triage that surfaces the entries worth reading",
+        "Onboarding and offboarding, the two tasks a helpdesk repeats most"
+      ],
+      "linkLabel": "View on GitHub",
+      "note": "",
+      "order": 30,
+      "status": "live",
+      "firstSeen": "2026-08-05",
+      "gh": {
+        "name": "powershell-admin-toolkit",
+        "description": "PowerShell toolkit for Windows/AD administration: system inventory, event-log triage, health reports, onboarding/offboarding — run against my AD homelab",
+        "language": "PowerShell",
+        "stars": 0,
+        "pushedAt": "2026-07-24T05:20:19Z",
+        "createdAt": "2026-07-23T17:24:51Z",
+        "url": "https://github.com/wardoep/powershell-admin-toolkit",
+        "homepageUrl": "",
+        "defaultBranch": "main",
+        "isArchived": false,
+        "topics": []
+      },
+      "lastSeen": "2026-08-05",
+      "title": "PowerShell Toolkit"
+    },
+    {
+      "ghId": "R_kgDOTGgmew",
+      "id": "it-support-scripts",
+      "renamedFrom": [],
+      "blurb": "Linux troubleshooting toolkit: layered network and DNS diagnosis.",
+      "folder": "infra",
+      "icon": "toolbox",
+      "featured": false,
+      "hidden": false,
+      "stack": [
+        "Bash",
+        "journalctl",
+        "systemd",
+        "DNS"
+      ],
+      "highlights": [
+        "Network and DNS diagnosis in layers, so you find the break instead of guessing",
+        "Service health checks driven by journalctl",
+        "Disk and system audits for the questions asked on every ticket"
+      ],
+      "linkLabel": "View on GitHub",
+      "note": "",
+      "order": 40,
+      "status": "live",
+      "firstSeen": "2026-08-05",
+      "gh": {
+        "name": "it-support-scripts",
+        "description": "Linux troubleshooting toolkit: layered network/DNS diagnosis, service health checks with journalctl, disk and system audits",
+        "language": "Shell",
+        "stars": 0,
+        "pushedAt": "2026-07-16T02:51:30Z",
+        "createdAt": "2026-06-27T03:53:43Z",
+        "url": "https://github.com/wardoep/it-support-scripts",
+        "homepageUrl": "",
+        "defaultBranch": "main",
+        "isArchived": false,
+        "topics": []
+      },
+      "lastSeen": "2026-08-05",
+      "title": "Support Scripts"
+    },
+    {
+      "ghId": "R_kgDOTj_1YA",
+      "id": "monitoring-observability-lab",
+      "renamedFrom": [],
+      "blurb": "Prometheus and Grafana watching the homelab, dashboards kept as code.",
+      "folder": "infra",
+      "icon": "chart",
+      "featured": false,
+      "hidden": false,
+      "stack": [
+        "Prometheus",
+        "Grafana",
+        "node_exporter",
+        "Alertmanager"
+      ],
+      "highlights": [
+        "node_exporter metrics into Prometheus, visualised in Grafana",
+        "Dashboards as code, so they survive a rebuild",
+        "Disk, CPU and service alerts routed to Discord — alerts I actually receive"
+      ],
+      "linkLabel": "View on GitHub",
+      "note": "",
+      "order": 50,
+      "status": "live",
+      "firstSeen": "2026-08-05",
+      "gh": {
+        "name": "monitoring-observability-lab",
+        "description": "Homelab monitoring with Prometheus, node_exporter, Grafana and Alertmanager: dashboards-as-code and disk/CPU/service alerts to Discord",
+        "language": null,
+        "stars": 0,
+        "pushedAt": "2026-07-26T13:14:10Z",
+        "createdAt": "2026-07-26T13:14:08Z",
+        "url": "https://github.com/wardoep/monitoring-observability-lab",
+        "homepageUrl": "",
+        "defaultBranch": "main",
+        "isArchived": false,
+        "topics": []
+      },
+      "lastSeen": "2026-08-05",
+      "title": "Monitoring"
+    },
+    {
+      "ghId": "R_kgDOTlA8Sw",
+      "id": "backup-dr-lab",
+      "renamedFrom": [],
+      "blurb": "3-2-1 backups with restic, encrypted on and off site. I test the restores.",
+      "folder": "infra",
+      "icon": "archive",
+      "featured": false,
+      "hidden": false,
+      "stack": [
+        "restic",
+        "systemd timers",
+        "Ubuntu"
+      ],
+      "highlights": [
+        "Encrypted local and offsite repositories, following 3-2-1 properly",
+        "systemd timers and a retention policy rather than a cron job and hope",
+        "Logged restore drills — an untested backup is not a backup"
+      ],
+      "linkLabel": "View on GitHub",
+      "note": "",
+      "order": 60,
+      "status": "live",
+      "firstSeen": "2026-08-05",
+      "gh": {
+        "name": "backup-dr-lab",
+        "description": "3-2-1 backup and disaster recovery with restic: encrypted local + offsite repos, systemd timers, retention, and logged restore drills — because I test my restores",
+        "language": "Shell",
+        "stars": 0,
+        "pushedAt": "2026-07-27T13:32:45Z",
+        "createdAt": "2026-07-27T13:32:42Z",
+        "url": "https://github.com/wardoep/backup-dr-lab",
+        "homepageUrl": "",
+        "defaultBranch": "main",
+        "isArchived": false,
+        "topics": []
+      },
+      "lastSeen": "2026-08-05",
+      "title": "Backup & DR"
+    },
+    {
+      "ghId": "R_kgDOTh8UnQ",
+      "id": "docker-selfhosted-lab",
+      "renamedFrom": [],
+      "blurb": "A Docker Compose homelab behind a reverse proxy, with volume backups.",
+      "folder": "infra",
+      "icon": "container",
+      "featured": false,
+      "hidden": false,
+      "stack": [
+        "Docker",
+        "Compose",
+        "Nginx Proxy Manager",
+        "Portainer",
+        "Uptime Kuma"
+      ],
+      "highlights": [
+        "Services behind a single reverse proxy instead of a sprawl of open ports",
+        "Portainer and Uptime Kuma for management and availability",
+        "Volume backups, because container data is the part people forget"
+      ],
+      "linkLabel": "View on GitHub",
+      "note": "",
+      "order": 70,
+      "status": "live",
+      "firstSeen": "2026-08-05",
+      "gh": {
+        "name": "docker-selfhosted-lab",
+        "description": "Docker + Compose homelab: Portainer, Nginx Proxy Manager, Uptime Kuma and more behind a reverse proxy on Ubuntu Server, with volume backups",
+        "language": "Shell",
+        "stars": 0,
+        "pushedAt": "2026-07-24T05:22:58Z",
+        "createdAt": "2026-07-24T05:22:55Z",
+        "url": "https://github.com/wardoep/docker-selfhosted-lab",
+        "homepageUrl": "",
+        "defaultBranch": "main",
+        "isArchived": false,
+        "topics": []
+      },
+      "lastSeen": "2026-08-05",
+      "title": "Docker Homelab"
+    },
+    {
+      "ghId": "R_kgDOTGi5pA",
+      "id": "homelab-vps-setup",
+      "renamedFrom": [],
+      "blurb": "Runbooks for my Ubuntu server: SSH workflows, Tailscale mesh, rebuildable.",
+      "folder": "infra",
+      "icon": "server",
+      "featured": false,
+      "hidden": false,
+      "stack": [
+        "Ubuntu Server",
+        "SSH",
+        "Tailscale"
+      ],
+      "highlights": [
+        "SSH administration workflows written down rather than remembered",
+        "Tailscale mesh networking for access without exposing ports",
+        "Setup documented so the box can be rebuilt from zero"
+      ],
+      "linkLabel": "View on GitHub",
+      "note": "Documentation, not code — written so the machine is reproducible.",
+      "order": 80,
+      "status": "live",
+      "firstSeen": "2026-08-05",
+      "gh": {
+        "name": "homelab-vps-setup",
+        "description": "Infrastructure runbooks for my Ubuntu Server homelab: SSH administration, Tailscale mesh networking, reproducible setup",
+        "language": null,
+        "stars": 0,
+        "pushedAt": "2026-07-16T02:51:31Z",
+        "createdAt": "2026-06-27T05:17:10Z",
+        "url": "https://github.com/wardoep/homelab-vps-setup",
+        "homepageUrl": "",
+        "defaultBranch": "main",
+        "isArchived": false,
+        "topics": []
+      },
+      "lastSeen": "2026-08-05",
+      "title": "Server Runbooks"
+    },
+    {
+      "ghId": "R_kgDOTQ5MbQ",
+      "id": "jobbot",
+      "renamedFrom": [],
+      "blurb": "Self-hosted job platform: multi-source ingestion, fit scoring, six alert channels.",
+      "folder": "builds",
+      "icon": "briefcase",
+      "featured": false,
+      "hidden": false,
+      "stack": [
+        "Python",
+        "IMAP",
+        "SQLite",
+        "REST APIs",
+        "OAuth2"
+      ],
+      "highlights": [
+        "Ingests postings from multiple sources into one searchable store",
+        "AI resume-fit scoring to rank what is actually worth applying to",
+        "Six alert channels and an IMAP inbox watcher, with credentials encrypted at rest"
+      ],
+      "linkLabel": "View on GitHub",
+      "note": "GitHub reports this as HTML; the working parts are Python.",
+      "order": 10,
+      "status": "live",
+      "firstSeen": "2026-08-05",
+      "gh": {
+        "name": "jobbot",
+        "description": "Self-hosted job-search platform: multi-source ingestion, AI resume-fit scoring, six alert channels, IMAP inbox watcher",
+        "language": "HTML",
+        "stars": 0,
+        "pushedAt": "2026-07-16T02:52:31Z",
+        "createdAt": "2026-07-07T21:02:22Z",
+        "url": "https://github.com/wardoep/jobbot",
+        "homepageUrl": "",
+        "defaultBranch": "main",
+        "isArchived": false,
+        "topics": []
+      },
+      "lastSeen": "2026-08-05",
+      "title": "Jobbot"
+    },
+    {
+      "ghId": "R_kgDOTGjknA",
+      "id": "hermes-personal-assistant",
+      "renamedFrom": [],
+      "blurb": "Architecture for the self-hosted assistant stack that runs on my server.",
+      "folder": "builds",
+      "icon": "brain",
+      "featured": false,
+      "hidden": false,
+      "stack": [
+        "Architecture",
+        "Self-hosted",
+        "Automation"
+      ],
+      "highlights": [
+        "Skills system, memory model and automation design",
+        "Written before building, so the structure is deliberate"
+      ],
+      "linkLabel": "View on GitHub",
+      "note": "Design documentation, not code.",
+      "order": 20,
+      "status": "live",
+      "firstSeen": "2026-08-05",
+      "gh": {
+        "name": "hermes-personal-assistant",
+        "description": "Design documentation for Hermes, my self-hosted AI assistant stack: architecture, skills system, memory, automation",
+        "language": null,
+        "stars": 0,
+        "pushedAt": "2026-07-16T02:51:32Z",
+        "createdAt": "2026-06-27T05:39:20Z",
+        "url": "https://github.com/wardoep/hermes-personal-assistant",
+        "homepageUrl": "",
+        "defaultBranch": "main",
+        "isArchived": false,
+        "topics": []
+      },
+      "lastSeen": "2026-08-05",
+      "title": "Hermes"
+    },
+    {
+      "ghId": "R_kgDOTS-hxA",
+      "id": "twitch-clips-bot",
+      "renamedFrom": [],
+      "blurb": "Discord bot delivering daily top clips. OAuth2, yt-dlp, 24/7 on systemd.",
+      "folder": "builds",
+      "icon": "clip",
+      "featured": false,
+      "hidden": false,
+      "stack": [
+        "Python",
+        "Discord API",
+        "OAuth2",
+        "yt-dlp",
+        "systemd"
+      ],
+      "highlights": [
+        "OAuth2 against the Twitch and Kick APIs with rate-limit handling",
+        "Downloads quality-stepped to fit Discord's upload cap",
+        "Runs continuously under systemd — uptime is the actual hard part"
+      ],
+      "linkLabel": "View on GitHub",
+      "note": "",
+      "order": 30,
+      "status": "live",
+      "firstSeen": "2026-08-05",
+      "gh": {
+        "name": "twitch-clips-bot",
+        "description": "Discord bot delivering daily top Twitch/Kick clips as playable cards — OAuth2, yt-dlp, AI search, runs 24/7 on systemd",
+        "language": "Python",
+        "stars": 0,
+        "pushedAt": "2026-07-16T02:50:57Z",
+        "createdAt": "2026-07-09T09:12:42Z",
+        "url": "https://github.com/wardoep/twitch-clips-bot",
+        "homepageUrl": "",
+        "defaultBranch": "master",
+        "isArchived": false,
+        "topics": []
+      },
+      "lastSeen": "2026-08-05",
+      "title": "Clips Bot"
+    },
+    {
+      "ghId": "R_kgDOTZxn8A",
+      "id": "ai-shorts-pipeline",
+      "renamedFrom": [],
+      "blurb": "Script to rendered short: TTS, captions, b-roll, ffmpeg, with cost guards.",
+      "folder": "builds",
+      "icon": "film",
+      "featured": false,
+      "hidden": false,
+      "stack": [
+        "Python",
+        "ffmpeg",
+        "TTS"
+      ],
+      "highlights": [
+        "End-to-end assembly with a human review step before anything renders",
+        "Quota pre-flight checks and budget tracking, so a bug can't run up a bill"
+      ],
+      "linkLabel": "View on GitHub",
+      "note": "",
+      "order": 40,
+      "status": "live",
+      "firstSeen": "2026-08-05",
+      "gh": {
+        "name": "ai-shorts-pipeline",
+        "description": "Human-in-the-loop pipeline turning AI-drafted stories into rendered Shorts: TTS, stock b-roll, ffmpeg, cost guards",
+        "language": "Python",
+        "stars": 0,
+        "pushedAt": "2026-07-16T02:53:26Z",
+        "createdAt": "2026-07-15T22:51:13Z",
+        "url": "https://github.com/wardoep/ai-shorts-pipeline",
+        "homepageUrl": "",
+        "defaultBranch": "master",
+        "isArchived": false,
+        "topics": []
+      },
+      "lastSeen": "2026-08-05",
+      "title": "Shorts Pipeline"
+    },
+    {
+      "ghId": "R_kgDOTZ6ksQ",
+      "id": "btc-backtest-lab",
+      "renamedFrom": [],
+      "blurb": "Event-driven backtester with out-of-sample validation and a live paper test.",
+      "folder": "builds",
+      "icon": "chart-line",
+      "featured": false,
+      "hidden": false,
+      "stack": [
+        "Python",
+        "pandas",
+        "systemd"
+      ],
+      "highlights": [
+        "Event-driven engine with a strategy leaderboard",
+        "Out-of-sample validation, because in-sample results prove nothing",
+        "Hourly forward paper test run by a systemd timer"
+      ],
+      "linkLabel": "View on GitHub",
+      "note": "",
+      "order": 50,
+      "status": "live",
+      "firstSeen": "2026-08-05",
+      "gh": {
+        "name": "btc-backtest-lab",
+        "description": "Event-driven BTC backtester: strategy leaderboard, out-of-sample validation, Pine export, live forward paper test",
+        "language": "Python",
+        "stars": 0,
+        "pushedAt": "2026-07-16T02:54:32Z",
+        "createdAt": "2026-07-16T02:54:29Z",
+        "url": "https://github.com/wardoep/btc-backtest-lab",
+        "homepageUrl": "",
+        "defaultBranch": "master",
+        "isArchived": false,
+        "topics": []
+      },
+      "lastSeen": "2026-08-05",
+      "title": "Backtester"
+    },
+    {
+      "ghId": "R_kgDOTGjhqw",
+      "id": "wardoep",
+      "renamedFrom": [],
+      "blurb": "My GitHub profile README — the index to everything here.",
+      "folder": "builds",
+      "icon": "profile",
+      "featured": false,
+      "hidden": false,
+      "stack": [
+        "Markdown"
+      ],
+      "highlights": [
+        "Each repo carries a 'What I learned' section"
+      ],
+      "linkLabel": "Open the profile",
+      "note": "",
+      "order": 90,
+      "status": "live",
+      "firstSeen": "2026-08-05",
+      "gh": {
+        "name": "wardoep",
+        "description": "",
+        "language": null,
+        "stars": 0,
+        "pushedAt": "2026-07-16T05:15:09Z",
+        "createdAt": "2026-06-27T05:37:47Z",
+        "url": "https://github.com/wardoep/wardoep",
+        "homepageUrl": "",
+        "defaultBranch": "main",
+        "isArchived": false,
+        "topics": []
+      },
+      "lastSeen": "2026-08-05",
+      "title": "Profile README"
+    }
+  ],
+  "generatedAt": "2026-08-05",
+  "layout": [
+    {
+      "page": 1,
+      "label": "HOME",
+      "tiles": [
+        {
+          "type": "project",
+          "id": "soc-siem-lab"
+        },
+        {
+          "type": "project",
+          "id": "phishing-analysis-lab"
+        },
+        {
+          "type": "project",
+          "id": "vuln-management-lab"
+        },
+        {
+          "type": "project",
+          "id": "helpdesk-ticketing-lab"
+        },
+        {
+          "type": "project",
+          "id": "ad-network-lab"
+        },
+        {
+          "type": "folder",
+          "id": "security"
+        },
+        {
+          "type": "folder",
+          "id": "infra"
+        },
+        {
+          "type": "folder",
+          "id": "builds"
+        },
+        {
+          "type": "channel",
+          "id": "about"
+        },
+        {
+          "type": "channel",
+          "id": "skills"
+        },
+        {
+          "type": "channel",
+          "id": "resume"
+        },
+        {
+          "type": "channel",
+          "id": "now"
+        },
+        {
+          "type": "channel",
+          "id": "contact"
+        },
+        {
+          "type": "link",
+          "id": "github"
+        },
+        {
+          "type": "link",
+          "id": "linkedin"
+        }
+      ]
+    },
+    {
+      "page": 2,
+      "label": "LABS",
+      "tiles": [
+        {
+          "type": "project",
+          "id": "linux-hardening-lab"
+        },
+        {
+          "type": "project",
+          "id": "honeypot-lab"
+        },
+        {
+          "type": "project",
+          "id": "powershell-admin-toolkit"
+        },
+        {
+          "type": "project",
+          "id": "it-support-scripts"
+        },
+        {
+          "type": "project",
+          "id": "monitoring-observability-lab"
+        },
+        {
+          "type": "project",
+          "id": "backup-dr-lab"
+        },
+        {
+          "type": "project",
+          "id": "docker-selfhosted-lab"
+        },
+        {
+          "type": "project",
+          "id": "homelab-vps-setup"
+        },
+        {
+          "type": "project",
+          "id": "jobbot"
+        },
+        {
+          "type": "project",
+          "id": "hermes-personal-assistant"
+        },
+        {
+          "type": "project",
+          "id": "twitch-clips-bot"
+        },
+        {
+          "type": "project",
+          "id": "ai-shorts-pipeline"
+        },
+        {
+          "type": "project",
+          "id": "btc-backtest-lab"
+        },
+        {
+          "type": "project",
+          "id": "wardoep"
+        },
+        {
+          "type": "channel",
+          "id": "colophon"
+        }
+      ]
+    }
+  ]
+}

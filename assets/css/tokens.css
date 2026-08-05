@@ -1,0 +1,151 @@
+/* tokens.css — the only file that sets a literal colour, duration or radius.
+ *
+ * Everything else references var(--…). That is what makes the tint toggle a
+ * two-line change instead of a hunt through five stylesheets, and it is why
+ * `data-tint="off"` below can restate the palette without touching a component.
+ *
+ * The type scale is fixed integers, not clamp(). Departure Mono is a bitmap
+ * face and blurs at fractional sizes; the rounded face is set on the same scale
+ * so the two never disagree about what "14px" means.
+ */
+
+@font-face {
+  font-family: 'M PLUS Rounded 1c';
+  src: url('../fonts/MPLUSRounded1c-Regular.woff2') format('woff2');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'M PLUS Rounded 1c';
+  src: url('../fonts/MPLUSRounded1c-Medium.woff2') format('woff2');
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'M PLUS Rounded 1c';
+  src: url('../fonts/MPLUSRounded1c-ExtraBold.woff2') format('woff2');
+  font-weight: 800; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Departure Mono';
+  src: url('../fonts/DepartureMono-Regular.woff2') format('woff2');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+
+:root {
+  /* --- ground and surfaces (the console's own light palette) --- */
+  --ground:      #e4e6e3;
+  --ground-lift: #f3f4f2;
+  --ground-edge: #cfd3ce;
+  --tile:        #ffffff;
+  --tile-2:      #f7f8f6;
+  --tile-edge:   #d5d9d4;
+
+  /* --- ink ---
+   * --ink-2 is #4a4a4a rather than a lighter grey on purpose: under the
+   * phosphor wash a mid grey collapses. Measured, #6b6b6b lands at 4.85 with
+   * no headroom; #4a4a4a lands at 7.69. */
+  --ink:    #161a16;
+  --ink-2:  #4a4a4a;
+  --ink-3:  #6b7169;
+  --rule:   #d3d7d2;
+
+  /* --- selection ---
+   * Pre-brightened. The wash eats ~21% of the blue channel, so the era-correct
+   * cyan lands as a muddy teal; #2ddcff lands where #00c3e3 looks like it
+   * should. --sel-ink is dark on purpose: white on cyan measures 1.63 under the
+   * tint and fails WCAG even with the tint off. */
+  --sel:      #2ddcff;
+  /* #0a7f96 was the obvious pick and measured 4.43 against white once the wash
+     was applied — a fail that is invisible by eye. check-contrast.mjs caught it. */
+  --sel-deep: #097082;
+  --sel-ink:  #062a33;
+
+  --ok:   #2e7d32;
+  --warn: #8a5a12;
+
+  /* --- Game Boy greens, used only as an overlay tint --- */
+  --gb-lightest: #9bbc0f;
+  --gb-light:    #8bac0f;
+  --gb-dark:     #306230;
+  --gb-darkest:  #0f380f;
+
+  /* --- tint strengths ---
+   * Tuned against a real render, not theory. The first pass used wash .22 /
+   * bloom .35 and the bloom read as a yellow blob across the middle of the
+   * grid, dragging the centre tiles toward mustard. Bloom is the layer that
+   * misbehaves at scale; the wash alone carries the phosphor. */
+  --tint-wash:  .15;
+  --tint-lift:  .07;
+  --bloom:      .13;
+  --vignette:   .26;
+  --scan-alpha: .055;
+  --scan-period: 3px;
+
+  /* --- shape --- */
+  --r-tile:  14px;
+  --r-panel: 18px;
+  --r-sm:     9px;
+  --r-pill:  999px;
+
+  --shadow-tile: 0 1px 1px rgb(22 26 22 / .05), 0 3px 6px rgb(22 26 22 / .09);
+  --shadow-lift: 0 4px 8px rgb(22 26 22 / .10), 0 12px 26px rgb(22 26 22 / .16);
+  --shadow-panel: 0 12px 48px rgb(22 26 22 / .28);
+
+  /* --- motion --- */
+  --d-fast:  120ms;
+  --d-mid:   220ms;
+  --d-slow:  420ms;
+  --stagger:  38ms;
+  --ease: cubic-bezier(.2, .8, .3, 1);
+  --ease-pop: cubic-bezier(.34, 1.42, .48, 1);
+
+  /* --- type --- */
+  --font-ui:  'M PLUS Rounded 1c', 'Hiragino Maru Gothic ProN', 'Varela Round',
+              -apple-system, 'Segoe UI', system-ui, sans-serif;
+  --font-pix: 'Departure Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --fs-micro: 11px;
+  --fs-small: 12px;
+  --fs-body:  15px;
+  --fs-lead:  17px;
+  --fs-h3:    16px;
+  --fs-h2:    20px;
+
+  --dock-h: 62px;
+  --hud-h:  74px;
+}
+
+/* Tint off: the greens stop, the accent returns to true cyan because nothing
+   is eating the blue channel any more, and a whisper of vignette survives so
+   the screen still has an edge. */
+:root[data-tint='off'] {
+  --tint-wash: 0;
+  --tint-lift: 0;
+  --bloom: 0;
+  --scan-alpha: 0;
+  --vignette: .12;
+  --sel: #00c3e3;
+}
+
+/* Accessibility overrides. forced-colors wins outright — the whole tint is
+   decoration and has no business surviving a high-contrast mode. */
+@media (prefers-contrast: more) {
+  :root { --tint-wash: .10; --scan-alpha: 0; --ink-2: #333; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  :root { --bloom: 0; }
+}
+@media (min-resolution: 2dppx) {
+  :root { --scan-period: 4px; }      /* 1px/3px moirés on a retina panel */
+}
+@media (max-width: 600px) {
+  :root { --scan-alpha: 0; }         /* and shimmers badly on OLED while scrolling */
+}
+
+/* One source of truth for motion: zero the durations and every transition and
+   animation that reads them stops. The JS stagger reads the same signal. */
+@media (prefers-reduced-motion: reduce) {
+  :root { --d-fast: 0ms; --d-mid: 0ms; --d-slow: 0ms; --stagger: 0ms; }
+}
+:root[data-motion='off'] {
+  --d-fast: 0ms; --d-mid: 0ms; --d-slow: 0ms; --stagger: 0ms;
+}

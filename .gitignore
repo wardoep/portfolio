@@ -1,0 +1,6 @@
+*.bak
+data/.cache/
+dist/
+.DS_Store
+__pycache__/
+*.tmp

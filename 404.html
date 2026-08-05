@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Not found — Edward Penna</title>
+<meta name="robots" content="noindex">
+
+<!-- ⚠ THE ONE FILE THAT HARDCODES /portfolio/ ⚠
+     A 404 served at /portfolio/a/b/c resolves RELATIVE urls against
+     /portfolio/a/b/ — so `assets/img/favicon.ico` would itself 404. Absolute
+     paths are correct here and wrong everywhere else in this project.
+
+     If the repo is ever renamed, or a CNAME moves the site to a domain root,
+     these paths break. The other three places that hardcode the URL are
+     index.html's canonical/og:url/og:image. -->
+<link rel="icon" href="/portfolio/assets/img/favicon.ico" sizes="any">
+<style>
+  body {
+    margin: 0; min-height: 100dvh;
+    display: grid; place-items: center; text-align: center;
+    background: #05070a; color: #e8efe4;
+    font: 15px/1.6 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    padding: 24px;
+  }
+  .code { font-size: 60px; font-weight: 800; letter-spacing: .06em; color: #9bbc0f;
+          text-shadow: 0 0 20px rgb(155 188 15 / .45); margin: 0; }
+  h1 { margin: 10px 0 0; font-size: 19px; font-weight: 600; }
+  p  { margin: 8px 0 0; color: #90a08c; }
+  a  { display: inline-block; margin-top: 26px; padding: 11px 22px;
+       background: #2ddcff; color: #062a33; font-weight: 700;
+       text-decoration: none; border-radius: 999px; }
+</style>
+</head>
+<body>
+  <div>
+    <p class="code">404</p>
+    <h1>No channel here</h1>
+    <p>That page does not exist.</p>
+    <a href="/portfolio/">Back to the menu</a>
+  </div>
+</body>
+</html>

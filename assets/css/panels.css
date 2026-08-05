@@ -1,0 +1,221 @@
+/* panels.css — channel detail panels and the folder overlay.
+ *
+ * Panels sit at z-index 1000: above #crt-under, below #crt-over. So the prose a
+ * recruiter actually reads keeps its full contrast while scanlines still ride
+ * over the top. That z-index is load-bearing, not arbitrary.
+ */
+
+.scrim {
+  position: fixed; inset: 0; z-index: 990;
+  background: rgb(10 16 12 / .48);
+  backdrop-filter: blur(2px);
+  animation: fade var(--d-mid) var(--ease) both;
+}
+.scrim[hidden] { display: none; }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+.panel {
+  position: fixed; z-index: 1000;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(760px, calc(100vw - 32px));
+  max-height: min(84vh, 760px);
+  display: flex; flex-direction: column;
+  background: var(--tile);
+  border: 1px solid var(--tile-edge);
+  border-radius: var(--r-panel);
+  box-shadow: var(--shadow-panel);
+  overflow: hidden;
+  animation: panelIn var(--d-mid) var(--ease-pop) both;
+}
+.panel[hidden] { display: none; }
+@keyframes panelIn {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(.96); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+.panel__bar {
+  flex: none;
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 14px 14px 20px;
+  border-bottom: 1px solid var(--rule);
+  background: linear-gradient(180deg, var(--tile) 0%, var(--tile-2) 100%);
+}
+.panel__bar h2 {
+  margin: 0; flex: 1 1 auto;
+  display: flex; align-items: center; gap: 10px;
+  font-size: var(--fs-h2); font-weight: 800; letter-spacing: -.01em;
+}
+.panel__bar h2 .ico { color: var(--sel-deep); }
+
+.panel__x {
+  flex: none;
+  width: 36px; height: 36px;
+  display: grid; place-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: background var(--d-fast) var(--ease), color var(--d-fast) var(--ease);
+}
+.panel__x:hover { background: var(--ground); color: var(--ink); border-color: var(--tile-edge); }
+
+.panel__body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 20px 24px 26px;
+}
+
+/* ── prose ───────────────────────────────────────────────────────────── */
+.prose { max-width: 66ch; }
+.prose > * + * { margin-top: 1em; }
+.prose p { margin: 0; }
+.prose .lead { font-size: var(--fs-lead); color: var(--ink); font-weight: 500; }
+.prose h3 {
+  margin: 1.7em 0 0;
+  font-size: var(--fs-h3); font-weight: 800;
+  letter-spacing: .04em; text-transform: uppercase;
+  color: var(--ink-2);
+}
+.prose code {
+  font-family: var(--font-pix); font-size: .92em;
+  background: var(--ground); padding: 1px 5px; border-radius: 4px;
+}
+.prose a { color: var(--sel-deep); text-underline-offset: 3px; }
+.prose a:hover { color: var(--ink); }
+
+.beats { margin: 0; padding-left: 1.15em; display: grid; gap: .6em; }
+.beats li { padding-left: .15em; }
+
+.facts { margin: 0; display: grid; gap: .55em; }
+.facts dt { font-weight: 800; }
+.facts dd { margin: 0; color: var(--ink-2); }
+
+.skills {
+  display: grid; gap: 18px 26px;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+}
+.skills section > h3 { margin-top: 0; }
+.skills ul { margin: .5em 0 0; padding-left: 1.1em; display: grid; gap: .25em; }
+.skills li { color: var(--ink-2); font-size: var(--fs-small); }
+
+.cta-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 17px;
+  background: var(--tile);
+  border: 1px solid var(--tile-edge);
+  border-radius: var(--r-pill);
+  box-shadow: var(--shadow-tile);
+  font-weight: 500; text-decoration: none; color: var(--ink);
+  cursor: pointer;
+  transition: transform var(--d-fast) var(--ease), box-shadow var(--d-fast) var(--ease);
+}
+.btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-lift); }
+.btn--primary { background: var(--sel); border-color: var(--sel); color: var(--sel-ink); font-weight: 800; }
+
+.links { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.links a {
+  display: flex; align-items: center; gap: 11px;
+  padding: 11px 12px;
+  border-radius: var(--r-sm);
+  text-decoration: none;
+  color: var(--ink);
+  transition: background var(--d-fast) var(--ease);
+}
+.links a:hover { background: var(--ground); }
+.links .ico { color: var(--ink-2); }
+
+.address {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 3px;
+  width: 100%; padding: 15px 18px;
+  background: var(--ground);
+  border: 1px dashed var(--tile-edge);
+  border-radius: var(--r-sm);
+  font: inherit; color: inherit; text-align: left;
+  cursor: pointer;
+  transition: border-color var(--d-fast) var(--ease), background var(--d-fast) var(--ease);
+}
+.address:hover { border-color: var(--sel-deep); background: var(--tile-2); }
+.address__value { font-family: var(--font-pix); font-size: var(--fs-lead); }
+.address__hint  { font-size: var(--fs-micro); color: var(--ink-2); letter-spacing: .08em; text-transform: uppercase; }
+.address.is-copied { border-color: var(--ok); border-style: solid; }
+.address.is-copied .address__hint { color: var(--ok); }
+
+/* ── settings ────────────────────────────────────────────────────────── */
+.setting + .setting { margin-top: 22px; }
+.setting__note { margin: 6px 0 0 54px; font-size: var(--fs-small); color: var(--ink-2); }
+.switch { display: flex; align-items: center; gap: 13px; cursor: pointer; font-weight: 500; }
+.switch input { position: absolute; opacity: 0; width: 0; height: 0; }
+.switch__ui {
+  flex: none; width: 42px; height: 24px;
+  background: var(--ground-edge);
+  border-radius: var(--r-pill);
+  position: relative;
+  transition: background var(--d-fast) var(--ease);
+}
+.switch__ui::after {
+  content: ''; position: absolute; top: 3px; left: 3px;
+  width: 18px; height: 18px;
+  background: var(--tile); border-radius: 50%;
+  box-shadow: 0 1px 3px rgb(0 0 0 / .3);
+  transition: transform var(--d-fast) var(--ease);
+}
+.switch input:checked + .switch__ui { background: var(--sel-deep); }
+.switch input:checked + .switch__ui::after { transform: translateX(18px); }
+.switch input:focus-visible + .switch__ui { outline: 3px solid #fff; outline-offset: 2px; box-shadow: 0 0 0 5px var(--gb-darkest); }
+
+/* ── project panel ───────────────────────────────────────────────────── */
+.meta { display: flex; flex-wrap: wrap; gap: 7px; margin: 0; padding: 0; list-style: none; }
+.meta li {
+  font-family: var(--font-pix); font-size: var(--fs-micro);
+  padding: 4px 9px;
+  background: var(--ground);
+  border: 1px solid var(--tile-edge);
+  border-radius: var(--r-pill);
+  color: var(--ink-2);
+}
+.note {
+  margin: 0; padding: 11px 14px;
+  background: var(--ground);
+  border-left: 3px solid var(--warn);
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  font-size: var(--fs-small); color: var(--ink-2);
+}
+
+/* ── folder overlay ──────────────────────────────────────────────────── */
+.folder-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(122px, 1fr));
+  gap: 14px;
+}
+.folder-grid .tile { aspect-ratio: 1 / .86; }
+
+@media (max-width: 600px) {
+  .panel { width: 100vw; max-height: 100vh; height: 100%; border-radius: 0; border: 0; top: 0; left: 0; transform: none; }
+  @keyframes panelIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  .panel__body { padding: 16px 18px 30px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel, .scrim { animation: none; }
+}
+:root[data-motion='off'] .panel,
+:root[data-motion='off'] .scrim { animation: none; }
+
+@media print {
+  .hud, .dock, .pager, .scrim, .boot, .ambient, .panel__x, .pages { display: none !important; }
+  .panel { position: static; transform: none; max-height: none; box-shadow: none; border: 0; width: auto; }
+  .panel[hidden] { display: block !important; }
+}
+
+/* the repo slug next to the display title, so the GitHub link is unambiguous */
+.panel__slug {
+  font-family: var(--font-pix);
+  font-size: var(--fs-small);
+  font-weight: 400;
+  color: var(--ink-3);
+  letter-spacing: .02em;
+}
