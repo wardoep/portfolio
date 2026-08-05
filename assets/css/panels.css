@@ -219,3 +219,7 @@
   color: var(--ink-3);
   letter-spacing: .02em;
 }
+
+/* date on the right of an experience entry */
+.facts dt { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.facts__when { font-weight: 400; color: var(--ink-3); font-size: var(--fs-small); font-variant-numeric: tabular-nums; }

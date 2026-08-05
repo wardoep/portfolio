@@ -142,16 +142,17 @@ a { color: inherit; }
   min-height: 0;
 }
 
-.pages { flex: 1 1 auto; overflow: hidden; }
+.pages { flex: 1 1 auto; min-height: 0; overflow: hidden; }
 .page-track {
   display: flex;
   transition: transform var(--d-slow) var(--ease);
   will-change: transform;
 }
-.page { flex: 0 0 100%; min-width: 0; padding: 4px; }
+.page { flex: 0 0 100%; min-width: 0; min-height: 0; padding: 4px; }
 
 .grid {
   --cols: 5;
+  --rows: 2;
   --gap: clamp(10px, 1.4vw, 18px);
   display: grid;
   grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
@@ -166,13 +167,21 @@ a { color: inherit; }
   gap: var(--gap);
 }
 
-.cell { position: relative; min-width: 0; }
+/* The row is as tall as the grid gives it; the tile is capped and centred
+   inside, so a tall window produces breathing room rather than a 370px tile
+   with a 58px icon marooned in the middle of it. */
+.cell {
+  position: relative; min-width: 0;
+  display: flex; align-items: center; justify-content: center;
+}
 
 /* ── tiles ───────────────────────────────────────────────────────────── */
 .tile {
   position: relative;
   width: 100%;
-  aspect-ratio: 1 / .74;
+  height: 100%;
+  min-height: 96px;          /* floor: below this the page scrolls rather than
+                                collapsing into something unreadable */
   display: flex; flex-direction: column;
   align-items: center; justify-content: center; gap: 10px;
   padding: 12px 8px 14px;
@@ -204,16 +213,38 @@ a { color: inherit; }
 
 .tile__art {
   display: grid; place-items: center;
-  width: 58px; height: 58px;
+  width: clamp(46px, 8.4vh, 76px);
+  height: clamp(46px, 8.4vh, 76px);
   border-radius: 14px;
   color: #fff;
   background: var(--tile-tint, #7d8f9c);
   box-shadow: inset 0 -2px 0 rgb(0 0 0 / .12);
 }
-.tile__art .ico { width: 32px; height: 32px; stroke-width: 1.8; }
+.tile__art .ico { width: 56%; height: 56%; stroke-width: 1.8; }
+
+/* a folder shows what is inside it, four at a time */
+.tile__art--folder {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 3px;
+  padding: 7px;
+  place-items: center;
+}
+.tile__art--folder .ico.mini { width: 100%; height: 100%; stroke-width: 2.1; }
+
+.tile__count {
+  position: absolute; top: 7px; right: 8px;
+  min-width: 20px; height: 20px; padding: 0 6px;
+  display: grid; place-items: center;
+  font-family: var(--font-pix); font-size: 11px;
+  color: var(--ink-2);
+  background: var(--ground);
+  border: 1px solid var(--tile-edge);
+  border-radius: var(--r-pill);
+}
 
 .tile__label {
-  font-size: var(--fs-small);
+  font-size: clamp(11px, 1.55vh, 15px);
   font-weight: 800;
   letter-spacing: .02em;
   text-align: center;
@@ -335,15 +366,16 @@ a { color: inherit; }
 .dock {
   position: relative; z-index: 3;
   flex: none;
-  height: var(--dock-h);
+  min-height: var(--dock-h);
   display: flex; align-items: center; justify-content: center;
   gap: clamp(6px, 1.4vw, 16px);
   padding: 0 12px 8px;
 }
 .dock__btn {
   position: relative;
-  width: 42px; height: 42px;
-  display: grid; place-items: center;
+  min-width: 62px;
+  padding: 6px 8px 5px;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
   background: var(--tile);
   border: 1px solid var(--tile-edge);
   border-radius: 12px;
@@ -355,8 +387,17 @@ a { color: inherit; }
               box-shadow var(--d-fast) var(--ease);
 }
 .dock__btn:hover { transform: translateY(-3px); color: var(--ink); box-shadow: var(--shadow-lift); }
+.dock__label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .02em;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--ink-2);
+}
+.dock__btn:hover .dock__label { color: var(--ink); }
 .dock__badge {
-  position: absolute; top: -3px; right: -3px;
+  position: absolute; top: -4px; right: 2px;
   min-width: 16px; height: 16px; padding: 0 4px;
   display: grid; place-items: center;
   background: #e8542f; color: #fff;
@@ -420,27 +461,54 @@ a { color: inherit; }
 :root[data-motion='off'] .boot__cue { animation: none; }
 :root[data-motion='off'] .page-track { transition: none; }
 
-/* ── reflow ──────────────────────────────────────────────────────────── */
+/* ── reflow ──────────────────────────────────────────────────────────────
+ * Two different contracts by width.
+ *
+ * Above 900px the requirement is absolute: everything fits one screen, no
+ * vertical scroll. So the grid takes whatever height is left after the header
+ * and dock and divides it between its rows — height comes from the VIEWPORT,
+ * not from tile width. The old `aspect-ratio` derived height from width, which
+ * is exactly why a short laptop window overflowed.
+ *
+ * Below 900px there is no honest way to fit ten readable tiles on a phone, so
+ * the document scrolls and tiles get their proportions back. */
+@media (min-width: 901px) {
+  html, body { height: 100dvh; overflow: hidden; }
+  .pages, .page-track, .page { height: 100%; }
+  .grid {
+    height: 100%;
+    align-content: center;            /* centre the block, don't stretch the rows */
+    /* Rows shrink to fit a short window but never grow past a sensible tile
+       height — 1fr alone gave a 370px tile holding a 58px icon. */
+    grid-auto-rows: minmax(0, min(212px, 29vh));
+  }
+}
+
 @media (max-width: 900px) {
   .grid { --cols: 3; }
   .hud { height: auto; padding-block: 10px; flex-wrap: wrap; }
   .pager { width: 40px; height: 76px; }
-  /* let the document scroll rather than squeezing the grid into what is left */
   .stage { align-items: flex-start; padding-block: 6px 18px; }
+  .tile { height: auto; aspect-ratio: 1 / .8; }
   .tile__art { width: 52px; height: 52px; }
   .tile__art .ico { width: 28px; height: 28px; }
 }
+
 @media (max-width: 600px) {
   .grid { --cols: 2; }
-  .tile { aspect-ratio: 1 / .9; }
+  .tile { aspect-ratio: 1 / .86; }
   .bubble { display: none; }             /* no hover on touch; the label carries it */
-  .dock { gap: 4px; height: auto; padding: 6px 8px 10px; flex-wrap: wrap; }
-  .dock__btn { width: 44px; height: 44px; }   /* touch target floor */
+  .dock { gap: 4px; min-height: auto; padding: 8px 8px 12px; flex-wrap: wrap; }
+  .dock__btn { min-width: 68px; min-height: 52px; }   /* touch target floor */
   .user__plate { display: none; }
   .clock { display: none; }
   .stage { padding-inline: 8px; }
   .pager { width: 34px; height: 60px; margin-inline: 2px; }
 }
+
+/* One page means no pager and no dot strip. A lone dot reads as a broken
+   control rather than an indicator. */
+.dots[hidden] { display: none; }
 
 .noscript { max-width: 46rem; margin: 40px auto; padding: 0 20px; }
 

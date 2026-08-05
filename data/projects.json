@@ -329,7 +329,7 @@
       "blurb": "PowerShell for the daily Windows and AD jobs, run against my own domain.",
       "folder": "infra",
       "icon": "terminal",
-      "featured": false,
+      "featured": true,
       "hidden": false,
       "stack": [
         "PowerShell",
@@ -369,7 +369,7 @@
       "blurb": "Linux troubleshooting toolkit: layered network and DNS diagnosis.",
       "folder": "infra",
       "icon": "toolbox",
-      "featured": false,
+      "featured": true,
       "hidden": false,
       "stack": [
         "Bash",
@@ -799,7 +799,7 @@
         "description": "IT support and cybersecurity portfolio — a console-style channel menu backed by 18 hands-on labs",
         "language": "HTML",
         "stars": 0,
-        "pushedAt": "2026-08-05T09:38:20Z",
+        "pushedAt": "2026-08-05T10:14:33Z",
         "createdAt": "2026-08-05T09:38:17Z",
         "url": "https://github.com/wardoep/portfolio",
         "homepageUrl": "",
@@ -855,23 +855,23 @@
       "tiles": [
         {
           "type": "project",
-          "id": "soc-siem-lab"
-        },
-        {
-          "type": "project",
-          "id": "phishing-analysis-lab"
-        },
-        {
-          "type": "project",
-          "id": "vuln-management-lab"
-        },
-        {
-          "type": "project",
           "id": "helpdesk-ticketing-lab"
         },
         {
           "type": "project",
           "id": "ad-network-lab"
+        },
+        {
+          "type": "project",
+          "id": "powershell-admin-toolkit"
+        },
+        {
+          "type": "project",
+          "id": "it-support-scripts"
+        },
+        {
+          "type": "project",
+          "id": "soc-siem-lab"
         },
         {
           "type": "folder",
@@ -891,93 +891,7 @@
         },
         {
           "type": "channel",
-          "id": "skills"
-        },
-        {
-          "type": "channel",
           "id": "resume"
-        },
-        {
-          "type": "channel",
-          "id": "now"
-        },
-        {
-          "type": "channel",
-          "id": "contact"
-        },
-        {
-          "type": "link",
-          "id": "github"
-        },
-        {
-          "type": "link",
-          "id": "linkedin"
-        }
-      ]
-    },
-    {
-      "page": 2,
-      "label": "LABS",
-      "tiles": [
-        {
-          "type": "project",
-          "id": "linux-hardening-lab"
-        },
-        {
-          "type": "project",
-          "id": "honeypot-lab"
-        },
-        {
-          "type": "project",
-          "id": "powershell-admin-toolkit"
-        },
-        {
-          "type": "project",
-          "id": "it-support-scripts"
-        },
-        {
-          "type": "project",
-          "id": "monitoring-observability-lab"
-        },
-        {
-          "type": "project",
-          "id": "backup-dr-lab"
-        },
-        {
-          "type": "project",
-          "id": "docker-selfhosted-lab"
-        },
-        {
-          "type": "project",
-          "id": "homelab-vps-setup"
-        },
-        {
-          "type": "project",
-          "id": "jobbot"
-        },
-        {
-          "type": "project",
-          "id": "hermes-personal-assistant"
-        },
-        {
-          "type": "project",
-          "id": "twitch-clips-bot"
-        },
-        {
-          "type": "project",
-          "id": "ai-shorts-pipeline"
-        },
-        {
-          "type": "project",
-          "id": "btc-backtest-lab"
-        },
-        {
-          "type": "project",
-          "id": "wardoep"
-        },
-        {
-          "type": "channel",
-          "id": "colophon"
         }
       ]
     }

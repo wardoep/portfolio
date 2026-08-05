@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Edward Penna — IT &amp; Cybersecurity</title>
-<meta name="description" content="Edward Penna — IT support and systems administration. B.S. Cybersecurity, SUNY Albany. Eighteen hands-on labs: SIEM detection, phishing triage, vulnerability management, Active Directory, monitoring and backup.">
+<title>Edward Penna — Desktop Support &amp; IT</title>
+<meta name="description" content="Edward Penna — Desktop Support / IT Support. B.S. Cybersecurity, SUNY Albany. Twenty documented labs: Active Directory, ticketing, PowerShell, Linux, monitoring, backup and security operations.">
 <meta name="author" content="Edward Penna">
 
 <!-- Absolute, because scrapers do not resolve relative og: values. If this ever
@@ -12,8 +12,8 @@
 <link rel="canonical" href="https://wardoep.github.io/portfolio/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://wardoep.github.io/portfolio/">
-<meta property="og:title" content="Edward Penna — IT &amp; Cybersecurity">
-<meta property="og:description" content="IT support and systems administration. B.S. Cybersecurity, SUNY Albany. Eighteen hands-on labs, documented so they can be rebuilt.">
+<meta property="og:title" content="Edward Penna — Desktop Support &amp; IT">
+<meta property="og:description" content="Desktop Support / IT Support. B.S. Cybersecurity, SUNY Albany. Twenty labs documented as reproducible runbooks.">
 <meta property="og:image" content="https://wardoep.github.io/portfolio/assets/img/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
 
@@ -121,7 +121,7 @@
     </span>
     <span class="user__plate">
       <strong class="user__name">Edward Penna</strong>
-      <span class="user__role">IT &amp; Cybersecurity</span>
+      <span class="user__role">Desktop Support / IT</span>
     </span>
     <span class="user__badge" aria-hidden="true">1</span>
   </button>
@@ -136,7 +136,7 @@
 
 <!-- ─── the grid ───────────────────────────────────────────────────────── -->
 <main id="main" class="stage">
-  <h1 class="sr-only">Edward Penna — IT support and cybersecurity portfolio</h1>
+  <h1 class="sr-only">Edward Penna — desktop support and IT portfolio</h1>
 
   <button class="pager pager--prev" type="button" data-page-prev hidden aria-label="Previous page">
     <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow-l"/></svg>
@@ -152,16 +152,44 @@
 </main>
 
 <!-- ─── dock ───────────────────────────────────────────────────────────── -->
+<!-- Every item carries a permanent text label. Nine unlabelled glyphs told a
+     visitor nothing, and a hover tooltip would never appear on a touch screen. -->
 <nav class="dock" aria-label="Quick actions">
-  <button class="dock__btn" type="button" data-open="about"   aria-label="About"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-person"/></svg></button>
-  <button class="dock__btn" type="button" data-open="contact" aria-label="Contact"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-chat"/></svg></button>
-  <button class="dock__btn" type="button" data-open="resume"  aria-label="Résumé"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-doc"/></svg></button>
-  <button class="dock__btn" type="button" data-open="now"     aria-label="Now — what I'm learning"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-spark"/></svg><span class="dock__badge" aria-hidden="true">1</span></button>
-  <a class="dock__btn" href="https://github.com/wardoep" rel="noopener noreferrer" target="_blank" aria-label="GitHub (opens in a new tab)"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-github"/></svg></a>
-  <a class="dock__btn" href="https://www.linkedin.com/in/edward-penna-469096245" rel="noopener noreferrer" target="_blank" aria-label="LinkedIn (opens in a new tab)"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-linkedin"/></svg></a>
-  <a class="dock__btn" href="resume.html" aria-label="Open the plain-text résumé"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-download"/></svg></a>
-  <button class="dock__btn" type="button" data-open="settings" aria-label="Display settings"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-gear"/></svg></button>
-  <button class="dock__btn" type="button" data-reboot aria-label="Back to the start screen"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-power"/></svg></button>
+  <button class="dock__btn" type="button" data-open="skills">
+    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-sliders"/></svg>
+    <span class="dock__label">Skills</span>
+  </button>
+  <button class="dock__btn" type="button" data-open="now">
+    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-spark"/></svg>
+    <span class="dock__label">Now</span>
+    <span class="dock__badge" aria-hidden="true">1</span>
+  </button>
+  <button class="dock__btn" type="button" data-open="contact">
+    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-chat"/></svg>
+    <span class="dock__label">Contact</span>
+  </button>
+  <a class="dock__btn" href="https://github.com/wardoep" rel="noopener noreferrer" target="_blank">
+    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-github"/></svg>
+    <span class="dock__label">GitHub</span>
+    <span class="sr-only">(opens in a new tab)</span>
+  </a>
+  <a class="dock__btn" href="https://www.linkedin.com/in/edward-penna-469096245" rel="noopener noreferrer" target="_blank">
+    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-linkedin"/></svg>
+    <span class="dock__label">LinkedIn</span>
+    <span class="sr-only">(opens in a new tab)</span>
+  </a>
+  <button class="dock__btn" type="button" data-open="colophon">
+    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-code"/></svg>
+    <span class="dock__label">Colophon</span>
+  </button>
+  <button class="dock__btn" type="button" data-open="settings">
+    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-gear"/></svg>
+    <span class="dock__label">Display</span>
+  </button>
+  <button class="dock__btn" type="button" data-reboot>
+    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-power"/></svg>
+    <span class="dock__label">Restart</span>
+  </button>
 </nav>
 
 <!-- ─── panels ─────────────────────────────────────────────────────────────
@@ -175,24 +203,28 @@
     <button class="panel__x" type="button" data-close aria-label="Close"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-close"/></svg></button>
   </div>
   <div class="panel__body prose">
-    <p class="lead">I'm Edward Penna — IT support and systems administration, with a B.S. in Cybersecurity from SUNY Albany.</p>
-    <p>I run a self-hosted Linux server that keeps a fleet of always-on services alive: bots, data pipelines, scheduled jobs, remote administration. That's where most of what I know actually came from. Not from following tutorials, but from things breaking at inconvenient times and having to read logs until I understood why.</p>
-    <p>The labs on this site are built the same way. Each one is a system I stood up, attacked or broke on purpose, fixed, and then documented well enough that I could rebuild it from the notes. The code matters less than the operational habit: keep it running, know why when it isn't, manage secrets properly, and write it down so someone else can take it over.</p>
+    <p class="lead">I'm Edward Penna — desktop and IT support, with a B.S. in Cybersecurity from the University at Albany.</p>
+    <p>I've supported end users in a hospital, reviewed access controls at a financial-technology firm, and I run a self-hosted Linux server that keeps a fleet of always-on services alive. That last part is where most of what I know actually came from: not from tutorials, but from things breaking at inconvenient times and having to read logs until I understood why.</p>
+    <p>The labs on this site are built the same way. Each one is a system I stood up, broke on purpose, fixed, and documented well enough that I could rebuild it from the notes. The code matters less than the operational habit: keep it running, know why when it isn't, and write it down so someone else can take it over.</p>
 
     <h3>Experience</h3>
     <dl class="facts">
-      <dt>Broadridge</dt><dd>Summer Consultant, Information Security — audit preparation and access reviews.</dd>
-      <dt>Stony Brook Hospital</dt><dd>Volunteer IT Support — front-line user support.</dd>
-      <dt>UAlbany Cyber Defense Organization</dt><dd>Member, 2022–2025.</dd>
+      <dt>Stony Brook Hospital <span class="facts__when">06/2023 – 08/2023</span></dt>
+      <dd>IT Support Volunteer — resolved login, system-access, hardware and software issues for clinical and administrative staff, tracked through tickets.</dd>
+      <dt>Broadridge <span class="facts__when">05/2024 – 08/2024</span></dt>
+      <dd>Summer Consultant, Information Security — user access reviews, audit preparation, risk analysis and process validation.</dd>
+      <dt>Lowe's <span class="facts__when">05/2022 – 08/2022</span></dt>
+      <dd>Sales Associate — direct customer service, Zebra devices for inventory lookup and restocking workflows.</dd>
     </dl>
 
     <h3>Education</h3>
     <dl class="facts">
-      <dt>SUNY Albany</dt><dd>B.S. Cybersecurity, May 2025.</dd>
+      <dt>University at Albany, SUNY <span class="facts__when">09/2021 – 05/2025</span></dt>
+      <dd>B.S. Cybersecurity. Member of the UAlbany Cyber Defense Organization, 2022–2025.</dd>
     </dl>
 
     <h3>Right now</h3>
-    <p>Studying for CompTIA Network+, and looking for a first role in IT support, helpdesk, systems administration or SOC analysis.</p>
+    <p>CompTIA Network+ is scheduled for July 2026. I'm looking for a first full-time role in desktop support, helpdesk or IT support.</p>
   </div>
 </section>
 
@@ -204,14 +236,10 @@
   <div class="panel__body prose">
     <p class="lead">Everything here is in active use on my own systems or in a lab on this site — not a list of things I've read about.</p>
     <div class="skills">
-      <section><h3>Linux administration</h3><ul><li>Ubuntu Server</li><li>systemd services &amp; timers</li><li>journalctl-driven debugging</li><li>cron</li><li>CIS hardening, Lynis</li></ul></section>
-      <section><h3>Networking &amp; remote access</h3><ul><li>SSH</li><li>Tailscale</li><li>Cloudflare tunnels</li><li>DNS</li><li>Reverse proxies</li><li>pfSense</li></ul></section>
-      <section><h3>Security</h3><ul><li>Access control / RBAC</li><li>SIEM detection rules (Wazuh, Sysmon)</li><li>Vulnerability management (Nessus)</li><li>Phishing analysis, SPF/DKIM/DMARC</li><li>Secrets management, encryption at rest</li></ul></section>
-      <section><h3>Windows &amp; directory</h3><ul><li>Active Directory</li><li>Group Policy, AGDLP</li><li>PowerShell</li><li>Windows Server</li></ul></section>
-      <section><h3>Automation &amp; scripting</h3><ul><li>Python</li><li>Bash</li><li>REST APIs</li><li>OAuth2</li><li>Rate-limit handling</li></ul></section>
-      <section><h3>Virtualization &amp; containers</h3><ul><li>VirtualBox</li><li>VMware</li><li>Docker &amp; Compose</li><li>Portainer</li></ul></section>
-      <section><h3>Monitoring &amp; recovery</h3><ul><li>Prometheus, node_exporter</li><li>Grafana, Alertmanager</li><li>restic, 3-2-1 backups</li><li>Tested restore drills</li></ul></section>
-      <section><h3>Support</h3><ul><li>osTicket</li><li>SLAs and help topics</li><li>KB authoring</li><li>Ticket triage</li></ul></section>
+      <section><h3>Support &amp; systems</h3><ul><li>Windows troubleshooting</li><li>Help-desk / end-user support</li><li>Hardware &amp; software diagnosis</li><li>Ticket-based support (osTicket)</li><li>System configuration</li><li>Technical documentation</li></ul></section>
+      <section><h3>OS &amp; infrastructure</h3><ul><li>Ubuntu / Linux Server administration</li><li>Virtual machines (VMware, VirtualBox)</li><li>Docker &amp; Docker Compose</li><li>Nginx reverse proxy / TLS</li><li>systemd services &amp; timers</li></ul></section>
+      <section><h3>Networking &amp; security</h3><ul><li>TCP/IP, network troubleshooting</li><li>SSH &amp; secure remote access</li><li>Active Directory (lab)</li><li>Linux hardening (CIS, Lynis)</li><li>SIEM (Wazuh)</li><li>Vulnerability scanning (Nessus)</li></ul></section>
+      <section><h3>Scripting &amp; tools</h3><ul><li>PowerShell</li><li>Bash</li><li>Python</li><li>Git &amp; GitHub</li><li>Prometheus &amp; Grafana</li><li>restic (backup / DR)</li><li>Tailscale</li></ul></section>
     </div>
   </div>
 </section>
@@ -222,7 +250,7 @@
     <button class="panel__x" type="button" data-close aria-label="Close"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-close"/></svg></button>
   </div>
   <div class="panel__body prose">
-    <p class="lead">Studying for <strong>CompTIA Network+</strong>.</p>
+    <p class="lead">Sitting <strong>CompTIA Network+</strong> in July 2026.</p>
     <p>Alongside it I'm working through the gap between "I built this once" and "I could run this for someone else." Recent things that changed how I work:</p>
     <ul class="beats">
       <li><strong>An untested backup is not a backup.</strong> The restore drill in the backup lab is logged for a reason — the first one I ran didn't work.</li>
@@ -246,10 +274,10 @@
     </p>
     <h3>The short version</h3>
     <ul class="beats">
-      <li>B.S. Cybersecurity, SUNY Albany, May 2025.</li>
-      <li>Information Security consulting at Broadridge — audit prep and access reviews.</li>
-      <li>Front-line user support at Stony Brook Hospital.</li>
-      <li>Eighteen hands-on labs covering SIEM detection, phishing triage, vulnerability management, Active Directory, ticketing, monitoring, backup and hardening.</li>
+      <li>B.S. Cybersecurity, University at Albany, May 2025. CompTIA Network+ scheduled July 2026.</li>
+      <li>IT support in a hospital — login, access, hardware and software issues, tracked through tickets.</li>
+      <li>Information Security consulting at Broadridge — access reviews and audit preparation.</li>
+      <li>Twenty documented labs: Active Directory, osTicket, PowerShell, Docker, monitoring, backup/DR and security operations.</li>
       <li>A self-hosted Linux server running production-style services with real uptime requirements.</li>
     </ul>
   </div>
@@ -327,7 +355,7 @@
   <span class="boot__inner">
     <span class="boot__logo">EP</span>
     <span class="boot__name">Edward Penna</span>
-    <span class="boot__role">IT &amp; Cybersecurity</span>
+    <span class="boot__role">Desktop Support / IT</span>
     <span class="boot__cue" aria-hidden="true">Press any key to start</span>
   </span>
   <span class="sr-only">Press any key or click to enter the portfolio</span>
@@ -342,8 +370,8 @@
 
 <noscript>
   <div class="noscript prose">
-    <h2>Edward Penna — IT &amp; Cybersecurity</h2>
-    <p>IT support and systems administration. B.S. Cybersecurity, SUNY Albany, May 2025. Studying CompTIA Network+.</p>
+    <h2>Edward Penna — Desktop Support &amp; IT</h2>
+    <p>Desktop Support / IT Support. B.S. Cybersecurity, University at Albany, May 2025. CompTIA Network+ scheduled July 2026.</p>
     <p><a href="resume.html">Résumé</a> · <a href="mailto:mail@penna.lol">mail@penna.lol</a> · <a href="https://github.com/wardoep">github.com/wardoep</a> · <a href="https://www.linkedin.com/in/edward-penna-469096245">LinkedIn</a></p>
     <h3>Security labs</h3>
     <ul>

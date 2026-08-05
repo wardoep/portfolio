@@ -4,19 +4,23 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Edward Penna — Résumé</title>
-<meta name="description" content="Edward Penna — IT support and systems administration. B.S. Cybersecurity, SUNY Albany. Résumé.">
+<meta name="description" content="Edward J. Penna — Desktop Support / IT Support. B.S. Cybersecurity, University at Albany. Résumé.">
 <link rel="canonical" href="https://wardoep.github.io/portfolio/resume.html">
 <link rel="icon" href="assets/img/favicon.ico" sizes="any">
 
 <!-- Deliberately standalone: no JavaScript, no webfont, no tint, nothing to
      fail. This is the URL that goes on an application, so it has to render
-     identically in a browser, a print dialog and an ATS text extractor. -->
+     identically in a browser, a print dialog and an ATS text extractor.
+
+     Phone number and home locality are intentionally NOT here. This page is
+     crawled, archived and scraped; the full-detail version belongs in the PDF
+     you attach to an application. -->
 <style>
-  :root { --ink:#15181a; --dim:#4a4f52; --rule:#d6dad8; --accent:#0a6b80; }
+  :root { --ink:#15181a; --dim:#4a4f52; --rule:#d6dad8; --accent:#097082; }
   * { box-sizing: border-box; }
   body {
-    margin: 0 auto; padding: 44px 26px 80px; max-width: 46rem;
-    font: 15px/1.55 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    margin: 0 auto; padding: 44px 26px 80px; max-width: 47rem;
+    font: 15px/1.5 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     color: var(--ink); background: #fff;
   }
   a { color: var(--accent); }
@@ -25,24 +29,26 @@
   .role { margin: 3px 0 0; font-size: 16px; color: var(--dim); }
   .contact { margin: 12px 0 0; padding: 0; list-style: none;
              display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 14px; }
-  h2 { margin: 30px 0 10px; font-size: 12px; letter-spacing: .12em;
+  h2 { margin: 26px 0 10px; font-size: 12px; letter-spacing: .12em;
        text-transform: uppercase; color: var(--dim);
        border-bottom: 1px solid var(--rule); padding-bottom: 5px; }
-  .entry { margin-bottom: 16px; }
+  .entry { margin-bottom: 15px; }
   .entry__top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 14px; }
   .entry__title { font-weight: 700; }
   .entry__when { color: var(--dim); font-size: 14px; white-space: nowrap; }
-  .entry__where { color: var(--dim); font-size: 14px; }
+  .entry__where { margin: 1px 0 0; color: var(--dim); font-size: 14px; }
+  .entry__note { margin: 3px 0 0; color: var(--dim); font-size: 14px; font-style: italic; }
   ul { margin: 6px 0 0; padding-left: 19px; }
-  li { margin-bottom: 4px; }
-  .skills { display: grid; gap: 5px 18px; grid-template-columns: max-content 1fr; font-size: 14px; }
+  li { margin-bottom: 3px; }
+  .skills { display: grid; gap: 6px 18px; grid-template-columns: max-content 1fr; font-size: 14px; }
   .skills dt { font-weight: 700; }
   .skills dd { margin: 0; color: var(--dim); }
   .back { display: inline-block; margin-bottom: 22px; font-size: 14px; }
+  @media (max-width: 560px) { .skills { grid-template-columns: 1fr; } .skills dd { margin-bottom: 8px; } }
   @media print {
-    body { padding: 0; max-width: none; font-size: 11pt; }
+    body { padding: 0; max-width: none; font-size: 10.5pt; }
     .back, .noprint { display: none; }
-    h2 { margin-top: 18px; }
+    h2 { margin-top: 16px; }
     a { color: var(--ink); text-decoration: none; }
   }
 </style>
@@ -52,155 +58,113 @@
 <a class="back" href="./">&larr; Back to the portfolio</a>
 
 <header>
-  <h1>Edward Penna</h1>
-  <p class="role">IT Support &amp; Systems Administration</p>
+  <h1>Edward J. Penna</h1>
+  <p class="role">Desktop Support / IT Support</p>
   <ul class="contact">
     <li><a href="mailto:mail@penna.lol">mail@penna.lol</a></li>
-    <li><a href="https://github.com/wardoep">github.com/wardoep</a></li>
     <li><a href="https://www.linkedin.com/in/edward-penna-469096245">linkedin.com/in/edward-penna</a></li>
+    <li><a href="https://github.com/wardoep">github.com/wardoep</a></li>
   </ul>
 </header>
 
 <h2>Summary</h2>
-<p>IT and cybersecurity practitioner with a B.S. in Cybersecurity and hands-on experience across
-support, systems administration and security operations. I run a self-hosted Linux server with
-production-style uptime requirements, and have built eighteen documented labs covering SIEM
-detection, phishing triage, vulnerability management, Active Directory, ticketing, monitoring and
-disaster recovery. Seeking a first role in IT support, helpdesk, systems administration or SOC
-analysis.</p>
+<p>Recent SUNY Albany cybersecurity graduate with hands-on experience supporting end users,
+troubleshooting hardware and software issues, and working with ticket-based support. Backs that
+experience with a hands-on homelab portfolio spanning Windows/Active Directory administration,
+Linux, Docker, monitoring, backup/DR, and security operations — all documented as reproducible
+runbooks on GitHub. Strong at resolving login and system-access issues, diagnosing desktop
+problems, and communicating clearly with non-technical users.</p>
 
 <h2>Experience</h2>
 
 <div class="entry">
   <div class="entry__top">
-    <span class="entry__title">Summer Consultant, Information Security</span>
-    <span class="entry__when">Broadridge</span>
+    <span class="entry__title">IT Support Volunteer — Stony Brook Hospital</span>
+    <span class="entry__when">06/2023 – 08/2023</span>
   </div>
   <ul>
-    <li>Supported audit preparation for information security controls.</li>
-    <li>Performed user access reviews, validating entitlements against role requirements.</li>
-    <li>Worked within an enterprise access-control and RBAC model in a regulated fintech environment.</li>
+    <li>Provided technical support to end users by resolving login, system access, hardware, and software issues in a healthcare environment.</li>
+    <li>Worked with tickets to track issues and support technical resolution follow-up.</li>
+    <li>Diagnosed and troubleshot basic desktop and user-side technical problems while communicating clearly with non-technical staff.</li>
+    <li>Assisted users with day-to-day technical issues while maintaining a responsive, customer-focused support approach.</li>
   </ul>
 </div>
 
 <div class="entry">
   <div class="entry__top">
-    <span class="entry__title">Volunteer IT Support</span>
-    <span class="entry__when">Stony Brook Hospital</span>
+    <span class="entry__title">Summer Consultant — Broadridge</span>
+    <span class="entry__when">05/2024 – 08/2024</span>
   </div>
   <ul>
-    <li>Provided front-line support to clinical and administrative staff.</li>
-    <li>Triaged hardware, account and connectivity issues in a live healthcare setting.</li>
+    <li>Reviewed user access controls and supporting documentation to ensure accuracy, compliance, and proper system access.</li>
+    <li>Worked with attention to detail on documentation and process validation in a professional team setting.</li>
+    <li>Assisted with audit preparation, risk analysis, and process improvement in a structured enterprise environment.</li>
   </ul>
 </div>
 
 <div class="entry">
   <div class="entry__top">
-    <span class="entry__title">Member, Cyber Defense Organization</span>
-    <span class="entry__when">2022 – 2025</span>
+    <span class="entry__title">Sales Associate — Lowe's</span>
+    <span class="entry__when">05/2022 – 08/2022</span>
   </div>
-  <p class="entry__where">University at Albany, SUNY</p>
+  <ul>
+    <li>Assisted customers directly while balancing accuracy, speed, and attention to detail.</li>
+    <li>Used Zebra devices for inventory checks, item lookup, restocking workflows, and organized task execution.</li>
+    <li>Helped maintain accurate item placement and product availability by locating items and verifying shelf organization.</li>
+  </ul>
 </div>
-
-<h2>Education</h2>
-<div class="entry">
-  <div class="entry__top">
-    <span class="entry__title">B.S. Cybersecurity</span>
-    <span class="entry__when">May 2025</span>
-  </div>
-  <p class="entry__where">University at Albany, SUNY</p>
-</div>
-
-<h2>Certifications</h2>
-<p>CompTIA Network+ — in progress.</p>
 
 <h2>Technical Skills</h2>
 <dl class="skills">
-  <dt>Operating systems</dt><dd>Ubuntu Server, Windows Server, Windows 10/11</dd>
-  <dt>Directory &amp; identity</dt><dd>Active Directory, Group Policy, AGDLP, RBAC, delegation</dd>
-  <dt>Security</dt><dd>Wazuh SIEM, Sysmon, detection rules, Nessus, Lynis, CIS hardening, SPF/DKIM/DMARC, phishing analysis, IOC extraction</dd>
-  <dt>Networking</dt><dd>SSH, DNS, pfSense, reverse proxies, Tailscale, Cloudflare tunnels</dd>
-  <dt>Monitoring</dt><dd>Prometheus, node_exporter, Grafana, Alertmanager, Uptime Kuma</dd>
-  <dt>Backup &amp; DR</dt><dd>restic, 3-2-1 strategy, systemd timers, tested restore drills</dd>
-  <dt>Scripting</dt><dd>Python, Bash, PowerShell, REST APIs, OAuth2</dd>
-  <dt>Virtualization</dt><dd>VMware, VirtualBox, Docker, Docker Compose, Portainer</dd>
-  <dt>Support tooling</dt><dd>osTicket, SLAs, knowledge-base authoring, ticket triage</dd>
+  <dt>Support &amp; Systems</dt>
+  <dd>Windows troubleshooting, help-desk / end-user support, hardware &amp; software diagnosis, ticket-based support, system configuration, technical documentation</dd>
+  <dt>OS &amp; Infrastructure</dt>
+  <dd>Ubuntu / Linux Server administration, virtual machines (VMware, VirtualBox), Docker &amp; Docker Compose, Nginx reverse proxy / TLS, systemd services &amp; timers</dd>
+  <dt>Networking &amp; Security</dt>
+  <dd>TCP/IP, network troubleshooting, SSH &amp; secure remote access, Active Directory (lab), Linux hardening, SIEM (Wazuh), vulnerability scanning (Nessus)</dd>
+  <dt>Scripting &amp; Tools</dt>
+  <dd>PowerShell, Bash, Python, Git &amp; GitHub, Prometheus &amp; Grafana, restic (backup / DR), Tailscale</dd>
 </dl>
 
-<h2>Selected Projects</h2>
+<h2>Projects</h2>
 
 <div class="entry">
   <div class="entry__top">
-    <span class="entry__title">SOC / SIEM Lab</span>
-    <span class="entry__when">Wazuh, Sysmon</span>
+    <span class="entry__title">IT &amp; Security Homelab Portfolio</span>
+    <span class="entry__when"><a href="https://github.com/wardoep">github.com/wardoep</a></span>
   </div>
+  <p class="entry__note">A growing set of hands-on IT, sysadmin, and SOC labs, each built and documented as a reproducible runbook with its configuration in version control.</p>
   <ul>
-    <li>Built a Wazuh SIEM with Sysmon-instrumented Windows and Linux agents reporting to one manager.</li>
-    <li>Ran attack simulations against my own virtual machines, then authored custom detection rules to catch them.</li>
-    <li>Documented incidents in a repeatable write-up format.</li>
+    <li><strong>Active Directory / Windows network lab:</strong> stood up a Windows Server domain (corp.lab), joined a client workstation, created and managed domain user accounts, and worked through logged break/fix troubleshooting drills.</li>
+    <li><strong>Docker self-hosted stack:</strong> deployed multi-service Docker Compose environments on Ubuntu Server (Portainer, Nginx Proxy Manager with TLS, Uptime Kuma) behind a reverse proxy, with scripted named-volume backups.</li>
+    <li><strong>Monitoring &amp; observability:</strong> Prometheus, Grafana (dashboards-as-code), and Alertmanager with node_exporter metrics, PromQL alert rules, and alert routing.</li>
+    <li><strong>Windows/AD administration toolkit:</strong> authored PowerShell scripts for system inventory, event-log triage, health reporting, and user on/off-boarding.</li>
+    <li><strong>Backup &amp; disaster recovery:</strong> 3-2-1 backups with restic, automated on a systemd schedule with retention policies and tested restore drills.</li>
+    <li><strong>Security operations:</strong> Wazuh SIEM with custom detection rules, a Nessus vulnerability-management workflow, a Cowrie SSH honeypot with a Python log analyzer, phishing triage with a Python IOC extractor, and CIS-based Linux hardening measured with Lynis.</li>
   </ul>
 </div>
 
 <div class="entry">
   <div class="entry__top">
-    <span class="entry__title">Phishing Analysis Lab</span>
-    <span class="entry__when">Python, email security</span>
+    <span class="entry__title">AI Infrastructure &amp; Automation</span>
   </div>
   <ul>
-    <li>Full email triage workflow: header chain analysis, and SPF, DKIM and DMARC evaluated together.</li>
-    <li>Wrote a Python IOC extractor that defangs its output so reports cannot be clicked by accident.</li>
-    <li>Produced a repeatable verdict and triage template.</li>
+    <li>Deployed and maintained self-hosted automation tools on a Linux VPS, including setup, configuration, and ongoing troubleshooting of bot, connectivity, and network issues to keep services running reliably.</li>
+    <li>Used Tailscale for secure remote access and private networking to hosted services.</li>
   </ul>
 </div>
 
+<h2>Education &amp; Certification</h2>
 <div class="entry">
   <div class="entry__top">
-    <span class="entry__title">Vulnerability Management Lab</span>
-    <span class="entry__when">Nessus Essentials</span>
+    <span class="entry__title">B.S. Cybersecurity — University at Albany, SUNY</span>
+    <span class="entry__when">09/2021 – 05/2025</span>
   </div>
-  <ul>
-    <li>Ran the full lifecycle: baseline scan, risk-based triage, remediation, verification rescan.</li>
-    <li>Produced a management-facing report communicating risk in business terms.</li>
-  </ul>
+  <p class="entry__where">CompTIA Network+ — scheduled July 2026</p>
 </div>
 
-<div class="entry">
-  <div class="entry__top">
-    <span class="entry__title">Active Directory &amp; Network Lab</span>
-    <span class="entry__when">Windows Server, pfSense</span>
-  </div>
-  <ul>
-    <li>Built an AD domain with Group Policy, AGDLP permission nesting and helpdesk delegation.</li>
-    <li>Automated user provisioning with PowerShell; documented everything as rebuildable runbooks.</li>
-    <li>Segmented the network with pfSense and ran break/fix drills.</li>
-  </ul>
-</div>
-
-<div class="entry">
-  <div class="entry__top">
-    <span class="entry__title">Helpdesk &amp; Ticketing Lab</span>
-    <span class="entry__when">osTicket, Docker</span>
-  </div>
-  <ul>
-    <li>Deployed osTicket with departments, help topics, SLA targets and email piping.</li>
-    <li>Worked five end-to-end tickets and wrote the matching knowledge-base articles.</li>
-  </ul>
-</div>
-
-<div class="entry">
-  <div class="entry__top">
-    <span class="entry__title">Monitoring, Backup &amp; Hardening</span>
-    <span class="entry__when">Prometheus, restic, Lynis</span>
-  </div>
-  <ul>
-    <li>Prometheus, Grafana and Alertmanager monitoring with dashboards kept as code and alerts routed to chat.</li>
-    <li>3-2-1 backups with restic — encrypted local and offsite repositories, systemd timers, logged restore drills.</li>
-    <li>CIS-inspired Ubuntu hardening with an idempotent script, measured by before/after Lynis scores.</li>
-  </ul>
-</div>
-
-<p class="noprint" style="margin-top:32px;color:#4a4f52;font-size:14px">
-  All eighteen projects, with write-ups:
+<p class="noprint" style="margin-top:30px;color:#4a4f52;font-size:14px">
+  Every project above is public, with write-ups:
   <a href="https://github.com/wardoep">github.com/wardoep</a>
 </p>
 

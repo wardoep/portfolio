@@ -29,7 +29,7 @@ COPY = {
         linkLabel="Read the write-ups",
     ),
     "phishing-analysis-lab": dict(
-        folder="security", icon="mail", order=20, featured=True,
+        folder="security", icon="mail", order=20,
         blurb="Full email triage: headers, SPF/DKIM/DMARC, IOC extraction, written verdict.",
         stack=["Python", "SPF / DKIM / DMARC", "IOC analysis", "Email headers"],
         highlights=[
@@ -41,7 +41,7 @@ COPY = {
         linkLabel="See the triage template",
     ),
     "vuln-management-lab": dict(
-        folder="security", icon="scan", order=30, featured=True,
+        folder="security", icon="scan", order=30,
         blurb="The whole lifecycle: scan, triage by risk, remediate, rescan, report up.",
         stack=["Nessus Essentials", "Ubuntu", "Windows", "Risk triage"],
         highlights=[
@@ -96,7 +96,7 @@ COPY = {
         linkLabel="Read the runbooks",
     ),
     "powershell-admin-toolkit": dict(
-        folder="infra", icon="terminal", order=30,
+        folder="infra", icon="terminal", order=30, featured=True,
         blurb="PowerShell for the daily Windows and AD jobs, run against my own domain.",
         stack=["PowerShell", "Active Directory", "Windows Server"],
         highlights=[
@@ -106,7 +106,7 @@ COPY = {
         ],
     ),
     "it-support-scripts": dict(
-        folder="infra", icon="toolbox", order=40,
+        folder="infra", icon="toolbox", order=40, featured=True,
         blurb="Linux troubleshooting toolkit: layered network and DNS diagnosis.",
         stack=["Bash", "journalctl", "systemd", "DNS"],
         highlights=[
@@ -260,47 +260,28 @@ TITLES = {
 # read the home screen off this list, and reordering is a one-line move.
 LAYOUT = [
     {
+        # ONE page, ten tiles. The three folders already hold all twenty
+        # projects, so a second page was duplicating what a folder click
+        # already reaches.
         "page": 1, "label": "HOME",
         "tiles": [
-            {"type": "project", "id": "soc-siem-lab"},
-            {"type": "project", "id": "phishing-analysis-lab"},
-            {"type": "project", "id": "vuln-management-lab"},
+            # Row 1 — proof, ordered for the role on the résumé:
+            # Desktop Support / IT Support. Ticketing and Active Directory are
+            # the literal job; the SIEM lab closes the row as the differentiator
+            # a cybersecurity degree earns.
             {"type": "project", "id": "helpdesk-ticketing-lab"},
             {"type": "project", "id": "ad-network-lab"},
+            {"type": "project", "id": "powershell-admin-toolkit"},
+            {"type": "project", "id": "it-support-scripts"},
+            {"type": "project", "id": "soc-siem-lab"},
 
+            # Row 2 — the way into the other fifteen, plus the two things a
+            # recruiter reaches for.
             {"type": "folder", "id": "security"},
             {"type": "folder", "id": "infra"},
             {"type": "folder", "id": "builds"},
             {"type": "channel", "id": "about"},
-            {"type": "channel", "id": "skills"},
-
             {"type": "channel", "id": "resume"},
-            {"type": "channel", "id": "now"},
-            {"type": "channel", "id": "contact"},
-            {"type": "link", "id": "github"},
-            {"type": "link", "id": "linkedin"},
-        ],
-    },
-    {
-        "page": 2, "label": "LABS",
-        "tiles": [
-            {"type": "project", "id": "linux-hardening-lab"},
-            {"type": "project", "id": "honeypot-lab"},
-            {"type": "project", "id": "powershell-admin-toolkit"},
-            {"type": "project", "id": "it-support-scripts"},
-            {"type": "project", "id": "monitoring-observability-lab"},
-
-            {"type": "project", "id": "backup-dr-lab"},
-            {"type": "project", "id": "docker-selfhosted-lab"},
-            {"type": "project", "id": "homelab-vps-setup"},
-            {"type": "project", "id": "jobbot"},
-            {"type": "project", "id": "hermes-personal-assistant"},
-
-            {"type": "project", "id": "twitch-clips-bot"},
-            {"type": "project", "id": "ai-shorts-pipeline"},
-            {"type": "project", "id": "btc-backtest-lab"},
-            {"type": "project", "id": "wardoep"},
-            {"type": "channel", "id": "colophon"},
         ],
     },
 ]

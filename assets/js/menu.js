@@ -38,8 +38,12 @@ function columns() {
 }
 
 /* ── one tile ─────────────────────────────────────────────────────────── */
+const projectsIn = (folderId) =>
+  data.projects.filter((p) => p.folder === folderId && !p.hidden && p.status !== 'missing');
+
 function tileFor(spec) {
   let node, label, iconId, cat, blurb, badge = null, external = false, pinned = false;
+  let folderKids = null;
 
   if (spec.type === 'project') {
     const p = projectById(spec.id);
@@ -62,6 +66,10 @@ function tileFor(spec) {
     node = el('button', 'tile tile--folder');
     node.type = 'button';
     node.dataset.route = 'folder/' + f.id;
+    /* Folders are now the only route to fifteen of the twenty projects, so the
+       tile has to advertise that it contains things: a 2x2 preview of what is
+       inside, and a count. Without this a folder looks like any other tile. */
+    folderKids = projectsIn(f.id);
   } else if (spec.type === 'channel') {
     const c = CHANNELS[spec.id];
     if (!c) return null;
@@ -86,9 +94,26 @@ function tileFor(spec) {
   node.tabIndex = -1;
 
   const art = el('span', 'tile__art');
-  art.appendChild(icon(iconId));
+  if (folderKids) {
+    /* four mini icons in a 2x2, the way a console folder shows its contents */
+    art.classList.add('tile__art--folder');
+    folderKids.slice(0, 4).forEach((p) => {
+      const cellIcon = icon('i-' + (p.icon || 'default'));
+      cellIcon.classList.add('mini');
+      art.appendChild(cellIcon);
+    });
+  } else {
+    art.appendChild(icon(iconId));
+  }
   node.appendChild(art);
   node.appendChild(el('span', 'tile__label', label));
+
+  if (folderKids) {
+    const n = el('span', 'tile__count', String(folderKids.length));
+    n.setAttribute('aria-hidden', 'true');
+    node.appendChild(n);
+    node.append(el('span', 'sr-only', `, folder, ${folderKids.length} projects`));
+  }
 
   if (pinned) {
     const pin = el('span', 'tile__pin');
@@ -137,6 +162,7 @@ export function render() {
     page.dataset.page = String(pg.page);
 
     const grid = el('div', 'grid');
+    grid.style.setProperty('--rows', String(Math.ceil(pg.tiles.length / cols)));
     grid.setAttribute('role', 'grid');
     grid.setAttribute('aria-label', `Channels, page ${pi + 1} of ${pages.length}: ${pg.label}`);
 
@@ -183,6 +209,9 @@ export function showPage(i, opts = {}) {
   if (!track) return;
   pageIndex = Math.max(0, Math.min(i, pageCount - 1));
   track.style.transform = `translateX(-${pageIndex * 100}%)`;
+
+  const dots = document.querySelector('.dots');
+  if (dots) dots.hidden = pageCount < 2;
 
   document.querySelectorAll('.dot').forEach((d, di) => {
     const on = di === pageIndex;
