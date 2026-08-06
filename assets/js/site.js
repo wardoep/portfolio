@@ -2,7 +2,8 @@
 
 import { asset, announce } from './util.js';
 import * as router from './router.js';
-import * as carousel from './carousel.js';
+import * as grid from './grid.js';
+import * as dock from './dock.js';
 import * as panels from './panels.js';
 import * as settings from './settings.js';
 
@@ -53,6 +54,9 @@ async function loadData() {
 
 async function main() {
   settings.init();
+  /* Before the fetch, and outside the try — the clock is dock furniture and
+     must not be hostage to whether projects.json arrives. */
+  dock.init();
   bootGate();
 
   const loading = document.querySelector('[data-loading]');
@@ -65,14 +69,17 @@ async function main() {
        only the generated tiles are missing. Say so rather than spinning. */
     console.error(err);
     if (loading) loading.textContent = 'Channels unavailable — use the dock below.';
-    panels.init({ projects: [], folders: [], carousel: [] });
+    /* Still draw the empty grid: a console shell with no channels is a more
+       honest failure state than a blank rectangle. */
+    grid.init({ projects: [], folders: [], channels: [] });
+    panels.init({ projects: [], folders: [], channels: [] });
     router.start();
     return;
   }
 
   if (loading) loading.hidden = true;
 
-  carousel.init(data);
+  grid.init(data);
   panels.init(data);
   router.start();
 

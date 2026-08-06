@@ -251,19 +251,21 @@ TITLES = {
     "portfolio":                    "This Site",
 }
 
-# Three cards in a coverflow carousel. PROJECTS sits at index 1 — the centre
-# card on load — because it is the reason a hiring manager is on the page.
-# A card can span several folders; the overlay renders one section per folder.
-CAROUSEL = [
-    {
-        "id": "builds", "label": "BUILDS", "icon": "wrench",
-        "folders": ["builds"],
-        "blurb": "Things I built because I wanted them to exist.",
-    },
+# The filled channels, in slot order. The grid fills from the top-left, so this
+# list IS the reading order — PROJECTS takes slot 1 because it is the reason a
+# hiring manager is on the page. (It used to sit at index 1 to be the centre
+# card of a carousel; that carousel is gone.)
+# A channel can span several folders; the overlay renders one section per folder.
+CHANNELS = [
     {
         "id": "projects", "label": "PROJECTS", "icon": "shield",
         "folders": ["security", "infra"],
         "blurb": "Hands-on IT and security labs, each documented as a rebuildable runbook.",
+    },
+    {
+        "id": "builds", "label": "BUILDS", "icon": "wrench",
+        "folders": ["builds"],
+        "blurb": "Things I built because I wanted them to exist.",
     },
     {
         # Opens the panel, NOT a navigation away. The panel links on to
@@ -299,22 +301,25 @@ def main():
         p["featured"] = bool(fields.get("featured", False))
         p["status"] = "live"
 
-    doc["carousel"] = CAROUSEL
+    doc["channels"] = CHANNELS
+    # both are dead keys from earlier home screens; leaving either behind
+    # means a stale shape survives in the committed JSON
+    doc.pop("carousel", None)
     doc.pop("layout", None)
 
     # Every visible project must be inside a folder a card can reach.
-    reachable = {f for c in CAROUSEL for f in c.get("folders", [])}
+    reachable = {f for c in CHANNELS for f in c.get("folders", [])}
     stranded = sorted(pid for pid, p in by_id.items()
                       if not p.get("hidden") and p.get("folder") not in reachable)
     if stranded:
-        print(f"UNREACHABLE — in no card's folders: {stranded}")
+        print(f"UNREACHABLE — in no channel's folders: {stranded}")
         return 3
 
     json.dump(doc, open(PATH, "w"), indent=2, ensure_ascii=False)
     open(PATH, "a").write("\n")
 
     longest = max(COPY.items(), key=lambda kv: len(kv[1]["blurb"]))
-    print(f"seeded {len(COPY)} projects, {len(CAROUSEL)} cards")
+    print(f"seeded {len(COPY)} projects, {len(CHANNELS)} channels")
     print(f"longest blurb: {len(longest[1]['blurb'])} chars ({longest[0]})")
     return 0
 

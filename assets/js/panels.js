@@ -271,7 +271,7 @@ function panelForRoute(r) {
     return p ? buildProject(p) : null;
   }
   if (r.name === 'card') {
-    const c = (data.carousel || []).find((x) => x.id === r.arg);
+    const c = (data.channels || []).find((x) => x.id === r.arg);
     if (c) lastCard = c.id;
     return c ? buildCard(c) : null;
   }

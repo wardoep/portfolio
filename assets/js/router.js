@@ -24,7 +24,7 @@ export function parse(hash) {
 
   if (head === 'project' && arg) return { name: 'project', arg };
   if (head === 'folder' && arg) return { name: 'folder', arg };
-  /* the two carousel cards that open an overlay */
+  /* the two channels that open an overlay */
   if (head === 'projects' || head === 'builds') return { name: 'card', arg: head };
   if (['about', 'skills', 'resume', 'now', 'contact', 'settings'].includes(head)) {
     return { name: head, arg: null };

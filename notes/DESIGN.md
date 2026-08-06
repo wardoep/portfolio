@@ -63,31 +63,46 @@ carries the phosphor.
 
 ## The grid
 
-Row 1 is the only row a 20-second skim reliably sees, so it carries **proof, not
-navigation** — and the five tiles cover all four target role families rather than
-ranking the best work:
+Four across, three down. **Three slots are filled and nine are empty** — that is
+the reference menu, and it was chosen deliberately over packing the wall.
 
-1. SIEM & Detection, 2. Phishing Triage, 3. Vulnerability Mgmt — the SOC case,
-   in the order a SOC job description reads.
-4. Helpdesk — the most likely first job, and the closest thing to a job simulation.
-5. Active Directory — **the highest-value keyword in the whole portfolio.**
+Slots fill from the top-left in reading order, because that is what a console
+menu does and because row 1 is the only row a 20-second skim reliably sees:
 
-Row 2 is navigation and identity. Row 3 is the four things a recruiter actually
-does: read the résumé, check you're still learning, make contact, verify you.
+1. **PROJECTS** — thirteen labs, grouped into SECURITY and IT / INFRASTRUCTURE.
+   First slot because it is why a hiring manager is on the page at all.
+2. **BUILDS** — six things built for their own sake.
+3. **RÉSUMÉ** — opens a panel, which links on to `resume.html`. It is not a
+   navigation: that URL is what goes on an application, so it needs a home.
 
-The three off-message repos — a crypto backtester, an AI video pipeline, a
-Twitch bot — sit in the bottom-right of page 2, the least-looked-at position on
-the site. Good engineering, wrong signal for a SOC role, and Broadridge is
-fintech. Deliberate, not accidental.
+An empty slot is a recessed socket, not a card: flat fill, a hairline, an inset
+shadow, and deliberately no outer shadow. It is `aria-hidden`, holds no text,
+has no tab stop and takes no pointer events. Nine of them, so getting the
+treatment wrong is nine mistakes rather than one.
+
+**Row height comes from the real stage box, never from token arithmetic.** Above
+901px the page is `overflow: hidden`, so a grid that is too tall does not
+scroll — it clips silently under the dock, and a `scrollHeight` test calls that
+a pass. (The previous grid's `minmax(0, min(212px, 29vh))` overshot the budget
+by 112px at 720p for exactly this reason.) Two caps bound the other axis:
+`--w-cap` derived from the height budget, `--h-cap` from the width budget.
+Exactly one binds at a time and both yield 4:3, which is also why no
+`aspect-ratio` is set above 900px — a second definition of the same thing is
+free to disagree with the first.
+
+The hover description hangs **below** the tile. Every filled slot is in the top
+row and `.hud` outranks `.stage`, so a bubble opening upward would slide under
+the header.
 
 ## Accessibility
 
 `role="grid"` is a promise: it tells a screen-reader user the layout has a
-shape, and obliges arrow-key movement. A grid without it is worse than a list.
-
-Roving tabindex makes the whole grid **one tab stop** — five stops to cross the
-page instead of twenty-five. At a row edge, ← and → turn the page and land in
-the mirrored column so the eye keeps its place.
+shape, and obliges arrow-key movement. **This grid deliberately does not make
+that promise.** Nine of its twelve cells are empty, so a grid role would offer
+2D navigation and deliver "blank, blank, blank". Three real `<button>`s in a
+labelled `<nav>` give three natural tab stops — fewer keystrokes than a roving
+tabindex, and no JavaScript. The roving-tabindex module that served the old
+25-tile grid is gone and should stay gone unless the wall fills up.
 
 **Focus restoration hangs off the router, not the click handler.** That is the
 bug nearly everyone ships: the panel closes via the browser back button, no

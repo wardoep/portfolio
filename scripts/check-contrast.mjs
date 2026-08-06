@@ -75,6 +75,16 @@ const PAIRS = [
   ['white on BUILDS face',     '#ffffff',  'card-builds',   4.5],
   ['white on RESUME face',     '#ffffff',  'card-resume',   4.5],
   ['card face vs ground',      'card-projects', 'ground',   1.4],
+
+  /* An empty slot carries no text, so WCAG has nothing to say about it — but an
+     invisible one is a layout bug that looks perfect on the machine it was
+     built on. The ground is a radial gradient, so the hairline is measured
+     against both of its stops. In dark mode the fill is 1.02 against
+     --ground-lift, i.e. effectively identical, and only the edge saves it. */
+  ['empty slot vs ground',     'slot',      'ground',       1.08],
+  ['slot edge vs slot fill',   'slot-edge', 'slot',         1.25],
+  ['slot edge vs ground lift', 'slot-edge', 'ground-lift',  1.35],
+  ['slot edge vs ground edge', 'slot-edge', 'ground-edge',  1.15],
 ];
 
 let failed = 0;

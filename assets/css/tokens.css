@@ -66,7 +66,12 @@
   --focus-halo: #0d2b33;
 
   /* --- shape --- */
-  --r-tile:  14px;
+  --r-tile:  16px;   /* filled tiles AND empty slots — sharing the radius
+                        is what makes an empty one read as a socket */
+  --stage-pad:   clamp(10px, 2.5vw, 28px);  /* the stage's inline padding */
+  --stage-pad-y: clamp(8px, 1.6vh, 16px);   /* and its vertical padding — the
+                        grid's maths subtracts exactly these two, so a change
+                        here cannot silently push the bottom row under the bar */
   --r-panel: 26px;
   --r-sm:     9px;
   --r-row:   18px;
@@ -86,6 +91,15 @@
   --card-projects: #2a628c;   /* white 6.51 */
   --card-builds:   #8f5915;   /* white 5.82 */
   --card-resume:   #3f6846;   /* white 6.40 */
+
+  /* An empty channel slot. A recessed SOCKET, not an object: flat fill, a
+     hairline a shade darker, an inset shadow, and deliberately no outer shadow
+     — an outer shadow is the one thing that would make it read as a card
+     waiting to be clicked. Nine of the twelve slots are empty, so getting this
+     wrong is nine mistakes, not one. */
+  --slot:       #d9dcd8;
+  --slot-edge:  #bcc1bb;
+  --slot-inset: inset 0 1px 3px rgb(0 0 0 / .07);
 
   /* --- motion --- */
   --d-fast:  120ms;
@@ -107,7 +121,8 @@
   --fs-h3:    16px;
   --fs-h2:    20px;
 
-  --dock-h: 62px;
+  --dock-h: 96px;   /* the bar's real height; the grid's width maths
+                       reads this, so the two must not drift */
   --hud-h:  74px;
 }
 
@@ -152,6 +167,13 @@
   --bevel: inset 0 1px 0 rgb(255 255 255 / .06);
   --scrim: rgb(4 7 10 / .66);
 
+  /* The dark fill sits almost exactly on --ground-lift, which the body's radial
+     gradient puts directly behind the top row — so here the HAIRLINE is the
+     only thing carrying the slot. That is why the gate measures the edge and
+     not just the fill. */
+  --slot:       #1c212a;
+  --slot-edge:  #333c4a;
+  --slot-inset: inset 0 1px 3px rgb(0 0 0 / .34);
 }
 
 @media (prefers-contrast: more) {

@@ -842,16 +842,7 @@
     }
   ],
   "generatedAt": "2026-08-06",
-  "carousel": [
-    {
-      "id": "builds",
-      "label": "BUILDS",
-      "icon": "wrench",
-      "folders": [
-        "builds"
-      ],
-      "blurb": "Things I built because I wanted them to exist."
-    },
+  "channels": [
     {
       "id": "projects",
       "label": "PROJECTS",
@@ -861,6 +852,15 @@
         "infra"
       ],
       "blurb": "Hands-on IT and security labs, each documented as a rebuildable runbook."
+    },
+    {
+      "id": "builds",
+      "label": "BUILDS",
+      "icon": "wrench",
+      "folders": [
+        "builds"
+      ],
+      "blurb": "Things I built because I wanted them to exist."
     },
     {
       "id": "resume",

@@ -71,7 +71,11 @@ done
 for id in $(grep -ohE "'i-[a-z-]+'" assets/js/*.js data/projects.json 2>/dev/null | tr -d "'" | sort -u); do
   grep -q "id=\"$id\"" index.html || missing="$missing $id"
 done
-for id in $(jq -r '.projects[].icon, .folders[].icon' data/projects.json | sort -u); do
+# Channel icons were never checked — the grid's three tiles got their icons
+# validated only by luck. `// []` matters: a bare .channels[] on a missing key
+# makes jq error, the loop gets nothing, $missing stays empty, and the check
+# passes silently, which is worse than not having it.
+for id in $(jq -r '.projects[].icon, .folders[].icon, (.channels // [])[].icon' data/projects.json | sort -u); do
   grep -q "id=\"i-$id\"" index.html || missing="$missing i-$id"
 done
 missing=$(echo "$missing" | tr ' ' '\n' | sort -u | tr '\n' ' ' | xargs || true)

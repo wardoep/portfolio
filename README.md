@@ -86,9 +86,10 @@ Every one of those corresponds to a bug that is invisible locally.
 index.html          the whole site — menu shell, hand-written panels, SVG sprite, avatar
 resume.html         standalone printable résumé. No JS, no webfont. THIS is the URL for applications.
 404.html            the only file that hardcodes /portfolio/ — see the comment inside
-data/projects.json  19 repos: hand-written fields + a machine-owned `gh` block
-assets/css/         tokens · menu · panels · crt
-assets/js/          site · router · menu · grid-nav · panels · settings · util
+data/projects.json  20 repos + the channel list: hand-written fields and a
+                    machine-owned `gh` block
+assets/css/         tokens · menu · panels
+assets/js/          site · router · grid · dock · panels · settings · util
 scripts/            sync-projects · seed-copy · check-contrast
 notes/              DESIGN.md · LEGAL.md
 ```
