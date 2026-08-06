@@ -159,6 +159,41 @@ a { color: inherit; }
   gap: clamp(12px, 2.4vh, 26px);
 }
 
+.cell {
+  position: absolute;
+  /* sized against the LANDSCAPE tile width — the old value was tuned for
+     portrait cards and left the side tiles mostly hidden behind the centre */
+  transform: translateX(calc(var(--d, 0) * clamp(215px, 27vw, 310px)));
+  transition: transform var(--d-slow) var(--ease);
+  z-index: 1;
+}
+.cell.is-centre { z-index: 3; }
+
+/* the hover description — back from the old tile grid. Clicking a side card
+   only centres it, so without this a side card is a dead end. */
+.bubble {
+  position: absolute;
+  left: 50%; bottom: calc(100% + 12px);
+  transform: translate(-50%, 6px);
+  z-index: 9;
+  width: max-content; max-width: 300px;
+  padding: 10px 15px;
+  background: var(--tile); color: var(--ink);
+  border: 1px solid var(--tile-edge);
+  border-radius: 13px;
+  box-shadow: var(--shadow-lift);
+  font-size: var(--fs-small); line-height: 1.4; text-align: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity var(--d-fast) var(--ease), transform var(--d-fast) var(--ease);
+}
+.bubble::after {
+  content: ''; position: absolute; top: 100%; left: 50%;
+  transform: translateX(-50%);
+  border: 8px solid transparent; border-top-color: var(--tile);
+}
+.ccard:hover + .bubble,
+.ccard:focus-visible + .bubble { opacity: 1; transform: translate(-50%, 0); }
+
 .coverflow__rail {
   position: relative;
   width: 100%;
@@ -168,51 +203,63 @@ a { color: inherit; }
 }
 
 .ccard {
-  position: absolute;
-  width: clamp(200px, 25vw, 290px);
-  height: 100%;
+  position: relative;
+  /* Landscape, like the channel tiles in the reference — they are wider than
+     they are tall. The old portrait shape was the main thing making these read
+     as generic cards rather than channels. */
+  width: clamp(240px, 27vw, 330px);
+  aspect-ratio: 4 / 3;
+  height: auto;
   display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: clamp(8px, 1.6vh, 16px);
-  padding: 20px 18px 24px;
-  font: inherit; color: var(--ink); text-decoration: none;
-  background: linear-gradient(180deg, var(--tile) 0%, var(--tile-2) 100%);
-  border: 1px solid var(--tile-edge);
-  border-radius: 20px;
+  align-items: center; justify-content: center; gap: 10px;
+  padding: 18px;
+  font: inherit; text-decoration: none;
+  /* full-bleed colour: the tile IS the channel art */
+  color: #fff;
+  background: var(--card-tint);
+  background-image: linear-gradient(170deg,
+      rgb(255 255 255 / .16) 0%, rgb(255 255 255 / 0) 46%,
+      rgb(0 0 0 / .10) 100%);
+  border: 1px solid rgb(255 255 255 / .30);
+  border-radius: 16px;
   box-shadow: var(--shadow-tile);
   cursor: pointer;
+  overflow: hidden;
   transition: transform var(--d-slow) var(--ease), opacity var(--d-slow) var(--ease),
               box-shadow var(--d-slow) var(--ease);
 }
 
-/* side cards: smaller, faded, behind */
-/* faint enough to recede, legible enough to read as a real destination */
-.ccard { transform: translateX(calc(var(--d, 0) * clamp(150px, 20vw, 240px))) scale(.74); opacity: .58; z-index: 1; filter: saturate(.8); }
-.ccard.is-centre { transform: translateX(0) scale(1); opacity: 1; z-index: 3; filter: none; }
+/* side cards: same tile, scaled and faded. The X offset lives on .cell so the
+   hover bubble stays full size instead of shrinking with the card. */
+.ccard { transform: scale(.74); opacity: .55; }
+.ccard.is-centre { transform: scale(1); opacity: 1; }
 
 .ccard__art {
   display: grid; place-items: center;
-  width: clamp(58px, 9vh, 88px); height: clamp(58px, 9vh, 88px);
-  border-radius: 18px;
+  width: clamp(44px, 7vh, 62px); height: clamp(44px, 7vh, 62px);
+  border-radius: 50%;
   color: #fff;
-  background: var(--card-tint, #7d8f9c);
-  box-shadow: inset 0 -3px 0 rgb(0 0 0 / .12);
+  background: rgb(255 255 255 / .18);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / .30);
 }
-.ccard__art .ico { width: 56%; height: 56%; stroke-width: 1.8; }
+.ccard__art .ico { width: 56%; height: 56%; stroke-width: 1.9; }
 
 .ccard__label {
-  font-size: clamp(15px, 2.2vh, 21px);
-  font-weight: 800; letter-spacing: .04em; text-align: center;
+  font-size: clamp(15px, 2.1vh, 20px);
+  font-weight: 800; letter-spacing: .05em; text-align: center;
+  color: #fff;
+  text-shadow: 0 1px 2px rgb(0 0 0 / .28);
 }
 .ccard__count {
   font-family: var(--font-pix);
-  font-size: clamp(10px, 1.4vh, 12px);
-  color: var(--ink-2); text-align: center; line-height: 1.4;
+  font-size: clamp(10px, 1.35vh, 12px);
+  color: rgb(255 255 255 / .88); text-align: center; line-height: 1.4;
 }
 .ccard__go {
   margin-top: 2px;
   padding: 5px 16px;
   font-family: var(--font-pix); font-size: 11px; letter-spacing: .14em;
-  color: var(--sel-ink); background: var(--sel);
+  color: var(--sel-ink); background: #fff;
   border-radius: var(--r-pill);
   opacity: 0; transform: translateY(4px);
   transition: opacity var(--d-mid) var(--ease), transform var(--d-mid) var(--ease);
@@ -264,49 +311,92 @@ a { color: inherit; }
 .ccard--in { animation: pop var(--d-slow) var(--ease-pop) both; animation-delay: var(--delay, 0ms); }
 @keyframes pop { from { opacity: 0; transform: translateY(10px) scale(.9); } }
 
-/* ── dock ────────────────────────────────────────────────────────────── */
+/* ── bottom bar ───────────────────────────────────────────────────────────
+ * The reference bar: a white band across the foot with a thin cyan hairline
+ * along its top edge, circular buttons, and the clock centred in it.
+ *
+ * The reference has two unlabelled circles. This has five labelled ones —
+ * circles for the feel, labels because the bar has to say what it does. */
 .dock {
   position: relative; z-index: 3;
   flex: none;
-  min-height: 78px;
+  min-height: 96px;
   display: flex; align-items: center; justify-content: center;
-  gap: clamp(8px, 1.6vw, 20px);
-  padding: 0 12px 12px;
+  gap: clamp(10px, 2vw, 26px);
+  padding: 12px clamp(14px, 4vw, 46px) 14px;
+  background: var(--tile);
+  border-top: 2px solid color-mix(in oklab, var(--sel) 55%, transparent);
+  border-radius: 26px 26px 0 0;
+  box-shadow: 0 -2px 14px rgb(0 0 0 / .06), var(--bevel);
 }
+
 .dock__btn {
   position: relative;
-  min-width: 92px;
-  padding: 11px 14px 9px;
-  display: flex; flex-direction: column; align-items: center; gap: 3px;
-  background: var(--tile);
-  border: 1px solid var(--tile-edge);
-  border-radius: 12px;
-  box-shadow: var(--shadow-tile);
-  color: var(--ink-2);
-  cursor: pointer;
-  text-decoration: none;
-  transition: transform var(--d-fast) var(--ease), color var(--d-fast) var(--ease),
-              box-shadow var(--d-fast) var(--ease);
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  background: none; border: 0; padding: 0;
+  color: var(--ink-2); cursor: pointer; text-decoration: none;
+  transition: transform var(--d-fast) var(--ease), color var(--d-fast) var(--ease);
 }
-.dock__btn .ico { width: 27px; height: 27px; }
-.dock__btn:hover { transform: translateY(-3px); color: var(--ink); box-shadow: var(--shadow-lift); }
+/* the circle is the button; the label sits under it */
+.dock__btn::before {
+  content: '';
+  position: absolute; top: 0; left: 50%;
+  width: 54px; height: 54px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: var(--ground);
+  border: 2px solid color-mix(in oklab, var(--sel) 42%, var(--tile-edge));
+  box-shadow: var(--bevel);
+  transition: border-color var(--d-fast) var(--ease), background var(--d-fast) var(--ease);
+}
+.dock__btn .ico {
+  position: relative;
+  width: 26px; height: 26px;
+  margin: 14px 14px 0;
+}
 .dock__label {
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: .02em;
-  line-height: 1;
-  white-space: nowrap;
-  color: var(--ink-2);
+  position: relative;
+  font-size: 11.5px; font-weight: 800; letter-spacing: .02em;
+  line-height: 1; white-space: nowrap; color: var(--ink-2);
+  margin-top: 12px;
 }
+.dock__btn:hover { transform: translateY(-3px); color: var(--ink); }
+.dock__btn:hover::before { border-color: var(--sel); background: var(--tile-2); }
 .dock__btn:hover .dock__label { color: var(--ink); }
+.dock__btn:focus-visible { outline: none; }
+.dock__btn:focus-visible::before {
+  border-color: var(--focus-core);
+  box-shadow: 0 0 0 4px var(--focus-halo);
+}
+
 .dock__badge {
-  position: absolute; top: -4px; right: 2px;
-  min-width: 16px; height: 16px; padding: 0 4px;
+  position: absolute; top: -2px; right: 4px; z-index: 2;
+  min-width: 18px; height: 18px; padding: 0 5px;
   display: grid; place-items: center;
   background: #e8542f; color: #fff;
-  font-family: var(--font-pix); font-size: 9px;
+  font-family: var(--font-pix); font-size: 9.5px;
   border-radius: var(--r-pill);
   box-shadow: 0 0 0 2px var(--tile);
+}
+
+/* the clock, centred in the bar — the strongest single cue in the reference */
+.dock__clock {
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
+  margin-inline: clamp(6px, 2.5vw, 34px);
+  user-select: none;
+}
+.dock__clock .clock {
+  font-family: var(--font-pix);
+  font-size: clamp(20px, 2.6vw, 28px);
+  color: var(--ink-3);
+  letter-spacing: .04em;
+  font-variant-numeric: tabular-nums;
+}
+.dock__date {
+  font-family: var(--font-pix);
+  font-size: var(--fs-small);
+  color: var(--ink-3);
+  letter-spacing: .06em;
 }
 
 /* ── boot overlay ────────────────────────────────────────────────────── */
@@ -391,47 +481,7 @@ a { color: inherit; }
   .clock { display: none; }
 }
 
-/* ── ambient drift ───────────────────────────────────────────────────────
- * Soft shapes wandering behind the grid. One transform per shape, animated on
- * transform only, so it stays on the compositor. It is also the single worst
- * offender for vestibular disorders — it is the first thing reduced-motion
- * kills, below. */
-.ambient {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  overflow: hidden;
-}
-.ambient > i {
-  position: absolute;
-  display: block;
-  border-radius: 50%;
-  background: radial-gradient(circle at 34% 30%,
-              rgb(255 255 255 / .85), rgb(255 255 255 / 0) 68%);
-  opacity: .5;
-  will-change: transform;
-  animation: drift 34s linear infinite;
-}
-.ambient > i:nth-child(1) { width: 190px; height: 190px; left:  4%; top: 14%; animation-duration: 41s; }
-.ambient > i:nth-child(2) { width: 120px; height: 120px; left: 26%; top: 68%; animation-duration: 33s; animation-delay: -8s; }
-.ambient > i:nth-child(3) { width: 240px; height: 240px; left: 58%; top:  8%; animation-duration: 47s; animation-delay: -19s; }
-.ambient > i:nth-child(4) { width:  90px; height:  90px; left: 78%; top: 52%; animation-duration: 29s; animation-delay: -4s; }
-.ambient > i:nth-child(5) { width: 150px; height: 150px; left: 88%; top: 78%; animation-duration: 38s; animation-delay: -23s; }
-.ambient > i:nth-child(6) { width: 110px; height: 110px; left: 44%; top: 38%; animation-duration: 44s; animation-delay: -12s; }
 
-@keyframes drift {
-  0%   { transform: translate3d(0, 0, 0) scale(1); }
-  25%  { transform: translate3d(28px, -34px, 0) scale(1.06); }
-  50%  { transform: translate3d(-18px, -58px, 0) scale(.96); }
-  75%  { transform: translate3d(-36px, -22px, 0) scale(1.03); }
-  100% { transform: translate3d(0, 0, 0) scale(1); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ambient { display: none; }
-}
-:root[data-motion='off'] .ambient { display: none; }
 
 .noscript { max-width: 46rem; margin: 40px auto; padding: 0 20px; }
 

@@ -78,9 +78,14 @@
   --bevel: inset 0 1px 0 rgb(255 255 255 / .9);
   --scrim: rgb(10 16 12 / .48);
 
-  --card-projects: #2f6f9e;
-  --card-builds:   #c07a1e;
-  --card-resume:   #4a7a52;
+  /* These are now the FULL FACE of a channel tile carrying white text, not a
+     small icon badge. Every value is measured for white at 4.5:1+ — the old
+     amber managed 3.47. They are deliberately shared by both themes: a mid
+     colour stands out against a light ground and a dark one, whereas the
+     lifted dark variants failed white text outright (2.26 at worst). */
+  --card-projects: #2a628c;   /* white 6.51 */
+  --card-builds:   #8f5915;   /* white 5.82 */
+  --card-resume:   #3f6846;   /* white 6.40 */
 
   /* --- motion --- */
   --d-fast:  120ms;
@@ -147,10 +152,6 @@
   --bevel: inset 0 1px 0 rgb(255 255 255 / .06);
   --scrim: rgb(4 7 10 / .66);
 
-  /* lifted, or these go muddy against a dark ground */
-  --card-projects: #4d93c6;
-  --card-builds:   #e0a04a;
-  --card-resume:   #6ea877;
 }
 
 @media (prefers-contrast: more) {

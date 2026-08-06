@@ -96,10 +96,6 @@
   </defs>
 </svg>
 
-<div class="ambient" aria-hidden="true">
-  <i></i><i></i><i></i><i></i><i></i><i></i>
-</div>
-
 <!-- ─── header ─────────────────────────────────────────────────────────── -->
 <header class="hud">
   <button class="user" type="button" data-open="about" aria-label="Edward Penna — open About">
@@ -125,7 +121,6 @@
 
 
   <div class="hud__right">
-    <time class="clock" data-clock aria-label="Current time, Eastern">--:--</time>
     <button class="cornerbtn" type="button" data-open="settings" aria-label="Display settings">
       <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-gear"/></svg>
     </button>
@@ -165,6 +160,10 @@
     <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-chat"/></svg>
     <span class="dock__label">Contact</span>
   </button>
+  <div class="dock__clock">
+    <time class="clock" data-clock aria-label="Current time, Eastern">--:--</time>
+    <span class="dock__date" data-date></span>
+  </div>
   <a class="dock__btn" href="https://github.com/wardoep" rel="noopener noreferrer" target="_blank">
     <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-github"/></svg>
     <span class="dock__label">GitHub</span>

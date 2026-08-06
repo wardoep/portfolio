@@ -266,9 +266,10 @@ CAROUSEL = [
         "blurb": "Hands-on IT and security labs, each documented as a rebuildable runbook.",
     },
     {
+        # Opens the panel, NOT a navigation away. The panel links on to
+        # resume.html, which is the URL that goes on an application.
         "id": "resume", "label": "R\u00c9SUM\u00c9", "icon": "doc",
-        "href": "resume.html",
-        "blurb": "Plain, printable, ATS-safe.",
+        "blurb": "Printable and ATS-safe.",
     },
 ]
 

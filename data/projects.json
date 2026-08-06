@@ -311,7 +311,7 @@
         "description": "Active Directory + pfSense homelab, documented as rebuildable runbooks: GPO, AGDLP, delegation, PowerShell provisioning",
         "language": "PowerShell",
         "stars": 0,
-        "pushedAt": "2026-07-25T05:19:11Z",
+        "pushedAt": "2026-08-06T05:46:11Z",
         "createdAt": "2026-07-16T05:14:46Z",
         "url": "https://github.com/wardoep/ad-network-lab",
         "homepageUrl": "",
@@ -791,9 +791,9 @@
       "gh": {
         "name": "portfolio",
         "description": "IT support and cybersecurity portfolio — a console-style channel menu backed by 18 hands-on labs",
-        "language": "JavaScript",
+        "language": "HTML",
         "stars": 0,
-        "pushedAt": "2026-08-05T22:23:41Z",
+        "pushedAt": "2026-08-06T05:30:12Z",
         "createdAt": "2026-08-05T09:38:17Z",
         "url": "https://github.com/wardoep/portfolio",
         "homepageUrl": "",
@@ -866,8 +866,7 @@
       "id": "resume",
       "label": "RÉSUMÉ",
       "icon": "doc",
-      "href": "resume.html",
-      "blurb": "Plain, printable, ATS-safe."
+      "blurb": "Printable and ATS-safe."
     }
   ]
 }

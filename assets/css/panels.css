@@ -245,7 +245,7 @@
 :root[data-motion='off'] .scrim { animation: none; }
 
 @media print {
-  .hud, .dock, .pager, .scrim, .boot, .ambient, .panel__x, .pages { display: none !important; }
+  .hud, .dock, .scrim, .boot, .pages { display: none !important; }
   .panel { position: static; transform: none; max-height: none; box-shadow: none; border: 0; width: auto; }
   .panel[hidden] { display: block !important; }
 }

@@ -64,8 +64,15 @@ function build() {
     }
     node.appendChild(el('span', 'ccard__go', 'Open'));
 
-    rail.appendChild(node);
-    cards.push({ spec: c, node });
+    const cell = el('div', 'cell');
+    cell.appendChild(node);
+    /* a description on hover: clicking a side card only centres it, so without
+       this a side card gives you nothing before you commit to two clicks */
+    const bub = el('span', 'bubble', captionFor(c));
+    bub.setAttribute('aria-hidden', 'true');   /* duplicates the label */
+    cell.appendChild(bub);
+    rail.appendChild(cell);
+    cards.push({ spec: c, node, cell });
   });
 
   host.appendChild(rail);
@@ -86,7 +93,7 @@ export function focus(i, opts = {}) {
   const n = cards.length;
   index = ((i % n) + n) % n;                       // wrap both directions
 
-  cards.forEach(({ node }, k) => {
+  cards.forEach(({ node, cell }, k) => {
     /* offset in the range -1 / 0 / +1 with wrapping, so the rail reads as a
        loop rather than a strip that runs out at either end */
     let d = k - index;
@@ -94,7 +101,8 @@ export function focus(i, opts = {}) {
     if (d < -n / 2) d += n;
 
     node.classList.toggle('is-centre', d === 0);
-    node.style.setProperty('--d', String(d));
+    cell.classList.toggle('is-centre', d === 0);
+    cell.style.setProperty('--d', String(d));
     node.setAttribute('aria-selected', d === 0 ? 'true' : 'false');
     node.tabIndex = d === 0 ? 0 : -1;
     /* A faded side card is decoration, not a destination; keep it out of the
@@ -129,7 +137,15 @@ function startClock() {
   const fmt = new Intl.DateTimeFormat('en-US', {
     hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'America/New_York',
   });
-  const tick = () => { node.textContent = fmt.format(new Date()); };
+  /* the reference shows a date under the clock — "Sun 5/27" */
+  const dateNode = document.querySelector('[data-date]');
+  const dfmt = new Intl.DateTimeFormat('en-US', {
+    weekday: 'short', month: 'numeric', day: 'numeric', timeZone: 'America/New_York',
+  });
+  const tick = () => {
+    node.textContent = fmt.format(new Date());
+    if (dateNode) dateNode.textContent = dfmt.format(new Date()).replace(',', '');
+  };
   tick();
   setInterval(tick, 15_000);
 }

@@ -8,6 +8,18 @@
 <link rel="canonical" href="https://wardoep.github.io/portfolio/resume.html">
 <link rel="icon" href="assets/img/favicon.ico" sizes="any">
 
+<script>
+/* Carry the site's theme choice across, before first paint. Without this the
+   résumé disagrees with the page that linked to it. The @media rule below is
+   the real default, so this page still themes correctly with JS off. */
+(function () {
+  try {
+    var t = localStorage.getItem('pf-theme');
+    if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+  } catch (e) {}
+})();
+</script>
+
 <!-- Deliberately standalone: no JavaScript, no webfont, no tint, nothing to
      fail. This is the URL that goes on an application, so it has to render
      identically in a browser, a print dialog and an ATS text extractor.
@@ -16,12 +28,18 @@
      crawled, archived and scraped; the full-detail version belongs in the PDF
      you attach to an application. -->
 <style>
-  :root { --ink:#15181a; --dim:#4a4f52; --rule:#d6dad8; --accent:#097082; }
+  :root { --ink:#15181a; --dim:#4a4f52; --rule:#d6dad8; --accent:#097082; --paper:#fff; }
+  @media (prefers-color-scheme: dark) {
+    :root { --ink:#e8ecf2; --dim:#a8b2c0; --rule:#2c343f; --accent:#6fd8ee; --paper:#12151a; }
+  }
+  /* an explicit choice from the site wins over the OS in both directions */
+  :root[data-theme='dark']  { --ink:#e8ecf2; --dim:#a8b2c0; --rule:#2c343f; --accent:#6fd8ee; --paper:#12151a; }
+  :root[data-theme='light'] { --ink:#15181a; --dim:#4a4f52; --rule:#d6dad8; --accent:#097082; --paper:#fff; }
   * { box-sizing: border-box; }
   body {
     margin: 0 auto; padding: 44px 26px 80px; max-width: 47rem;
     font: 15px/1.5 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    color: var(--ink); background: #fff;
+    color: var(--ink); background: var(--paper);
   }
   a { color: var(--accent); }
   header { border-bottom: 2px solid var(--ink); padding-bottom: 14px; }
@@ -45,8 +63,11 @@
   .skills dd { margin: 0; color: var(--dim); }
   .back { display: inline-block; margin-bottom: 22px; font-size: 14px; }
   @media (max-width: 560px) { .skills { grid-template-columns: 1fr; } .skills dd { margin-bottom: 8px; } }
+  /* Print is always light on white. A dark-mode CV coming out of a printer as
+     a black page is a real way to lose an application. */
   @media print {
-    body { padding: 0; max-width: none; font-size: 10.5pt; }
+    :root { --ink:#15181a; --dim:#4a4f52; --rule:#d6dad8; --accent:#15181a; --paper:#fff; }
+    body { padding: 0; max-width: none; font-size: 10.5pt; background: #fff; color: #15181a; }
     .back, .noprint { display: none; }
     h2 { margin-top: 16px; }
     a { color: var(--ink); text-decoration: none; }

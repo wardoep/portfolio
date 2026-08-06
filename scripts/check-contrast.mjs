@@ -67,6 +67,14 @@ const PAIRS = [
   ['body text on ground',      'ink',      'ground',     7.0],
   ['muted text on ground',     'ink-2',    'ground',     4.5],
   ['boot cue on black',        '#7f8f7c',  '#05070a',    4.5],
+
+  /* The card faces carry white text now. These were picked as small icon
+     badges and three of the six failed the moment they became a background —
+     the amber measured 2.26. */
+  ['white on PROJECTS face',   '#ffffff',  'card-projects', 4.5],
+  ['white on BUILDS face',     '#ffffff',  'card-builds',   4.5],
+  ['white on RESUME face',     '#ffffff',  'card-resume',   4.5],
+  ['card face vs ground',      'card-projects', 'ground',   1.4],
 ];
 
 let failed = 0;
