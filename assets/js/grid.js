@@ -1,19 +1,18 @@
-/* grid.js — the channel grid. Four across, three down.
+/* grid.js — the channel wall. One row, one tile per channel.
  *
- * Three slots are filled and nine are empty, which is what the reference looks
- * like and what was asked for. The empty ones are not placeholders waiting on
- * content: they are part of the picture, so they are inert — no tab stop, no
- * pointer events, nothing announced.
+ * It was a 4x3 of twelve with nine empty sockets. The empties were part of the
+ * picture then; they are not wanted now, so they are not rendered — the grid
+ * emits exactly as many slots as there are channels and the CSS lays out that
+ * many columns. Nothing is hidden, because a hidden element is still a thing
+ * the next person has to reason about.
  *
- * Every filled tile opens on a single click. The coverflow's centre-first rule
- * is gone with it, and so is the keyboard handler that rule needed: a real
- * <button> already fires click on both Enter and Space.
+ * Every tile opens on a single click. The coverflow's centre-first rule went
+ * with it, and so did the keyboard handler that rule needed: a real <button>
+ * already fires click on both Enter and Space.
  */
 
 import { el, icon, reduceMotion } from './util.js';
 import * as router from './router.js';
-
-const SLOTS = 12;                 /* 4 x 3 — one page of the reference menu */
 
 const projectsIn = (data, folderId) =>
   data.projects.filter((p) => p.folder === folderId && !p.hidden && p.status !== 'missing');
@@ -66,12 +65,6 @@ function channelSlot(data, c) {
   return slot;
 }
 
-function emptySlot() {
-  const slot = el('div', 'slot slot--empty');
-  slot.setAttribute('aria-hidden', 'true');
-  return slot;
-}
-
 /* ── entrance ──────────────────────────────────────────────────────────── */
 function enter(host) {
   if (reduceMotion()) return;
@@ -83,7 +76,6 @@ function enter(host) {
     getComputedStyle(document.documentElement).getPropertyValue('--stagger'));
   const step = Number.isFinite(raw) ? raw : 38;
 
-  /* Only the filled tiles. Popping nine grey sockets is noise. */
   host.querySelectorAll('.chan').forEach((n, i) => {
     n.classList.add('chan--in');
     n.style.setProperty('--delay', `${i * step}ms`);
@@ -112,7 +104,8 @@ export function init(data) {
   host.textContent = '';
 
   channels.forEach((c) => host.appendChild(channelSlot(data, c)));
-  for (let i = channels.length; i < SLOTS; i++) host.appendChild(emptySlot());
+  /* the column count follows the data, so adding a fourth channel needs no CSS */
+  host.style.setProperty('--cols', String(Math.max(1, channels.length)));
 
   host.addEventListener('click', (e) => {
     const btn = e.target.closest('.chan');

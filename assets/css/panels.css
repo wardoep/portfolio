@@ -20,15 +20,16 @@
 
 .panel {
   position: fixed; z-index: 1000;
+  --panel-rule: 3px;
   left: 50%; top: 50%;
   transform: translate(-50%, -50%);
   width: min(760px, calc(100vw - 32px));
   max-height: min(86vh, 780px);
   display: flex; flex-direction: column;
   background: var(--tile);
-  border: 1px solid var(--tile-edge);
+  border: 0;
   border-radius: var(--r-panel);
-  box-shadow: var(--shadow-panel), var(--bevel);
+  box-shadow: 0 0 0 var(--panel-rule) var(--ink), var(--shadow-panel);
   overflow: hidden;
   animation: panelIn var(--d-mid) var(--ease-pop) both;
 }
@@ -49,8 +50,9 @@
   flex: none;
   display: flex; align-items: center; gap: 14px;
   padding: 16px 22px;
-  border-bottom: 1px solid var(--rule);
-  background: linear-gradient(180deg, var(--tile-2) 0%, var(--tile) 100%);
+  border-bottom: 0;
+  background: var(--ink);
+  color: var(--tile);
 }
 .panel__badge {
   flex: none;
@@ -59,7 +61,7 @@
   border-radius: 50%;
   color: #fff;
   background: var(--badge-tint, var(--sel-deep));
-  box-shadow: 0 0 0 3px var(--badge-ring), inset 0 -2px 0 rgb(0 0 0 / .14);
+  box-shadow: 0 0 0 3px var(--ink);
 }
 .panel__badge .ico { width: 24px; height: 24px; stroke-width: 2; }
 

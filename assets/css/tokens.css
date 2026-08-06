@@ -31,43 +31,42 @@
 }
 
 :root {
-  /* --- ground and surfaces (the console's own light palette) --- */
-  --ground:      #e4e6e3;
-  --ground-lift: #f3f4f2;
-  --ground-edge: #cfd3ce;
+  /* --- ground and surfaces ---
+   * Black and white, no hue anywhere. The greys that remain are the ones text
+   * sits on, so they are the only values here that can fail a contrast pair —
+   * the pure ends are 20:1 and take care of themselves. */
+  --ground:      #ececec;
+  --ground-lift: #f7f7f7;
+  --ground-edge: #dcdcdc;
   --tile:        #ffffff;
-  --tile-2:      #f7f8f6;
-  --tile-edge:   #d5d9d4;
+  --tile-2:      #f4f4f4;
+  --tile-edge:   #0a0a0a;   /* borders are ink here, not a hairline */
 
-  --ink:    #161a16;
-  --ink-2:  #4a4a4a;
-  --ink-3:  #6b7169;
-  --rule:   #d3d7d2;
+  --ink:    #0a0a0a;
+  --ink-2:  #3d3d3d;
+  --ink-3:  #606060;
+  --rule:   #d4d4d4;
 
   /* --- selection ---
-   * --sel is the true console cyan. It was #2ddcff, pre-brightened to survive a
-   * green wash that ate ~21% of the blue channel; the wash is gone, so the
-   * compensation goes with it.
-   * --sel-ink is dark on purpose: white on cyan measures 2.12 and fails WCAG,
-   * which is the most common console-UI accessibility bug there is. */
-  --sel:      #00c3e3;
-  --sel-deep: #097082;   /* links and switches — must read against the GROUND */
-  --sel-ink:  #062a33;   /* text sitting ON --sel */
+   * There is no accent colour to reach for, so emphasis is carried by polarity
+   * instead: --sel is ink, and anything sitting on it flips to paper. */
+  --sel:      #0a0a0a;
+  --sel-deep: #0a0a0a;   /* links and switches — must read against the GROUND */
+  --sel-ink:  #ffffff;   /* text sitting ON --sel */
 
-  --row-active: linear-gradient(180deg, #e8f8fd 0%, #d4f0fa 100%);
+  --row-active: linear-gradient(180deg, #f2f2f2 0%, #e6e6e6 100%);
   --badge-ring: #ffffff;
 
-  --ok:   #2e7d32;
-  --warn: #8a5a12;
+  --ok:   #0a0a0a;
+  --warn: #3d3d3d;
 
   /* the ring and its halo — has to stay visible on any ground, including the
      black boot screen and the pale active row */
   --focus-core: #ffffff;
-  --focus-halo: #0d2b33;
+  --focus-halo: #0a0a0a;
 
   /* --- shape --- */
-  --r-tile:  16px;   /* filled tiles AND empty slots — sharing the radius
-                        is what makes an empty one read as a socket */
+  --r-tile:  3px;    /* hard corners: the softness belonged to the old look */
   --stage-pad:   clamp(10px, 2.5vw, 28px);  /* the stage's inline padding */
   --stage-pad-y: clamp(8px, 1.6vh, 16px);   /* and its vertical padding — the
                         grid's maths subtracts exactly these two, so a change
@@ -81,25 +80,21 @@
   --shadow-lift: 0 4px 8px rgb(22 26 22 / .10), 0 12px 26px rgb(22 26 22 / .16);
   --shadow-panel: 0 16px 60px rgb(22 26 22 / .30);
   --bevel: inset 0 1px 0 rgb(255 255 255 / .9);
-  --scrim: rgb(10 16 12 / .48);
+  --scrim: rgb(0 0 0 / .55);
 
-  /* These are now the FULL FACE of a channel tile carrying white text, not a
-     small icon badge. Every value is measured for white at 4.5:1+ — the old
-     amber managed 3.47. They are deliberately shared by both themes: a mid
-     colour stands out against a light ground and a dark one, whereas the
-     lifted dark variants failed white text outright (2.26 at worst). */
-  --card-projects: #2a628c;   /* white 6.51 */
-  --card-builds:   #8f5915;   /* white 5.82 */
-  --card-resume:   #3f6846;   /* white 6.40 */
+  /* The three faces. With no colour to separate them the distinction is
+     POLARITY — two tiles inked, one left as paper — and that difference is the
+     only thing telling them apart, so it lives in the tokens rather than in a
+     one-off rule. Kept as tokens (rather than deleted) because panels.js reads
+     var(--card-<id>) for the panel badge and the gate measures these pairs. */
+  --card-projects: #0a0a0a;
+  --card-builds:   #0a0a0a;
+  --card-resume:   #ffffff;
+  /* what text sits on each face */
+  --card-projects-ink: #ffffff;
+  --card-builds-ink:   #ffffff;
+  --card-resume-ink:   #0a0a0a;
 
-  /* An empty channel slot. A recessed SOCKET, not an object: flat fill, a
-     hairline a shade darker, an inset shadow, and deliberately no outer shadow
-     — an outer shadow is the one thing that would make it read as a card
-     waiting to be clicked. Nine of the twelve slots are empty, so getting this
-     wrong is nine mistakes, not one. */
-  --slot:       #d9dcd8;
-  --slot-edge:  #bcc1bb;
-  --slot-inset: inset 0 1px 3px rgb(0 0 0 / .07);
 
   /* --- motion --- */
   --d-fast:  120ms;
@@ -123,62 +118,59 @@
 
   --dock-h: 96px;   /* the bar's real height; the grid's width maths
                        reads this, so the two must not drift */
-  --hud-h:  74px;
+  --hud-h:  102px;  /* the identity tile is a portrait over two lines of type;
+                       74px cropped it. The grid subtracts this token, so the
+                       wall re-derives its own height rather than overflowing. */
 }
 
 /* ── DARK ─────────────────────────────────────────────────────────────────
- * A dark console menu: deep blue-grey, not pure black. Against pure black the
- * rounded cards read as holes cut in the page; a lifted ground keeps them
- * reading as objects sitting on it.
- *
- * --sel-deep is the one token that INVERTS rather than darkens. It is the link
- * and switch colour, so it has to contrast against the GROUND — a dark teal on
- * a dark ground is unreadable, and it looks fine to the eye while failing, which
- * is exactly why check-contrast.mjs now runs both themes. */
+ * A monochrome design has no natural second theme, so dark is the literal
+ * inverse: paper becomes ink and ink becomes paper, including the three faces.
+ * The two tiles that were black are now white and the one that was white is
+ * black, so the polarity that tells them apart survives the flip. */
 :root[data-theme='dark'] {
-  --ground:      #12151a;
-  --ground-lift: #1a1f27;
-  --ground-edge: #0c0e12;
-  --tile:        #1e242e;
-  --tile-2:      #232a35;
-  --tile-edge:   #333c4a;
+  --ground:      #0a0a0a;
+  --ground-lift: #151515;
+  --ground-edge: #000000;
+  --tile:        #141414;
+  --tile-2:      #1c1c1c;
+  --tile-edge:   #f5f5f5;
 
-  --ink:    #e8ecf2;
-  --ink-2:  #a8b2c0;
-  --ink-3:  #7d8796;
-  --rule:   #2c343f;
+  --ink:    #f5f5f5;
+  --ink-2:  #c4c4c4;
+  --ink-3:  #9a9a9a;
+  --rule:   #2e2e2e;
 
-  --sel:      #35d6f5;
-  --sel-deep: #6fd8ee;   /* INVERTED — light on dark, not dark on dark */
-  --sel-ink:  #06222b;
+  --sel:      #f5f5f5;
+  --sel-deep: #f5f5f5;
+  --sel-ink:  #0a0a0a;
 
-  --row-active: linear-gradient(180deg, #24404c 0%, #1d333d 100%);
-  --badge-ring: #2b3340;
+  --row-active: linear-gradient(180deg, #202020 0%, #171717 100%);
+  --badge-ring: #0a0a0a;
 
-  --ok:   #6fcf78;
-  --warn: #e0a84a;
+  --card-projects: #f5f5f5;
+  --card-builds:   #f5f5f5;
+  --card-resume:   #141414;
+  --card-projects-ink: #0a0a0a;
+  --card-builds-ink:   #0a0a0a;
+  --card-resume-ink:   #f5f5f5;
+
+  --ok:   #f5f5f5;
+  --warn: #c4c4c4;
 
   --focus-core: #ffffff;
-  --focus-halo: #04161c;
+  --focus-halo: #000000;
 
   --shadow-tile:  0 1px 1px rgb(0 0 0 / .40), 0 3px 8px rgb(0 0 0 / .45);
   --shadow-lift:  0 4px 10px rgb(0 0 0 / .45), 0 14px 30px rgb(0 0 0 / .55);
   --shadow-panel: 0 18px 64px rgb(0 0 0 / .65);
   --bevel: inset 0 1px 0 rgb(255 255 255 / .06);
-  --scrim: rgb(4 7 10 / .66);
-
-  /* The dark fill sits almost exactly on --ground-lift, which the body's radial
-     gradient puts directly behind the top row — so here the HAIRLINE is the
-     only thing carrying the slot. That is why the gate measures the edge and
-     not just the fill. */
-  --slot:       #1c212a;
-  --slot-edge:  #333c4a;
-  --slot-inset: inset 0 1px 3px rgb(0 0 0 / .34);
+  --scrim: rgb(0 0 0 / .72);
 }
 
 @media (prefers-contrast: more) {
   :root { --ink-2: #333; }
-  :root[data-theme='dark'] { --ink-2: #d4dae2; }
+  :root[data-theme='dark'] { --ink-2: #dcdcdc; }
 }
 
 /* One source of truth for motion: zero the durations and every transition and

@@ -68,23 +68,21 @@ const PAIRS = [
   ['muted text on ground',     'ink-2',    'ground',     4.5],
   ['boot cue on black',        '#7f8f7c',  '#05070a',    4.5],
 
-  /* The card faces carry white text now. These were picked as small icon
-     badges and three of the six failed the moment they became a background —
-     the amber measured 2.26. */
-  ['white on PROJECTS face',   '#ffffff',  'card-projects', 4.5],
-  ['white on BUILDS face',     '#ffffff',  'card-builds',   4.5],
-  ['white on RESUME face',     '#ffffff',  'card-resume',   4.5],
-  ['card face vs ground',      'card-projects', 'ground',   1.4],
+  /* Each face carries its OWN ink, because the three channels are told apart by
+     polarity: two are inked and one is left as paper, and that flips wholesale
+     between themes. Pairing a hardcoded white against every face — which is what
+     this did before — passes in one theme and fails in the other. */
+  ['ink on PROJECTS face',     'card-projects-ink', 'card-projects', 4.5],
+  ['ink on BUILDS face',       'card-builds-ink',   'card-builds',   4.5],
+  ['ink on RESUME face',       'card-resume-ink',   'card-resume',   4.5],
 
-  /* An empty slot carries no text, so WCAG has nothing to say about it — but an
-     invisible one is a layout bug that looks perfect on the machine it was
-     built on. The ground is a radial gradient, so the hairline is measured
-     against both of its stops. In dark mode the fill is 1.02 against
-     --ground-lift, i.e. effectively identical, and only the edge saves it. */
-  ['empty slot vs ground',     'slot',      'ground',       1.08],
-  ['slot edge vs slot fill',   'slot-edge', 'slot',         1.25],
-  ['slot edge vs ground lift', 'slot-edge', 'ground-lift',  1.35],
-  ['slot edge vs ground edge', 'slot-edge', 'ground-edge',  1.15],
+  /* The inked tiles separate from the ground on their own. The paper one does
+     NOT — white on #ececec is 1.19, and its dark opposite is just as close — so
+     the only thing making it a tile at all is the rule around it. That rule is
+     what gets gated, and it is gated hard. */
+  ['inked face vs ground',     'card-projects', 'ground',      3.0],
+  ['tile rule vs ground',      'tile-edge',     'ground',      3.0],
+  ['tile rule vs paper face',  'tile-edge',     'card-resume', 3.0],
 ];
 
 let failed = 0;
