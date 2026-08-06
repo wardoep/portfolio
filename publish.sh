@@ -126,6 +126,39 @@ else
   ok "no resume.pdf to verify"
 fi
 
+# 13 — a forward-looking date that has quietly gone past. The site promised
+#      "CompTIA Network+ scheduled July 2026" in five places and was still
+#      saying it in August, which a recruiter reads as either he didn't sit it
+#      or he doesn't maintain his own site. Nothing catches that by eye,
+#      because the sentence is still perfectly well-formed.
+stale=$(python3 - <<'PY'
+import re, sys, datetime, pathlib
+MONTHS = {m: i for i, m in enumerate(
+    "january february march april may june july august september october "
+    "november december".split(), 1)}
+today = datetime.date.today()
+pat = re.compile(
+    r"(scheduled|sitting|upcoming|due|expected|starting)\b[^.<]{0,60}?"
+    r"\b(" + "|".join(MONTHS) + r")\s+(\d{4})", re.I)
+bad = []
+for f in ("index.html", "resume.html", "404.html"):
+    p = pathlib.Path(f)
+    if not p.exists():
+        continue
+    for m in pat.finditer(p.read_text()):
+        when = datetime.date(int(m.group(3)), MONTHS[m.group(2).lower()], 1)
+        # the month itself is generous: a date is only stale once it is over
+        if when < today.replace(day=1):
+            bad.append(f"{f}: {m.group(0).strip()}")
+print("\n".join(bad))
+PY
+)
+if [ -n "$stale" ]; then
+  bad "a future date has gone past: $(echo "$stale" | head -1)"
+else
+  ok "no forward-looking date has expired"
+fi
+
 echo
 [ "$fail" -eq 0 ] || { echo "pre-flight failed."; exit 1; }
 

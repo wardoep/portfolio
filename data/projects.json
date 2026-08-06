@@ -791,9 +791,9 @@
       "gh": {
         "name": "portfolio",
         "description": "IT support and cybersecurity portfolio — a console-style channel menu backed by 18 hands-on labs",
-        "language": "CSS",
+        "language": "JavaScript",
         "stars": 0,
-        "pushedAt": "2026-08-06T07:02:48Z",
+        "pushedAt": "2026-08-06T17:11:58Z",
         "createdAt": "2026-08-05T09:38:17Z",
         "url": "https://github.com/wardoep/portfolio",
         "homepageUrl": "",
