@@ -135,6 +135,90 @@
 .beats { margin: 0; padding-left: 1.15em; display: grid; gap: .6em; }
 .beats li { padding-left: .15em; }
 
+/* ── evidence ─────────────────────────────────────────────────────────────
+ * The result as a number, and the screenshots. Both are optional in the data
+ * and render nothing at all when absent — no heading, no empty frame, no
+ * placeholder. A panel with no evidence looks exactly as it did before. */
+.metric {
+  display: flex; align-items: baseline; gap: 12px;
+  padding: 12px 16px;
+  background: var(--tile-2);
+  border: 1px solid var(--tile-edge);
+  border-left: 3px solid var(--sel-deep);
+  border-radius: var(--r-sm);
+}
+.metric__value {
+  font-family: var(--font-pix);
+  font-size: 22px; line-height: 1;
+  color: var(--sel-deep);
+}
+.metric__label { font-size: var(--fs-small); color: var(--ink-2); }
+
+.shots {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+}
+.shot { margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.shot__open {
+  display: block; padding: 0; width: 100%;
+  background: var(--tile-2);
+  border: 1px solid var(--tile-edge);
+  border-radius: var(--r-sm);
+  overflow: hidden; cursor: zoom-in;
+  transition: transform var(--d-fast) var(--ease), box-shadow var(--d-fast) var(--ease);
+}
+.shot__open:hover,
+.shot__open:focus-visible { transform: translateY(-2px); box-shadow: var(--shadow-lift); }
+/* aspect-ratio + object-fit so a mixed bag of capture sizes still tiles evenly,
+   and the reserved box stops the panel reflowing as lazy images arrive */
+.shot__open img {
+  display: block; width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover; object-position: top left;
+}
+.shot figcaption { font-size: var(--fs-small); color: var(--ink-2); line-height: 1.4; }
+
+/* recency, which was in the data and rendered nowhere */
+.stamp {
+  font-family: var(--font-pix);
+  font-size: var(--fs-micro);
+  color: var(--ink-3);
+  letter-spacing: .06em;
+}
+
+/* ── lightbox ─────────────────────────────────────────────────────────────
+ * A sibling of the panels, not a child, so the panel's focus trap and this one
+ * never argue about who owns Tab. */
+.lightbox {
+  position: fixed; inset: 0; z-index: 2000;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 18px;
+  padding: clamp(16px, 4vw, 48px);
+  background: rgb(6 9 12 / .92);
+}
+.lightbox[hidden] { display: none; }
+.lightbox__figure { margin: 0; display: flex; flex-direction: column; gap: 12px; min-height: 0; }
+.lightbox__img {
+  max-width: 100%; max-height: 76vh;
+  object-fit: contain;
+  border-radius: var(--r-sm);
+  box-shadow: var(--shadow-panel);
+  background: #fff;
+}
+.lightbox__cap {
+  max-width: 70ch; text-align: center;
+  font-size: var(--fs-small); line-height: 1.5;
+  color: #d8dee6;
+}
+.lightbox__close {
+  padding: 10px 22px;
+  font: inherit; font-weight: 800;
+  color: var(--sel-ink); background: var(--sel);
+  border: 0; border-radius: var(--r-pill);
+  cursor: pointer;
+}
+
 .facts { margin: 0; display: grid; gap: .55em; }
 .facts dt { font-weight: 800; }
 .facts dd { margin: 0; color: var(--ink-2); }
@@ -248,7 +332,7 @@
   /* .pages was the old grid container and has not existed for three commits,
      which is why the home screen has been printing. .stage is the element
      that is actually there. */
-  .hud, .dock, .scrim, .boot, .stage { display: none !important; }
+  .hud, .dock, .scrim, .boot, .stage, .lightbox { display: none !important; }
   .panel { position: static; transform: none; max-height: none; box-shadow: none; border: 0; width: auto; }
   .panel[hidden] { display: block !important; }
 }

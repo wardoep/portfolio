@@ -1,6 +1,6 @@
 /* panels.js — opening, closing, focus trapping, and the project templates. */
 
-import { el, icon, safeUrl, announce, copyText } from './util.js';
+import { el, icon, safeUrl, announce, copyText, asset } from './util.js';
 import * as router from './router.js';
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])';
@@ -57,6 +57,7 @@ export function show(panel) {
 }
 
 export function hide({ restoreFocus = true } = {}) {
+  closeLightbox();
   if (!open) return;
   open.hidden = true;
   open = null;
@@ -108,6 +109,109 @@ function panelFoot(extra) {
   return foot;
 }
 
+/* ── evidence ─────────────────────────────────────────────────────────────
+ * A portfolio of GitHub links shows nothing. Every panel used to end in an
+ * outbound link, so a visitor read three paragraphs claiming there was a
+ * working ticket queue and never saw one.
+ *
+ * The gallery is dormant until images exist: a project with no `shots` renders
+ * no heading, no container, no empty frame. Adding evidence later is dropping a
+ * file in assets/img/shots/ and one line in the data. */
+function monthYear(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+}
+
+function buildGallery(p) {
+  const shots = (p.shots || []).filter((s) => s && s.src && s.alt);
+  if (!shots.length) return null;
+
+  const grid = el('div', 'shots');
+  shots.forEach((s, i) => {
+    const fig = el('figure', 'shot');
+    const btn = el('button', 'shot__open');
+    btn.type = 'button';
+    btn.dataset.shot = `${p.id}:${i}`;
+    /* the alt text IS the caption, so a screen reader gets the same sentence a
+       sighted visitor reads under the image — never "screenshot 1 of 4" */
+    btn.setAttribute('aria-label', `View larger: ${s.alt}`);
+
+    const img = el('img');
+    img.src = asset('assets/img/shots/' + s.src);
+    img.alt = s.alt;
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    if (s.w) img.width = s.w;
+    if (s.h) img.height = s.h;
+    btn.appendChild(img);
+
+    fig.appendChild(btn);
+    if (s.caption) fig.appendChild(el('figcaption', null, s.caption));
+    grid.appendChild(fig);
+  });
+  return grid;
+}
+
+/* One lightbox for the whole site, built once. It is a sibling of the panels
+   rather than a child, so the panel's own focus trap never fights it. */
+let lightbox = null;
+let lightboxReturn = null;
+
+function openLightbox(img, caption, trigger) {
+  if (!lightbox) {
+    lightbox = el('div', 'lightbox');
+    lightbox.setAttribute('role', 'dialog');
+    lightbox.setAttribute('aria-modal', 'true');
+    lightbox.setAttribute('aria-label', 'Screenshot');
+    lightbox.hidden = true;
+    lightbox.innerHTML = '';
+
+    const figure = el('figure', 'lightbox__figure');
+    const big = el('img', 'lightbox__img');
+    const cap = el('figcaption', 'lightbox__cap');
+    figure.append(big, cap);
+
+    const close = el('button', 'lightbox__close');
+    close.type = 'button';
+    close.setAttribute('aria-label', 'Close');
+    close.append('Close');
+
+    lightbox.append(figure, close);
+    document.body.appendChild(lightbox);
+
+    close.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+    /* Escape and Tab both stop here — with one control there is nowhere else
+       for focus to go, so the trap is simply "keep it on Close". */
+    lightbox.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); closeLightbox(); }
+      else if (e.key === 'Tab') { e.preventDefault(); close.focus(); }
+    });
+  }
+  lightbox.querySelector('.lightbox__img').src = img.currentSrc || img.src;
+  lightbox.querySelector('.lightbox__img').alt = img.alt;
+  lightbox.querySelector('.lightbox__cap').textContent = caption || img.alt;
+  lightbox.hidden = false;
+  /* The trigger is passed in, not read from document.activeElement. A click
+     does not necessarily leave focus on the button — a programmatic one never
+     does — and reading it here silently returned focus to <body> on close. */
+  lightboxReturn = trigger || null;
+  lightbox.querySelector('.lightbox__close').focus();
+}
+
+function closeLightbox() {
+  if (!lightbox || lightbox.hidden) return;
+  lightbox.hidden = true;
+  if (lightboxReturn && document.contains(lightboxReturn) && lightboxReturn.offsetParent !== null) {
+    lightboxReturn.focus({ preventScroll: true });
+  }
+  lightboxReturn = null;
+}
+
+export const isLightboxOpen = () => !!lightbox && !lightbox.hidden;
+
 /* ── project panel ────────────────────────────────────────────────────── */
 function buildProject(p) {
   const id = 'p-project-' + p.id;
@@ -127,6 +231,16 @@ function buildProject(p) {
   const body = el('div', 'panel__body prose');
 
   if (p.blurb) body.appendChild(el('p', 'lead', p.blurb));
+
+  /* The result, as a number. Several labs promise one in their own copy — the
+     hardening lab literally says "so the improvement is a number and not a
+     claim" — and then the number appeared nowhere on the site. */
+  if (p.metric) {
+    const m = el('p', 'metric');
+    m.appendChild(el('strong', 'metric__value', p.metric.value));
+    m.appendChild(el('span', 'metric__label', p.metric.label));
+    body.appendChild(m);
+  }
 
   const stack = (p.stack && p.stack.length) ? p.stack : [];
   if (stack.length) {
@@ -152,6 +266,17 @@ function buildProject(p) {
     p.highlights.forEach((t) => ul.appendChild(el('li', null, t)));
     body.appendChild(ul);
   }
+
+  const gallery = buildGallery(p);
+  if (gallery) {
+    body.appendChild(el('h3', null, 'What it looks like'));
+    body.appendChild(gallery);
+  }
+
+  /* Recency was already in the data and rendered nowhere, so a lab built last
+     month was indistinguishable from three-year-old coursework. */
+  const updated = monthYear(p.gh && p.gh.pushedAt);
+  if (updated) body.appendChild(el('p', 'stamp', `Updated ${updated}`));
 
   panel.appendChild(body);
 
@@ -303,10 +428,18 @@ export function init(payload) {
        the menu carries it, which is what makes the bare attribute safe here. */
     const inner = e.target.closest('.panel [data-route]');
     if (inner) { e.preventDefault(); router.go(inner.dataset.route, inner); }
+    const shot = e.target.closest('[data-shot]');
+    if (shot) {
+      e.preventDefault();
+      openLightbox(shot.querySelector('img'),
+        shot.closest('.shot')?.querySelector('figcaption')?.textContent, shot);
+    }
   });
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && open) { e.preventDefault(); router.home(); }
+    if (e.key !== 'Escape') return;
+    if (isLightboxOpen()) { e.preventDefault(); closeLightbox(); return; }
+    if (open) { e.preventDefault(); router.home(); }
   });
 
   router.onRoute((r) => {

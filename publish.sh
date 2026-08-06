@@ -89,6 +89,24 @@ else
   ok "every .ico svg carries a viewBox"
 fi
 
+# 11 — every screenshot referenced in the data is actually on disk, and carries
+#      a real alt sentence. A typo'd filename would otherwise ship as a broken
+#      image icon in the middle of the evidence section, which is worse than
+#      having no evidence at all.
+shotmiss=""
+for f in $(jq -r '[.projects[].shots // []] | flatten | .[].src' data/projects.json 2>/dev/null); do
+  [ -f "assets/img/shots/$f" ] || shotmiss="$shotmiss $f"
+done
+noalt=$(jq -r '[.projects[].shots // []] | flatten | map(select((.alt // "") | length < 12)) | length' data/projects.json 2>/dev/null || echo 0)
+if [ -n "$shotmiss" ]; then
+  bad "screenshot referenced but not on disk:$shotmiss"
+elif [ "${noalt:-0}" != "0" ]; then
+  bad "$noalt screenshot(s) have no usable alt text"
+else
+  nshots=$(jq -r '[.projects[].shots // []] | flatten | length' data/projects.json 2>/dev/null || echo 0)
+  ok "every screenshot exists and is described ($nshots on file)"
+fi
+
 echo
 [ "$fail" -eq 0 ] || { echo "pre-flight failed."; exit 1; }
 
