@@ -71,7 +71,7 @@
         "isArchived": false,
         "topics": []
       },
-      "lastSeen": "2026-08-05",
+      "lastSeen": "2026-08-06",
       "title": "SIEM & Detection"
     },
     {
@@ -81,7 +81,7 @@
       "blurb": "Full email triage: headers, SPF/DKIM/DMARC, IOC extraction, written verdict.",
       "folder": "security",
       "icon": "mail",
-      "featured": true,
+      "featured": false,
       "hidden": false,
       "stack": [
         "Python",
@@ -113,7 +113,7 @@
         "isArchived": false,
         "topics": []
       },
-      "lastSeen": "2026-08-05",
+      "lastSeen": "2026-08-06",
       "title": "Phishing Triage"
     },
     {
@@ -123,7 +123,7 @@
       "blurb": "The whole lifecycle: scan, triage by risk, remediate, rescan, report up.",
       "folder": "security",
       "icon": "scan",
-      "featured": true,
+      "featured": false,
       "hidden": false,
       "stack": [
         "Nessus Essentials",
@@ -154,7 +154,7 @@
         "isArchived": false,
         "topics": []
       },
-      "lastSeen": "2026-08-05",
+      "lastSeen": "2026-08-06",
       "title": "Vulnerability Mgmt"
     },
     {
@@ -196,7 +196,7 @@
         "isArchived": false,
         "topics": []
       },
-      "lastSeen": "2026-08-05",
+      "lastSeen": "2026-08-06",
       "title": "Linux Hardening"
     },
     {
@@ -237,7 +237,7 @@
         "isArchived": false,
         "topics": []
       },
-      "lastSeen": "2026-08-05",
+      "lastSeen": "2026-08-06",
       "title": "SSH Honeypot"
     },
     {
@@ -278,7 +278,7 @@
         "isArchived": false,
         "topics": []
       },
-      "lastSeen": "2026-08-05",
+      "lastSeen": "2026-08-06",
       "title": "Helpdesk"
     },
     {
@@ -319,7 +319,7 @@
         "isArchived": false,
         "topics": []
       },
-      "lastSeen": "2026-08-05",
+      "lastSeen": "2026-08-06",
       "title": "Active Directory"
     },
     {
@@ -359,7 +359,7 @@
         "isArchived": false,
         "topics": []
       },
-      "lastSeen": "2026-08-05",
+      "lastSeen": "2026-08-06",
       "title": "PowerShell Toolkit"
     },
     {
@@ -400,7 +400,7 @@
         "isArchived": false,
         "topics": []
       },
-      "lastSeen": "2026-08-05",
+      "lastSeen": "2026-08-06",
       "title": "Support Scripts"
     },
     {
@@ -441,7 +441,7 @@
         "isArchived": false,
         "topics": []
       },
-      "lastSeen": "2026-08-05",
+      "lastSeen": "2026-08-06",
       "title": "Monitoring"
     },
     {
@@ -481,7 +481,7 @@
         "isArchived": false,
         "topics": []
       },
-      "lastSeen": "2026-08-05",
+      "lastSeen": "2026-08-06",
       "title": "Backup & DR"
     },
     {
@@ -523,7 +523,7 @@
         "isArchived": false,
         "topics": []
       },
-      "lastSeen": "2026-08-05",
+      "lastSeen": "2026-08-06",
       "title": "Docker Homelab"
     },
     {
@@ -563,7 +563,7 @@
         "isArchived": false,
         "topics": []
       },
-      "lastSeen": "2026-08-05",
+      "lastSeen": "2026-08-06",
       "title": "Server Runbooks"
     },
     {
@@ -605,7 +605,7 @@
         "isArchived": false,
         "topics": []
       },
-      "lastSeen": "2026-08-05",
+      "lastSeen": "2026-08-06",
       "title": "Jobbot"
     },
     {
@@ -644,7 +644,7 @@
         "isArchived": false,
         "topics": []
       },
-      "lastSeen": "2026-08-05",
+      "lastSeen": "2026-08-06",
       "title": "Hermes"
     },
     {
@@ -686,7 +686,7 @@
         "isArchived": false,
         "topics": []
       },
-      "lastSeen": "2026-08-05",
+      "lastSeen": "2026-08-06",
       "title": "Clips Bot"
     },
     {
@@ -725,7 +725,7 @@
         "isArchived": false,
         "topics": []
       },
-      "lastSeen": "2026-08-05",
+      "lastSeen": "2026-08-06",
       "title": "Shorts Pipeline"
     },
     {
@@ -765,7 +765,7 @@
         "isArchived": false,
         "topics": []
       },
-      "lastSeen": "2026-08-05",
+      "lastSeen": "2026-08-06",
       "title": "Backtester"
     },
     {
@@ -793,7 +793,7 @@
         "description": "IT support and cybersecurity portfolio — a console-style channel menu backed by 18 hands-on labs",
         "language": "JavaScript",
         "stars": 0,
-        "pushedAt": "2026-08-05T19:32:57Z",
+        "pushedAt": "2026-08-05T22:23:41Z",
         "createdAt": "2026-08-05T09:38:17Z",
         "url": "https://github.com/wardoep/portfolio",
         "homepageUrl": "",
@@ -801,7 +801,7 @@
         "isArchived": false,
         "topics": []
       },
-      "lastSeen": "2026-08-05",
+      "lastSeen": "2026-08-06",
       "title": "This Site"
     },
     {
@@ -837,57 +837,37 @@
         "isArchived": false,
         "topics": []
       },
-      "lastSeen": "2026-08-05",
+      "lastSeen": "2026-08-06",
       "title": "Profile README"
     }
   ],
-  "generatedAt": "2026-08-05",
-  "layout": [
+  "generatedAt": "2026-08-06",
+  "carousel": [
     {
-      "page": 1,
-      "label": "HOME",
-      "tiles": [
-        {
-          "type": "project",
-          "id": "helpdesk-ticketing-lab"
-        },
-        {
-          "type": "project",
-          "id": "ad-network-lab"
-        },
-        {
-          "type": "project",
-          "id": "powershell-admin-toolkit"
-        },
-        {
-          "type": "project",
-          "id": "it-support-scripts"
-        },
-        {
-          "type": "project",
-          "id": "soc-siem-lab"
-        },
-        {
-          "type": "folder",
-          "id": "security"
-        },
-        {
-          "type": "folder",
-          "id": "infra"
-        },
-        {
-          "type": "folder",
-          "id": "builds"
-        },
-        {
-          "type": "channel",
-          "id": "about"
-        },
-        {
-          "type": "channel",
-          "id": "resume"
-        }
-      ]
+      "id": "builds",
+      "label": "BUILDS",
+      "icon": "wrench",
+      "folders": [
+        "builds"
+      ],
+      "blurb": "Things I built because I wanted them to exist."
+    },
+    {
+      "id": "projects",
+      "label": "PROJECTS",
+      "icon": "shield",
+      "folders": [
+        "security",
+        "infra"
+      ],
+      "blurb": "Hands-on IT and security labs, each documented as a rebuildable runbook."
+    },
+    {
+      "id": "resume",
+      "label": "RÉSUMÉ",
+      "icon": "doc",
+      "href": "resume.html",
+      "blurb": "Plain, printable, ATS-safe."
     }
   ]
 }

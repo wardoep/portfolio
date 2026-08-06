@@ -27,16 +27,18 @@
 <link rel="stylesheet" href="assets/css/tokens.css">
 <link rel="stylesheet" href="assets/css/menu.css">
 <link rel="stylesheet" href="assets/css/panels.css">
-<link rel="stylesheet" href="assets/css/crt.css">
 
 <script>
-/* Resolve display preferences before first paint, so a reload never flashes
-   green and then un-greens. Same trick, same reason, as a theme resolver. */
+/* Resolve the theme BEFORE first paint. If this ran after, a dark-mode visitor
+   would get a white flash on every load. Stored choice wins; otherwise follow
+   the OS. */
 (function () {
-  var r = document.documentElement, s;
-  try { s = localStorage.getItem('pf-tint'); } catch (e) {}
-  if (s !== 'on' && s !== 'off') s = window.matchMedia('(min-width: 900px)').matches ? 'on' : 'off';
-  r.dataset.tint = s;
+  var r = document.documentElement, t = null;
+  try { t = localStorage.getItem('pf-theme'); } catch (e) {}
+  if (t !== 'dark' && t !== 'light') {
+    t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  r.dataset.theme = t;
   try { if (localStorage.getItem('pf-motion') === 'off') r.dataset.motion = 'off'; } catch (e) {}
 })();
 </script>
@@ -94,11 +96,6 @@
   </defs>
 </svg>
 
-<!-- tint layers that sit UNDER the panels -->
-<div id="crt-under" aria-hidden="true">
-  <i class="l-wash"></i><i class="l-lift"></i><i class="l-bloom"></i><i class="l-vig"></i>
-</div>
-
 <div class="ambient" aria-hidden="true">
   <i></i><i></i><i></i><i></i><i></i><i></i>
 </div>
@@ -126,43 +123,43 @@
     <span class="user__badge" aria-hidden="true">1</span>
   </button>
 
-  <nav class="dots" aria-label="Pages">
-    <button type="button" class="dot is-on" data-page="1" aria-current="page"><span class="sr-only">Page 1, Home</span></button>
-    <button type="button" class="dot" data-page="2"><span class="sr-only">Page 2, Labs</span></button>
-  </nav>
 
-  <time class="clock" data-clock aria-label="Current time, Eastern">--:--</time>
+  <div class="hud__right">
+    <time class="clock" data-clock aria-label="Current time, Eastern">--:--</time>
+    <button class="cornerbtn" type="button" data-open="settings" aria-label="Display settings">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-gear"/></svg>
+    </button>
+  </div>
 </header>
 
 <!-- ─── the grid ───────────────────────────────────────────────────────── -->
 <main id="main" class="stage">
   <h1 class="sr-only">Edward Penna — desktop support and IT portfolio</h1>
 
-  <button class="pager pager--prev" type="button" data-page-prev hidden aria-label="Previous page">
+  <button class="arrow arrow--prev" type="button" data-prev aria-label="Previous section">
     <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow-l"/></svg>
   </button>
 
-  <div class="pages" data-pages><!-- built by menu.js --></div>
+  <div class="coverflow" data-coverflow><!-- built by carousel.js --></div>
 
-  <button class="pager pager--next" type="button" data-page-next aria-label="Next page">
+  <button class="arrow arrow--next" type="button" data-next aria-label="Next section">
     <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow-r"/></svg>
   </button>
 
-  <p class="loading" data-loading>Loading channels…</p>
+  <p class="loading" data-loading>Loading…</p>
 </main>
 
 <!-- ─── dock ───────────────────────────────────────────────────────────── -->
 <!-- Every item carries a permanent text label. Nine unlabelled glyphs told a
      visitor nothing, and a hover tooltip would never appear on a touch screen. -->
 <nav class="dock" aria-label="Quick actions">
+  <button class="dock__btn" type="button" data-open="about">
+    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-person"/></svg>
+    <span class="dock__label">About</span>
+  </button>
   <button class="dock__btn" type="button" data-open="skills">
     <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-sliders"/></svg>
     <span class="dock__label">Skills</span>
-  </button>
-  <button class="dock__btn" type="button" data-open="now">
-    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-spark"/></svg>
-    <span class="dock__label">Now</span>
-    <span class="dock__badge" aria-hidden="true">1</span>
   </button>
   <button class="dock__btn" type="button" data-open="contact">
     <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-chat"/></svg>
@@ -178,14 +175,6 @@
     <span class="dock__label">LinkedIn</span>
     <span class="sr-only">(opens in a new tab)</span>
   </a>
-  <button class="dock__btn" type="button" data-open="settings">
-    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-gear"/></svg>
-    <span class="dock__label">Display</span>
-  </button>
-  <button class="dock__btn" type="button" data-reboot>
-    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-power"/></svg>
-    <span class="dock__label">Restart</span>
-  </button>
 </nav>
 
 <!-- ─── panels ─────────────────────────────────────────────────────────────
@@ -195,8 +184,8 @@
 
 <section class="panel" id="p-about" role="dialog" aria-modal="true" aria-labelledby="h-about" tabindex="-1" hidden>
   <div class="panel__bar">
-    <h2 id="h-about"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-person"/></svg>About</h2>
-    <button class="panel__x" type="button" data-close aria-label="Close"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-close"/></svg></button>
+    <span class="panel__badge" style="--badge-tint:var(--card-projects)"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-person"/></svg></span>
+    <h2 id="h-about">About</h2>
   </div>
   <div class="panel__body prose">
     <p class="lead">Hi — I'm Edward.</p>
@@ -204,14 +193,20 @@
     <p>That server is where most of what I actually know came from. Not from tutorials — from a backup that didn't restore, a service that died quietly and stayed dead for two days before I noticed, a certificate that expired at the worst possible moment. Everything on this site is built the same way: stand it up, break it on purpose, fix it, then write it down well enough that I could rebuild it from the notes.</p>
     <p>The other half of the job is people. I'm patient with someone who is frustrated with their computer, I explain things without making anyone feel stupid, and I would rather ask a question than guess and be wrong twice.</p>
     <p>Right now I'm looking for a first full-time role in desktop or IT support, and sitting CompTIA Network+ in July 2026.</p>
-    <p class="cta-row"><a class="btn btn--primary" href="resume.html">Read the résumé</a></p>
+    <p class="cta-row">
+      <a class="btn btn--primary" href="resume.html">Read the résumé</a>
+      <a class="btn" href="#/now">What I'm learning</a>
+    </p>
+  </div>
+  <div class="panel__foot">
+    <button class="panel__back" type="button" data-close><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow-l"/></svg>Back</button>
   </div>
 </section>
 
 <section class="panel" id="p-skills" role="dialog" aria-modal="true" aria-labelledby="h-skills" tabindex="-1" hidden>
   <div class="panel__bar">
-    <h2 id="h-skills"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-sliders"/></svg>Skills</h2>
-    <button class="panel__x" type="button" data-close aria-label="Close"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-close"/></svg></button>
+    <span class="panel__badge" style="--badge-tint:var(--card-projects)"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-sliders"/></svg></span>
+    <h2 id="h-skills">Skills</h2>
   </div>
   <div class="panel__body prose">
     <p class="lead">Everything here is in active use on my own systems or in a lab on this site — not a list of things I've read about.</p>
@@ -222,12 +217,15 @@
       <section><h3>Scripting &amp; tools</h3><ul><li>PowerShell</li><li>Bash</li><li>Python</li><li>Git &amp; GitHub</li><li>Prometheus &amp; Grafana</li><li>restic (backup / DR)</li><li>Tailscale</li></ul></section>
     </div>
   </div>
+  <div class="panel__foot">
+    <button class="panel__back" type="button" data-close><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow-l"/></svg>Back</button>
+  </div>
 </section>
 
 <section class="panel" id="p-now" role="dialog" aria-modal="true" aria-labelledby="h-now" tabindex="-1" hidden>
   <div class="panel__bar">
-    <h2 id="h-now"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-spark"/></svg>Now / Learning</h2>
-    <button class="panel__x" type="button" data-close aria-label="Close"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-close"/></svg></button>
+    <span class="panel__badge" style="--badge-tint:var(--card-builds)"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-spark"/></svg></span>
+    <h2 id="h-now">Now / Learning</h2>
   </div>
   <div class="panel__body prose">
     <p class="lead">Sitting <strong>CompTIA Network+</strong> in July 2026.</p>
@@ -239,12 +237,15 @@
       <li><strong>Write it down while it hurts.</strong> Every runbook here exists because I'd already had to rediscover the same fix twice.</li>
     </ul>
   </div>
+  <div class="panel__foot">
+    <button class="panel__back" type="button" data-close><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow-l"/></svg>Back</button>
+  </div>
 </section>
 
 <section class="panel" id="p-resume" role="dialog" aria-modal="true" aria-labelledby="h-resume" tabindex="-1" hidden>
   <div class="panel__bar">
-    <h2 id="h-resume"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-doc"/></svg>Résumé</h2>
-    <button class="panel__x" type="button" data-close aria-label="Close"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-close"/></svg></button>
+    <span class="panel__badge" style="--badge-tint:var(--card-resume)"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-doc"/></svg></span>
+    <h2 id="h-resume">Résumé</h2>
   </div>
   <div class="panel__body prose">
     <p class="lead">A plain, printable résumé — no styling to fight, no JavaScript, safe for an applicant tracking system.</p>
@@ -261,12 +262,15 @@
       <li>A self-hosted Linux server running production-style services with real uptime requirements.</li>
     </ul>
   </div>
+  <div class="panel__foot">
+    <button class="panel__back" type="button" data-close><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow-l"/></svg>Back</button>
+  </div>
 </section>
 
 <section class="panel" id="p-contact" role="dialog" aria-modal="true" aria-labelledby="h-contact" tabindex="-1" hidden>
   <div class="panel__bar">
-    <h2 id="h-contact"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-chat"/></svg>Contact</h2>
-    <button class="panel__x" type="button" data-close aria-label="Close"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-close"/></svg></button>
+    <span class="panel__badge" style="--badge-tint:var(--card-resume)"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-chat"/></svg></span>
+    <h2 id="h-contact">Contact</h2>
   </div>
   <div class="panel__body prose">
     <p class="lead">Open to IT support, helpdesk, systems administration and SOC analyst roles.</p>
@@ -280,18 +284,21 @@
       <li><a href="https://www.linkedin.com/in/edward-penna-469096245" rel="noopener noreferrer" target="_blank"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-linkedin"/></svg>LinkedIn<svg class="ico ico--sm" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-external"/></svg></a></li>
     </ul>
   </div>
+  <div class="panel__foot">
+    <button class="panel__back" type="button" data-close><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow-l"/></svg>Back</button>
+  </div>
 </section>
 
 <section class="panel" id="p-settings" role="dialog" aria-modal="true" aria-labelledby="h-settings" tabindex="-1" hidden>
   <div class="panel__bar">
-    <h2 id="h-settings"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-gear"/></svg>Display</h2>
-    <button class="panel__x" type="button" data-close aria-label="Close"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-close"/></svg></button>
+    <span class="panel__badge" style="--badge-tint:var(--ink-3)"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-gear"/></svg></span>
+    <h2 id="h-settings">Display</h2>
   </div>
   <div class="panel__body prose">
-    <p class="lead">The green wash is decoration. Turn it off if it's in the way — the choice is remembered.</p>
+    <p class="lead">How the site looks. Every choice here is remembered.</p>
     <div class="setting">
-      <label class="switch"><input type="checkbox" data-toggle-tint><span class="switch__ui" aria-hidden="true"></span><span>Green CRT tint</span></label>
-      <p class="setting__note">Phosphor wash, bloom and scanlines. Defaults on above 900px, off on phones.</p>
+      <label class="switch"><input type="checkbox" data-toggle-theme><span class="switch__ui" aria-hidden="true"></span><span>Dark mode</span></label>
+      <p class="setting__note">Follows your system setting unless you change it here.</p>
     </div>
     <div class="setting">
       <label class="switch"><input type="checkbox" data-toggle-motion><span class="switch__ui" aria-hidden="true"></span><span>Animation</span></label>
@@ -301,7 +308,14 @@
       <label class="switch"><input type="checkbox" data-toggle-fps><span class="switch__ui" aria-hidden="true"></span><span>Frame-rate counter</span></label>
       <p class="setting__note">Shows live frames per second in the corner. Should sit at 60 (or your display's refresh rate) while the menu is idle and while paging.</p>
     </div>
+    <div class="setting setting--action">
+      <button class="btn" type="button" data-reboot>Back to the start screen</button>
+      <p class="setting__note">Replays the boot screen. Purely for fun.</p>
+    </div>
     <p class="fineprint">An original interface inspired by 2010s console home menus. Not affiliated with, endorsed by, or connected to any console manufacturer. Type is M PLUS Rounded 1c and Departure Mono, both SIL Open Font License 1.1.</p>
+  </div>
+  <div class="panel__foot">
+    <button class="panel__back" type="button" data-close><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow-l"/></svg>Back</button>
   </div>
 </section>
 
@@ -321,8 +335,6 @@
   <span class="sr-only">Press any key or click to enter the portfolio</span>
 </button>
 
-<!-- scanlines ride over everything, including panels -->
-<div id="crt-over" aria-hidden="true"><i class="l-scan"></i></div>
 
 <output class="fps" data-fps hidden aria-label="Frame rate"></output>
 

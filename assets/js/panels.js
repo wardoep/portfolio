@@ -67,6 +67,36 @@ export function hide({ restoreFocus = true } = {}) {
   }
 }
 
+/* ── shared chrome ────────────────────────────────────────────────────────
+ * Header carries a circular badge; the foot carries a wide Back bar. Both come
+ * from the reference renders, and the foot replaces the corner X — closing had
+ * no visible affordance, and an X has no console equivalent. */
+function panelBar(id, iconId, title, slug, tint) {
+  const bar = el('div', 'panel__bar');
+  const badge = el('span', 'panel__badge');
+  if (tint) badge.style.setProperty('--badge-tint', tint);
+  badge.appendChild(icon(iconId));
+  bar.appendChild(badge);
+  const h2 = el('h2');
+  h2.id = id + '-h';
+  h2.append(title);
+  if (slug) h2.appendChild(el('span', 'panel__slug', slug));
+  bar.appendChild(h2);
+  return bar;
+}
+
+function panelFoot(extra) {
+  const foot = el('div', 'panel__foot');
+  const back = el('button', 'panel__back');
+  back.type = 'button';
+  back.setAttribute('data-close', '');
+  back.appendChild(icon('i-arrow-l'));
+  back.append('Back');
+  foot.appendChild(back);
+  if (extra) foot.appendChild(extra);
+  return foot;
+}
+
 /* ── project panel ────────────────────────────────────────────────────── */
 function buildProject(p) {
   const id = 'p-project-' + p.id;
@@ -81,20 +111,7 @@ function buildProject(p) {
   panel.tabIndex = -1;
   panel.hidden = true;
 
-  const bar = el('div', 'panel__bar');
-  const h2 = el('h2');
-  h2.id = id + '-h';
-  h2.appendChild(icon('i-' + (p.icon || 'default')));
-  h2.append(p.title || p.id);
-  if (p.title) h2.appendChild(el('span', 'panel__slug', p.id));
-  bar.appendChild(h2);
-  const x = el('button', 'panel__x');
-  x.type = 'button';
-  x.setAttribute('data-close', '');
-  x.setAttribute('aria-label', 'Close');
-  x.appendChild(icon('i-close'));
-  bar.appendChild(x);
-  panel.appendChild(bar);
+  panel.appendChild(panelBar(id, 'i-' + (p.icon || 'default'), p.title || p.id, p.title ? p.id : null));
 
   const body = el('div', 'panel__body prose');
 
@@ -125,40 +142,58 @@ function buildProject(p) {
     body.appendChild(ul);
   }
 
-  const url = safeUrl(p.gh && p.gh.url);
-  if (url) {
-    const row = el('p', 'cta-row');
-    const a = el('a', 'btn btn--primary');
-    a.href = url;
-    a.target = '_blank';
-    a.rel = 'noopener noreferrer';
-    a.append(p.linkLabel || 'View on GitHub');
-    a.appendChild(icon('i-external'));
-    row.appendChild(a);
-
-    const home = safeUrl(p.gh && p.gh.homepageUrl);
-    if (home) {
-      const b = el('a', 'btn');
-      b.href = home; b.target = '_blank'; b.rel = 'noopener noreferrer';
-      b.append('Live');
-      b.appendChild(icon('i-external'));
-      row.appendChild(b);
-    }
-    body.appendChild(row);
-  }
-
   panel.appendChild(body);
+
+  /* the outbound action belongs in the foot beside Back, not buried in prose */
+  const url = safeUrl(p.gh && p.gh.url);
+  let action = null;
+  if (url) {
+    action = el('a', 'btn btn--primary');
+    action.href = url;
+    action.target = '_blank';
+    action.rel = 'noopener noreferrer';
+    action.append(p.linkLabel || 'View on GitHub');
+    action.appendChild(icon('i-external'));
+  }
+  panel.appendChild(panelFoot(action));
   dynamicHost.appendChild(panel);
   return panel;
 }
 
-/* ── folder overlay ───────────────────────────────────────────────────── */
-function buildFolder(f) {
-  const id = 'p-folder-' + f.id;
+/* ── card overlay ─────────────────────────────────────────────────────────
+ * A card can span several folders. PROJECTS covers thirteen labs, and thirteen
+ * undifferentiated items is its own kind of unorganised — so each folder gets
+ * its own labelled section inside the one overlay. */
+function projectRow(p, cat) {
+  const b = el('button', 'row-item');
+  b.type = 'button';
+  b.dataset.cat = cat;
+  b.dataset.route = 'project/' + p.id;
+  b.dataset.tile = '';
+
+  const badge = el('span', 'row-item__badge');
+  badge.appendChild(icon('i-' + (p.icon || 'default')));
+  b.appendChild(badge);
+
+  const text = el('div', 'row-item__text');
+  text.appendChild(el('span', 'row-item__name', p.title || p.id));
+  /* the blurb is the reason rows beat the old icon grid — a grid had nowhere
+     to put it, and it is what someone scanning thirteen labs actually reads */
+  if (p.blurb) text.appendChild(el('span', 'row-item__blurb', p.blurb));
+  b.appendChild(text);
+
+  const go = el('span', 'row-item__go');
+  go.appendChild(icon('i-arrow-r'));
+  b.appendChild(go);
+  return b;
+}
+
+function buildCard(card) {
+  const id = 'p-card-' + card.id;
   let panel = document.getElementById(id);
   if (panel) return panel;
 
-  panel = el('section', 'panel');
+  panel = el('section', 'panel panel--wide');
   panel.id = id;
   panel.setAttribute('role', 'dialog');
   panel.setAttribute('aria-modal', 'true');
@@ -166,45 +201,35 @@ function buildFolder(f) {
   panel.tabIndex = -1;
   panel.hidden = true;
 
-  const bar = el('div', 'panel__bar');
-  const h2 = el('h2');
-  h2.id = id + '-h';
-  h2.appendChild(icon('i-' + (f.icon || 'box')));
-  h2.append(f.label);
-  bar.appendChild(h2);
-  const x = el('button', 'panel__x');
-  x.type = 'button';
-  x.setAttribute('data-close', '');
-  x.setAttribute('aria-label', 'Close');
-  x.appendChild(icon('i-close'));
-  bar.appendChild(x);
-  panel.appendChild(bar);
+  panel.appendChild(panelBar(id, 'i-' + (card.icon || 'box'), card.label, null,
+                             `var(--card-${card.id})`));
 
   const body = el('div', 'panel__body');
-  if (f.blurb) {
-    const p = el('p', 'lead', f.blurb);
-    p.style.marginBottom = '18px';
-    body.appendChild(p);
-  }
+  const folders = (card.folders || [])
+    .map((fid) => data.folders.find((f) => f.id === fid))
+    .filter(Boolean);
 
-  const grid = el('div', 'folder-grid');
-  data.projects
-    .filter((p) => p.folder === f.id && !p.hidden && p.status !== 'missing')
-    .forEach((p) => {
-      const b = el('button', 'tile tile--project');
-      b.type = 'button';
-      b.dataset.cat = f.id;
-      b.dataset.route = 'project/' + p.id;
-      b.dataset.tile = '';
-      const art = el('span', 'tile__art');
-      art.appendChild(icon('i-' + (p.icon || 'default')));
-      b.appendChild(art);
-      b.appendChild(el('span', 'tile__label', p.title || p.id));
-      b.appendChild(el('span', 'tile__start', 'Start'));
-      grid.appendChild(b);
-    });
-  body.appendChild(grid);
+  folders.forEach((f) => {
+    const items = data.projects
+      .filter((p) => p.folder === f.id && !p.hidden && p.status !== 'missing');
+    if (!items.length) return;
+
+    const sec = el('section', 'group');
+    if (folders.length > 1) {
+      const head = el('div', 'group__head');
+      head.appendChild(el('h3', 'group__name', f.label));
+      head.appendChild(el('span', 'group__n', String(items.length)));
+      sec.appendChild(head);
+    }
+    if (f.blurb) sec.appendChild(el('p', 'group__blurb', f.blurb));
+    const rows = el('div', 'rows');
+    items.forEach((p) => rows.appendChild(projectRow(p, f.id)));
+    sec.appendChild(rows);
+    body.appendChild(sec);
+  });
+
   panel.appendChild(body);
+  panel.appendChild(panelFoot());
   dynamicHost.appendChild(panel);
   return panel;
 }
@@ -235,9 +260,14 @@ function panelForRoute(r) {
       || (x.renamedFrom || []).includes(r.arg));
     return p ? buildProject(p) : null;
   }
+  if (r.name === 'card') {
+    const c = (data.carousel || []).find((x) => x.id === r.arg);
+    return c ? buildCard(c) : null;
+  }
   if (r.name === 'folder') {
+    /* kept so an older shared link still resolves */
     const f = data.folders.find((x) => x.id === r.arg);
-    return f ? buildFolder(f) : null;
+    return f ? buildCard({ id: f.id, label: f.label, icon: f.icon, folders: [f.id] }) : null;
   }
   const stat = document.getElementById('p-' + r.name);
   return stat || null;

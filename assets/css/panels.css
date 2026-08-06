@@ -1,13 +1,17 @@
 /* panels.css — channel detail panels and the folder overlay.
  *
- * Panels sit at z-index 1000: above #crt-under, below #crt-over. So the prose a
- * recruiter actually reads keeps its full contrast while scanlines still ride
- * over the top. That z-index is load-bearing, not arbitrary.
+ * Grounded in two console-UI reference renders held in the sibling repo, not
+ * invented:
+ *   the boot-notice render   — rounded panel, soft bevel, and a wide pill bar
+ *                              across the bottom carrying the action.
+ *   the handheld list render — rows are rounded pills with a circular badge
+ *                              OUTSIDE the row, and a pale gradient on the
+ *                              active one.
  */
 
 .scrim {
   position: fixed; inset: 0; z-index: 990;
-  background: rgb(10 16 12 / .48);
+  background: var(--scrim);
   backdrop-filter: blur(2px);
   animation: fade var(--d-mid) var(--ease) both;
 }
@@ -19,12 +23,12 @@
   left: 50%; top: 50%;
   transform: translate(-50%, -50%);
   width: min(760px, calc(100vw - 32px));
-  max-height: min(84vh, 760px);
+  max-height: min(86vh, 780px);
   display: flex; flex-direction: column;
   background: var(--tile);
   border: 1px solid var(--tile-edge);
   border-radius: var(--r-panel);
-  box-shadow: var(--shadow-panel);
+  box-shadow: var(--shadow-panel), var(--bevel);
   overflow: hidden;
   animation: panelIn var(--d-mid) var(--ease-pop) both;
 }
@@ -34,39 +38,75 @@
   to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 }
 
+/* ── header ───────────────────────────────────────────────────────────────
+ * The icon lives in a circular badge rather than sitting flat beside the text.
+ * That badge is what makes the header read as console chrome instead of a
+ * document heading. */
 .panel__bar {
   flex: none;
-  display: flex; align-items: center; gap: 12px;
-  padding: 14px 14px 14px 20px;
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 22px;
   border-bottom: 1px solid var(--rule);
-  background: linear-gradient(180deg, var(--tile) 0%, var(--tile-2) 100%);
+  background: linear-gradient(180deg, var(--tile-2) 0%, var(--tile) 100%);
 }
+.panel__badge {
+  flex: none;
+  width: 46px; height: 46px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  color: #fff;
+  background: var(--badge-tint, var(--sel-deep));
+  box-shadow: 0 0 0 3px var(--badge-ring), inset 0 -2px 0 rgb(0 0 0 / .14);
+}
+.panel__badge .ico { width: 24px; height: 24px; stroke-width: 2; }
+
 .panel__bar h2 {
   margin: 0; flex: 1 1 auto;
-  display: flex; align-items: center; gap: 10px;
+  display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
   font-size: var(--fs-h2); font-weight: 800; letter-spacing: -.01em;
 }
-.panel__bar h2 .ico { color: var(--sel-deep); }
-
-.panel__x {
-  flex: none;
-  width: 36px; height: 36px;
-  display: grid; place-items: center;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: var(--r-sm);
-  color: var(--ink-2);
-  cursor: pointer;
-  transition: background var(--d-fast) var(--ease), color var(--d-fast) var(--ease);
-}
-.panel__x:hover { background: var(--ground); color: var(--ink); border-color: var(--tile-edge); }
 
 .panel__body {
   flex: 1 1 auto;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 20px 24px 26px;
+  padding: 22px 24px 26px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--tile-edge) transparent;
 }
+.panel__body::-webkit-scrollbar { width: 10px; }
+.panel__body::-webkit-scrollbar-thumb {
+  background: var(--tile-edge); border-radius: var(--r-pill);
+  border: 3px solid var(--tile);
+}
+
+/* ── bottom action bar ────────────────────────────────────────────────────
+ * Straight from the boot-notice render: a wide rounded bar across the foot
+ * carrying the action. It also replaces the corner X — closing was the one
+ * thing with no visible affordance, and an X has no console equivalent. */
+.panel__foot {
+  flex: none;
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 18px 16px;
+  border-top: 1px solid var(--rule);
+  background: linear-gradient(180deg, var(--tile) 0%, var(--tile-2) 100%);
+}
+.panel__back {
+  flex: 1 1 auto;
+  display: flex; align-items: center; justify-content: center; gap: 9px;
+  min-height: 46px; padding: 0 22px;
+  background: var(--ground);
+  border: 1px solid var(--tile-edge);
+  border-radius: var(--r-pill);
+  box-shadow: var(--bevel);
+  font: inherit; font-weight: 800; color: var(--ink);
+  cursor: pointer;
+  transition: transform var(--d-fast) var(--ease), box-shadow var(--d-fast) var(--ease),
+              background var(--d-fast) var(--ease);
+}
+.panel__back:hover { transform: translateY(-1px); background: var(--tile-2); box-shadow: var(--shadow-lift); }
+.panel__back .ico { width: 19px; height: 19px; stroke-width: 2.2; }
+.panel__foot .btn { flex: 0 0 auto; min-height: 46px; }
 
 /* ── prose ───────────────────────────────────────────────────────────── */
 .prose { max-width: 66ch; }
@@ -86,8 +126,11 @@
   font-family: var(--font-pix); font-size: .92em;
   background: var(--ground); padding: 1px 5px; border-radius: 4px;
 }
-.prose a { color: var(--sel-deep); text-underline-offset: 3px; }
-.prose a:hover { color: var(--ink); }
+/* :not(.btn) matters. `.prose a` is specificity (0,1,1) and was beating
+   `.btn--primary` at (0,1,0), overwriting the pill's dark ink with a light cyan
+   on a light cyan ground. Same trap as the .prose p margin bug. */
+.prose a:not(.btn) { color: var(--sel-deep); text-underline-offset: 3px; }
+.prose a:not(.btn):hover { color: var(--ink); }
 
 .beats { margin: 0; padding-left: 1.15em; display: grid; gap: .6em; }
 .beats li { padding-left: .15em; }
@@ -149,7 +192,7 @@
 
 /* ── settings ────────────────────────────────────────────────────────── */
 .setting + .setting { margin-top: 22px; }
-.setting__note { margin: 6px 0 0 54px; font-size: var(--fs-small); color: var(--ink-2); }
+.setting__note { margin: 6px 0 0 55px; font-size: var(--fs-small); color: var(--ink-2); }
 .switch { display: flex; align-items: center; gap: 13px; cursor: pointer; font-weight: 500; }
 .switch input { position: absolute; opacity: 0; width: 0; height: 0; }
 .switch__ui {
@@ -168,7 +211,7 @@
 }
 .switch input:checked + .switch__ui { background: var(--sel-deep); }
 .switch input:checked + .switch__ui::after { transform: translateX(18px); }
-.switch input:focus-visible + .switch__ui { outline: 3px solid #fff; outline-offset: 2px; box-shadow: 0 0 0 5px var(--gb-darkest); }
+.switch input:focus-visible + .switch__ui { outline: 3px solid var(--focus-core); outline-offset: 2px; box-shadow: 0 0 0 5px var(--focus-halo); }
 
 /* ── project panel ───────────────────────────────────────────────────── */
 .meta { display: flex; flex-wrap: wrap; gap: 7px; margin: 0; padding: 0; list-style: none; }
@@ -188,13 +231,6 @@
   font-size: var(--fs-small); color: var(--ink-2);
 }
 
-/* ── folder overlay ──────────────────────────────────────────────────── */
-.folder-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(122px, 1fr));
-  gap: 14px;
-}
-.folder-grid .tile { aspect-ratio: 1 / .86; }
 
 @media (max-width: 600px) {
   .panel { width: 100vw; max-height: 100vh; height: 100%; border-radius: 0; border: 0; top: 0; left: 0; transform: none; }
@@ -233,3 +269,85 @@
   border-top: 1px solid var(--rule);
   font-size: var(--fs-micro); line-height: 1.5; color: var(--ink-3);
 }
+
+
+/* ── grouped card overlay ─────────────────────────────────────────────────
+ * PROJECTS spans two folders, so each gets a labelled band. Rows follow
+ * the handheld list render: a rounded pill with a CIRCULAR BADGE sitting
+ * outside it on the left, and a pale gradient on the active one.
+ *
+ * Rows rather than an icon grid because the grid had nowhere to put the blurb —
+ * which is the part someone scanning thirteen labs actually reads. */
+.panel--wide { width: min(900px, calc(100vw - 32px)); }
+
+.group + .group { margin-top: 30px; }
+.group__head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 16px;
+  margin-bottom: 14px;
+  background: var(--ground);
+  border-radius: var(--r-pill);
+}
+.group__name {
+  margin: 0; font-size: var(--fs-small); font-weight: 800;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2);
+}
+.group__n {
+  font-family: var(--font-pix); font-size: var(--fs-micro);
+  min-width: 22px; height: 22px; padding: 0 7px;
+  display: grid; place-items: center;
+  background: var(--tile); border: 1px solid var(--tile-edge);
+  border-radius: var(--r-pill); color: var(--ink-2);
+}
+.group__blurb { margin: -6px 0 14px 16px; font-size: var(--fs-small); color: var(--ink-2); }
+
+.rows { display: grid; gap: 9px; }
+
+.row-item {
+  display: flex; align-items: center; gap: 14px;
+  width: 100%;
+  padding: 11px 16px 11px 11px;
+  background: var(--tile-2);
+  border: 1px solid var(--tile-edge);
+  border-radius: var(--r-row);
+  box-shadow: var(--bevel);
+  font: inherit; color: var(--ink); text-align: left;
+  cursor: pointer;
+  transition: transform var(--d-fast) var(--ease), box-shadow var(--d-fast) var(--ease),
+              border-color var(--d-fast) var(--ease);
+}
+.row-item:hover,
+.row-item:focus-visible {
+  background: var(--row-active);
+  border-color: color-mix(in oklab, var(--sel-deep) 45%, var(--tile-edge));
+  transform: translateX(3px);
+  box-shadow: var(--shadow-lift);
+}
+
+.row-item__badge {
+  flex: none;
+  width: 44px; height: 44px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  color: #fff;
+  background: var(--row-tint, var(--sel-deep));
+  box-shadow: 0 0 0 3px var(--badge-ring), inset 0 -2px 0 rgb(0 0 0 / .14);
+}
+.row-item__badge .ico { width: 23px; height: 23px; stroke-width: 2; }
+
+.row-item__text { flex: 1 1 auto; min-width: 0; display: grid; gap: 2px; }
+.row-item__name { font-size: var(--fs-body); font-weight: 800; line-height: 1.25; }
+.row-item__blurb {
+  font-size: var(--fs-small); color: var(--ink-2); line-height: 1.4;
+  overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+}
+.row-item__go { flex: none; color: var(--ink-3); }
+.row-item__go .ico { width: 18px; height: 18px; stroke-width: 2.4; }
+.row-item:hover .row-item__go { color: var(--sel-deep); }
+
+.row-item[data-cat='security'] { --row-tint: #b4453c; }
+.row-item[data-cat='infra']    { --row-tint: var(--card-projects); }
+.row-item[data-cat='builds']   { --row-tint: var(--card-builds); }
+
+/* a setting that is a plain button, not a switch — no toggle to indent past */
+.setting--action .setting__note { margin-left: 0; }

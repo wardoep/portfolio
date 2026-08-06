@@ -251,33 +251,24 @@ TITLES = {
     "portfolio":                    "This Site",
 }
 
-# Explicit tile layout. Beats deriving position from order/featured — you can
-# read the home screen off this list, and reordering is a one-line move.
-LAYOUT = [
+# Three cards in a coverflow carousel. PROJECTS sits at index 1 — the centre
+# card on load — because it is the reason a hiring manager is on the page.
+# A card can span several folders; the overlay renders one section per folder.
+CAROUSEL = [
     {
-        # ONE page, ten tiles. The three folders already hold all twenty
-        # projects, so a second page was duplicating what a folder click
-        # already reaches.
-        "page": 1, "label": "HOME",
-        "tiles": [
-            # Row 1 — proof, ordered for the role on the résumé:
-            # Desktop Support / IT Support. Ticketing and Active Directory are
-            # the literal job; the SIEM lab closes the row as the differentiator
-            # a cybersecurity degree earns.
-            {"type": "project", "id": "helpdesk-ticketing-lab"},
-            {"type": "project", "id": "ad-network-lab"},
-            {"type": "project", "id": "powershell-admin-toolkit"},
-            {"type": "project", "id": "it-support-scripts"},
-            {"type": "project", "id": "soc-siem-lab"},
-
-            # Row 2 — the way into the other fifteen, plus the two things a
-            # recruiter reaches for.
-            {"type": "folder", "id": "security"},
-            {"type": "folder", "id": "infra"},
-            {"type": "folder", "id": "builds"},
-            {"type": "channel", "id": "about"},
-            {"type": "channel", "id": "resume"},
-        ],
+        "id": "builds", "label": "BUILDS", "icon": "wrench",
+        "folders": ["builds"],
+        "blurb": "Things I built because I wanted them to exist.",
+    },
+    {
+        "id": "projects", "label": "PROJECTS", "icon": "shield",
+        "folders": ["security", "infra"],
+        "blurb": "Hands-on IT and security labs, each documented as a rebuildable runbook.",
+    },
+    {
+        "id": "resume", "label": "R\u00c9SUM\u00c9", "icon": "doc",
+        "href": "resume.html",
+        "blurb": "Plain, printable, ATS-safe.",
     },
 ]
 
@@ -302,20 +293,27 @@ def main():
         p.update(fields)
         p["title"] = TITLES.get(pid, pid)
         p["hidden"] = bool(fields.get("hidden", False))
+        # Explicit, not update()-implied: dropping `featured=True` from the dict
+        # above must actually clear it, and update() silently would not.
+        p["featured"] = bool(fields.get("featured", False))
         p["status"] = "live"
 
-    doc["layout"] = LAYOUT
+    doc["carousel"] = CAROUSEL
+    doc.pop("layout", None)
 
-    laid_out = {t["id"] for pg in LAYOUT for t in pg["tiles"] if t["type"] == "project"}
-    orphans = sorted(set(by_id) - laid_out)
-    if orphans:
-        print(f"note: not on any page (reachable via folders only): {orphans}")
+    # Every visible project must be inside a folder a card can reach.
+    reachable = {f for c in CAROUSEL for f in c.get("folders", [])}
+    stranded = sorted(pid for pid, p in by_id.items()
+                      if not p.get("hidden") and p.get("folder") not in reachable)
+    if stranded:
+        print(f"UNREACHABLE — in no card's folders: {stranded}")
+        return 3
 
     json.dump(doc, open(PATH, "w"), indent=2, ensure_ascii=False)
     open(PATH, "a").write("\n")
 
     longest = max(COPY.items(), key=lambda kv: len(kv[1]["blurb"]))
-    print(f"seeded {len(COPY)} projects, {len(LAYOUT)} pages")
+    print(f"seeded {len(COPY)} projects, {len(CAROUSEL)} cards")
     print(f"longest blurb: {len(longest[1]['blurb'])} chars ({longest[0]})")
     return 0
 

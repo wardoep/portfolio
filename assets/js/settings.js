@@ -48,16 +48,16 @@ function fpsMeter() {
 }
 
 export function init() {
-  const tintBox = document.querySelector('[data-toggle-tint]');
+  const themeBox = document.querySelector('[data-toggle-theme]');
   const motionBox = document.querySelector('[data-toggle-motion]');
 
-  if (tintBox) {
-    tintBox.checked = root.dataset.tint !== 'off';
-    tintBox.addEventListener('change', () => {
-      const on = tintBox.checked;
-      root.dataset.tint = on ? 'on' : 'off';
-      write('pf-tint', on ? 'on' : 'off');
-      announce(on ? 'Green tint on' : 'Green tint off');
+  if (themeBox) {
+    themeBox.checked = root.dataset.theme === 'dark';
+    themeBox.addEventListener('change', () => {
+      const dark = themeBox.checked;
+      root.dataset.theme = dark ? 'dark' : 'light';
+      write('pf-theme', dark ? 'dark' : 'light');
+      announce(dark ? 'Dark mode on' : 'Light mode on');
     });
   }
 
@@ -89,15 +89,15 @@ export function init() {
     });
   }
 
-  /* If nothing is stored, the tint default follows the viewport. Keep following
-     it on resize until the user expresses a preference. */
-  if (read('pf-tint') === null) {
-    const mq = matchMedia('(min-width: 900px)');
-    const sync = () => {
-      if (read('pf-tint') !== null) return;
-      root.dataset.tint = mq.matches ? 'on' : 'off';
-      if (tintBox) tintBox.checked = mq.matches;
-    };
-    mq.addEventListener('change', sync);
+  /* With nothing stored, keep following the OS. Once the user picks, their
+     choice is stored and this stops overriding it. */
+  if (read('pf-theme') === null) {
+    const mq = matchMedia('(prefers-color-scheme: dark)');
+    mq.addEventListener('change', (e) => {
+      if (read('pf-theme') !== null) return;
+      root.dataset.theme = e.matches ? 'dark' : 'light';
+      if (themeBox) themeBox.checked = e.matches;
+    });
   }
+
 }

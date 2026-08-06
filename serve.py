@@ -18,7 +18,7 @@ import os
 import sys
 from functools import partial
 from http import HTTPStatus
-from http.server import HTTPServer, SimpleHTTPRequestHandler
+from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
 from socket import socket, AF_INET, SOCK_STREAM
 
@@ -120,7 +120,12 @@ def main():
         sys.exit(f"port {args.port} is already listening — pick another, e.g. ./serve.sh {args.port + 1}")
 
     os.chdir(ROOT)
-    httpd = HTTPServer(("0.0.0.0", args.port), partial(Handler, directory=str(ROOT)))
+    # Threading, not plain HTTPServer. Single-threaded, one slow or half-open
+    # connection blocks every other request, and a browser opening several in
+    # parallel fills the accept backlog and wedges the server completely — it
+    # keeps listening while answering nothing, which looks exactly like a crash.
+    httpd = ThreadingHTTPServer(("0.0.0.0", args.port), partial(Handler, directory=str(ROOT)))
+    httpd.daemon_threads = True
     url = f"http://localhost:{args.port}{MOUNT}/"
     print(f"serving {ROOT}")
     print(f"  -> {url}")

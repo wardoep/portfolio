@@ -24,7 +24,8 @@ export function parse(hash) {
 
   if (head === 'project' && arg) return { name: 'project', arg };
   if (head === 'folder' && arg) return { name: 'folder', arg };
-  if (head === 'page' && arg) return { name: 'page', arg };
+  /* the two carousel cards that open an overlay */
+  if (head === 'projects' || head === 'builds') return { name: 'card', arg: head };
   if (['about', 'skills', 'resume', 'now', 'contact', 'settings'].includes(head)) {
     return { name: head, arg: null };
   }
@@ -34,8 +35,7 @@ export function parse(hash) {
 export const route = () => current;
 
 /* Is a panel open? Everything except the bare menu counts. */
-export const isPanelRoute = (r = current) =>
-  !['home', 'page'].includes(r.name);
+export const isPanelRoute = (r = current) => r.name !== 'home';
 
 export function onRoute(fn) {
   listeners.add(fn);

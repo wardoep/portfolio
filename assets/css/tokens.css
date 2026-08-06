@@ -2,7 +2,7 @@
  *
  * Everything else references var(--…). That is what makes the tint toggle a
  * two-line change instead of a hunt through five stylesheets, and it is why
- * `data-tint="off"` below can restate the palette without touching a component.
+ * the dark block below restates the palette without touching a component.
  *
  * The type scale is fixed integers, not clamp(). Departure Mono is a bitmap
  * face and blurs at fractional sizes; the rounded face is set on the same scale
@@ -39,56 +39,48 @@
   --tile-2:      #f7f8f6;
   --tile-edge:   #d5d9d4;
 
-  /* --- ink ---
-   * --ink-2 is #4a4a4a rather than a lighter grey on purpose: under the
-   * phosphor wash a mid grey collapses. Measured, #6b6b6b lands at 4.85 with
-   * no headroom; #4a4a4a lands at 7.69. */
   --ink:    #161a16;
   --ink-2:  #4a4a4a;
   --ink-3:  #6b7169;
   --rule:   #d3d7d2;
 
   /* --- selection ---
-   * Pre-brightened. The wash eats ~21% of the blue channel, so the era-correct
-   * cyan lands as a muddy teal; #2ddcff lands where #00c3e3 looks like it
-   * should. --sel-ink is dark on purpose: white on cyan measures 1.63 under the
-   * tint and fails WCAG even with the tint off. */
-  --sel:      #2ddcff;
-  /* #0a7f96 was the obvious pick and measured 4.43 against white once the wash
-     was applied — a fail that is invisible by eye. check-contrast.mjs caught it. */
-  --sel-deep: #097082;
-  --sel-ink:  #062a33;
+   * --sel is the true console cyan. It was #2ddcff, pre-brightened to survive a
+   * green wash that ate ~21% of the blue channel; the wash is gone, so the
+   * compensation goes with it.
+   * --sel-ink is dark on purpose: white on cyan measures 2.12 and fails WCAG,
+   * which is the most common console-UI accessibility bug there is. */
+  --sel:      #00c3e3;
+  --sel-deep: #097082;   /* links and switches — must read against the GROUND */
+  --sel-ink:  #062a33;   /* text sitting ON --sel */
+
+  --row-active: linear-gradient(180deg, #e8f8fd 0%, #d4f0fa 100%);
+  --badge-ring: #ffffff;
 
   --ok:   #2e7d32;
   --warn: #8a5a12;
 
-  /* --- Game Boy greens, used only as an overlay tint --- */
-  --gb-lightest: #9bbc0f;
-  --gb-light:    #8bac0f;
-  --gb-dark:     #306230;
-  --gb-darkest:  #0f380f;
-
-  /* --- tint strengths ---
-   * Tuned against a real render, not theory. The first pass used wash .22 /
-   * bloom .35 and the bloom read as a yellow blob across the middle of the
-   * grid, dragging the centre tiles toward mustard. Bloom is the layer that
-   * misbehaves at scale; the wash alone carries the phosphor. */
-  --tint-wash:  .15;
-  --tint-lift:  .07;
-  --bloom:      .13;
-  --vignette:   .26;
-  --scan-alpha: .055;
-  --scan-period: 3px;
+  /* the ring and its halo — has to stay visible on any ground, including the
+     black boot screen and the pale active row */
+  --focus-core: #ffffff;
+  --focus-halo: #0d2b33;
 
   /* --- shape --- */
   --r-tile:  14px;
-  --r-panel: 18px;
+  --r-panel: 26px;
   --r-sm:     9px;
+  --r-row:   18px;
   --r-pill:  999px;
 
   --shadow-tile: 0 1px 1px rgb(22 26 22 / .05), 0 3px 6px rgb(22 26 22 / .09);
   --shadow-lift: 0 4px 8px rgb(22 26 22 / .10), 0 12px 26px rgb(22 26 22 / .16);
-  --shadow-panel: 0 12px 48px rgb(22 26 22 / .28);
+  --shadow-panel: 0 16px 60px rgb(22 26 22 / .30);
+  --bevel: inset 0 1px 0 rgb(255 255 255 / .9);
+  --scrim: rgb(10 16 12 / .48);
+
+  --card-projects: #2f6f9e;
+  --card-builds:   #c07a1e;
+  --card-resume:   #4a7a52;
 
   /* --- motion --- */
   --d-fast:  120ms;
@@ -114,31 +106,56 @@
   --hud-h:  74px;
 }
 
-/* Tint off: the greens stop, the accent returns to true cyan because nothing
-   is eating the blue channel any more, and a whisper of vignette survives so
-   the screen still has an edge. */
-:root[data-tint='off'] {
-  --tint-wash: 0;
-  --tint-lift: 0;
-  --bloom: 0;
-  --scan-alpha: 0;
-  --vignette: .12;
-  --sel: #00c3e3;
+/* ── DARK ─────────────────────────────────────────────────────────────────
+ * A dark console menu: deep blue-grey, not pure black. Against pure black the
+ * rounded cards read as holes cut in the page; a lifted ground keeps them
+ * reading as objects sitting on it.
+ *
+ * --sel-deep is the one token that INVERTS rather than darkens. It is the link
+ * and switch colour, so it has to contrast against the GROUND — a dark teal on
+ * a dark ground is unreadable, and it looks fine to the eye while failing, which
+ * is exactly why check-contrast.mjs now runs both themes. */
+:root[data-theme='dark'] {
+  --ground:      #12151a;
+  --ground-lift: #1a1f27;
+  --ground-edge: #0c0e12;
+  --tile:        #1e242e;
+  --tile-2:      #232a35;
+  --tile-edge:   #333c4a;
+
+  --ink:    #e8ecf2;
+  --ink-2:  #a8b2c0;
+  --ink-3:  #7d8796;
+  --rule:   #2c343f;
+
+  --sel:      #35d6f5;
+  --sel-deep: #6fd8ee;   /* INVERTED — light on dark, not dark on dark */
+  --sel-ink:  #06222b;
+
+  --row-active: linear-gradient(180deg, #24404c 0%, #1d333d 100%);
+  --badge-ring: #2b3340;
+
+  --ok:   #6fcf78;
+  --warn: #e0a84a;
+
+  --focus-core: #ffffff;
+  --focus-halo: #04161c;
+
+  --shadow-tile:  0 1px 1px rgb(0 0 0 / .40), 0 3px 8px rgb(0 0 0 / .45);
+  --shadow-lift:  0 4px 10px rgb(0 0 0 / .45), 0 14px 30px rgb(0 0 0 / .55);
+  --shadow-panel: 0 18px 64px rgb(0 0 0 / .65);
+  --bevel: inset 0 1px 0 rgb(255 255 255 / .06);
+  --scrim: rgb(4 7 10 / .66);
+
+  /* lifted, or these go muddy against a dark ground */
+  --card-projects: #4d93c6;
+  --card-builds:   #e0a04a;
+  --card-resume:   #6ea877;
 }
 
-/* Accessibility overrides. forced-colors wins outright — the whole tint is
-   decoration and has no business surviving a high-contrast mode. */
 @media (prefers-contrast: more) {
-  :root { --tint-wash: .10; --scan-alpha: 0; --ink-2: #333; }
-}
-@media (prefers-reduced-transparency: reduce) {
-  :root { --bloom: 0; }
-}
-@media (min-resolution: 2dppx) {
-  :root { --scan-period: 4px; }      /* 1px/3px moirés on a retina panel */
-}
-@media (max-width: 600px) {
-  :root { --scan-alpha: 0; }         /* and shimmers badly on OLED while scrolling */
+  :root { --ink-2: #333; }
+  :root[data-theme='dark'] { --ink-2: #d4dae2; }
 }
 
 /* One source of truth for motion: zero the durations and every transition and

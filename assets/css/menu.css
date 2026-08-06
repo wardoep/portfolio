@@ -1,9 +1,9 @@
-/* menu.css — boot screen, header, tile grid, hover bubble, pager, dock. */
+/* menu.css — boot screen, header, coverflow carousel, dock. */
 
 *, *::before, *::after { box-sizing: border-box; }
 
-/* min-height, not height: on a phone the grid is taller than the viewport and a
-   hard 100% clipped it under the header. This lets the document scroll. */
+/* min-height, not height: on a phone the content can exceed the viewport, and a
+   hard 100% clipped it under the header. Desktop is pinned to 100dvh below. */
 html { height: 100%; }
 
 body {
@@ -51,11 +51,12 @@ body {
 }
 .skip:focus { top: 12px; }
 
-/* A ring that survives both the green wash and the black boot screen. */
+/* A ring that has to stay visible on any ground the site has: white cards, the
+   dark ground, the black boot screen, and the pale active row. */
 :focus-visible {
-  outline: 3px solid #fff;
+  outline: 3px solid var(--focus-core);
   outline-offset: 2px;
-  box-shadow: 0 0 0 5px var(--gb-darkest);
+  box-shadow: 0 0 0 5px var(--focus-halo);
   border-radius: var(--r-sm);
 }
 
@@ -115,15 +116,19 @@ a { color: inherit; }
   box-shadow: 0 0 0 2px var(--tile);
 }
 
-.dots { margin-inline: auto; display: flex; gap: 9px; }
-.dot {
-  width: 11px; height: 11px; padding: 0;
-  border: 1px solid var(--tile-edge);
-  background: rgb(255 255 255 / .6);
-  border-radius: 50%; cursor: pointer;
-  transition: background var(--d-fast) var(--ease), transform var(--d-fast) var(--ease);
+
+.hud__right { display: flex; align-items: center; gap: 12px; }
+.cornerbtn {
+  width: 34px; height: 34px;
+  display: grid; place-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  color: var(--ink-3); cursor: pointer;
+  transition: color var(--d-fast) var(--ease), background var(--d-fast) var(--ease);
 }
-.dot.is-on { background: var(--sel-deep); border-color: var(--sel-deep); transform: scale(1.15); }
+.cornerbtn:hover { color: var(--ink); background: var(--tile); border-color: var(--tile-edge); }
+.cornerbtn .ico { width: 20px; height: 20px; }
 
 .clock {
   font-family: var(--font-pix);
@@ -137,244 +142,141 @@ a { color: inherit; }
 .stage {
   position: relative; z-index: 2;
   flex: 1 1 auto;
-  display: flex; align-items: center;
-  padding: 0 clamp(12px, 2.5vw, 28px);
+  display: flex; align-items: center; justify-content: center;
+  gap: clamp(8px, 2vw, 28px);
+  padding: 0 clamp(10px, 2.5vw, 28px);
   min-height: 0;
 }
 
-.pages { flex: 1 1 auto; min-height: 0; overflow: hidden; }
-.page-track {
-  display: flex;
-  transition: transform var(--d-slow) var(--ease);
-  will-change: transform;
-}
-.page { flex: 0 0 100%; min-width: 0; min-height: 0; padding: 4px; }
-
-.grid {
-  --cols: 5;
-  --rows: 2;
-  --gap: clamp(10px, 1.4vw, 18px);
-  display: grid;
-  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
-  gap: var(--gap);
-}
-/* Real row elements for the a11y tree; subgrid keeps them visually aligned to
-   the parent's columns, so semantics and layout don't have to disagree. */
-.row {
-  display: grid;
-  grid-column: 1 / -1;
-  grid-template-columns: subgrid;
-  gap: var(--gap);
+/* ── coverflow ───────────────────────────────────────────────────────────
+ * The rail is a fixed-size stage; each card is absolutely centred and then
+ * pushed out by its own --d offset (-1, 0, +1). Only transform and opacity
+ * animate, so the whole thing stays on the compositor. */
+.coverflow {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex; flex-direction: column; align-items: center;
+  gap: clamp(12px, 2.4vh, 26px);
 }
 
-/* The row is as tall as the grid gives it; the tile is capped and centred
-   inside, so a tall window produces breathing room rather than a 370px tile
-   with a 58px icon marooned in the middle of it. */
-.cell {
-  position: relative; min-width: 0;
-  display: flex; align-items: center; justify-content: center;
-}
-
-/* ── tiles ───────────────────────────────────────────────────────────── */
-.tile {
+.coverflow__rail {
   position: relative;
   width: 100%;
-  height: 100%;
-  min-height: 96px;          /* floor: below this the page scrolls rather than
-                                collapsing into something unreadable */
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 10px;
-  padding: 12px 8px 14px;
-  font: inherit; color: var(--ink);
-  text-decoration: none;
-  background: linear-gradient(180deg, var(--tile) 0%, var(--tile-2) 100%);
-  border: 1px solid var(--tile-edge);
-  border-radius: var(--r-tile);
-  box-shadow: var(--shadow-tile);
-  cursor: pointer;
-  /* transform only. box-shadow and border-color are PAINT properties — animating
-     them repaints the tile every frame. The lift shadow and selection ring live
-     on ::after below and cross-fade with opacity, which the compositor handles
-     without ever touching the main thread. */
-  transition: transform var(--d-mid) var(--ease);
-}
-
-/* the hover state, pre-rendered and faded in */
-.tile::after {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  box-shadow: var(--shadow-lift), 0 0 0 3px var(--sel);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--d-mid) var(--ease);
-}
-
-.tile__art {
-  display: grid; place-items: center;
-  width: clamp(46px, 8.4vh, 76px);
-  height: clamp(46px, 8.4vh, 76px);
-  border-radius: 14px;
-  color: #fff;
-  background: var(--tile-tint, #7d8f9c);
-  box-shadow: inset 0 -2px 0 rgb(0 0 0 / .12);
-}
-.tile__art .ico { width: 56%; height: 56%; stroke-width: 1.8; }
-
-/* a folder shows what is inside it, four at a time */
-.tile__art--folder {
+  height: clamp(210px, 42vh, 330px);
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 3px;
-  padding: 7px;
   place-items: center;
 }
-.tile__art--folder .ico.mini { width: 100%; height: 100%; stroke-width: 2.1; }
 
-.tile__count {
-  position: absolute; top: 7px; right: 8px;
-  min-width: 20px; height: 20px; padding: 0 6px;
-  display: grid; place-items: center;
-  font-family: var(--font-pix); font-size: 11px;
-  color: var(--ink-2);
-  background: var(--ground);
-  border: 1px solid var(--tile-edge);
-  border-radius: var(--r-pill);
-}
-
-.tile__label {
-  font-size: clamp(11px, 1.55vh, 15px);
-  font-weight: 800;
-  letter-spacing: .02em;
-  text-align: center;
-  line-height: 1.2;
-  color: var(--ink);
-  max-width: 100%;
-  overflow-wrap: anywhere;
-}
-
-/* Featured tiles also live inside their folder. The pin says so, in a shape —
-   never in colour alone, because the whole page is one hue. */
-.tile__pin {
-  position: absolute; top: 6px; right: 6px;
-  width: 17px; height: 17px;
-  display: grid; place-items: center;
-  color: var(--ink-3);
-  opacity: .55;
-}
-.tile__pin .ico { width: 13px; height: 13px; }
-
-.tile__ext { position: absolute; top: 6px; right: 6px; color: var(--ink-3); }
-.tile__ext .ico { width: 13px; height: 13px; }
-
-/* the "Start" strip on the selected tile — dark ink on cyan, never white */
-.tile__start {
-  position: absolute; left: 0; right: 0; bottom: 0;
-  padding: 3px 0 4px;
-  font-family: var(--font-pix);
-  font-size: 10px; letter-spacing: .14em;
-  color: var(--sel-ink);
-  background: var(--sel);
-  border-radius: 0 0 calc(var(--r-tile) - 1px) calc(var(--r-tile) - 1px);
-  opacity: 0;
-  transform: translateY(100%);
-  transition: opacity var(--d-fast) var(--ease), transform var(--d-fast) var(--ease);
-}
-
-.tile:hover,
-.tile:focus-visible { transform: translateY(-4px); }
-.tile:hover::after,
-.tile:focus-visible::after { opacity: 1; }
-.tile:hover .tile__start,
-.tile:focus-visible .tile__start { opacity: 1; transform: translateY(0); }
-.tile:active { transform: translateY(-1px); }
-
-.tile--folder .tile__art { border-radius: 13px; position: relative; }
-.tile--folder .tile__art::after {
-  content: ''; position: absolute; inset: auto 6px 5px;
-  height: 2px; border-radius: 2px;
-  background: rgb(255 255 255 / .5);
-}
-
-/* per-category icon colour, set as a token so nothing hardcodes a hue */
-.tile[data-cat='security'] { --tile-tint: #c0453a; }
-.tile[data-cat='infra']    { --tile-tint: #2f6f9e; }
-.tile[data-cat='builds']   { --tile-tint: #c07a1e; }
-.tile[data-cat='self']     { --tile-tint: #4a7a52; }
-.tile[data-cat='link']     { --tile-tint: #5a5f68; }
-
-/* ── hover bubble ────────────────────────────────────────────────────── */
-.bubble {
+.ccard {
   position: absolute;
-  left: 50%; bottom: calc(100% + 10px);
-  transform: translate(-50%, 6px);
-  z-index: 5;
-  width: max-content; max-width: 260px;
-  padding: 9px 13px;
-  background: var(--tile);
-  color: var(--ink);
+  width: clamp(200px, 25vw, 290px);
+  height: 100%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: clamp(8px, 1.6vh, 16px);
+  padding: 20px 18px 24px;
+  font: inherit; color: var(--ink); text-decoration: none;
+  background: linear-gradient(180deg, var(--tile) 0%, var(--tile-2) 100%);
   border: 1px solid var(--tile-edge);
-  border-radius: 12px;
-  box-shadow: var(--shadow-lift);
-  font-size: var(--fs-small);
-  line-height: 1.35;
-  text-align: center;
-  opacity: 0; pointer-events: none;
-  transition: opacity var(--d-fast) var(--ease), transform var(--d-fast) var(--ease);
-}
-.bubble::after {
-  content: ''; position: absolute;
-  top: 100%; left: 50%; transform: translateX(-50%);
-  border: 8px solid transparent;
-  border-top-color: var(--tile);
-  filter: drop-shadow(0 1px 0 var(--tile-edge));
-}
-.cell:hover .bubble,
-.tile:focus-visible ~ .bubble { opacity: 1; transform: translate(-50%, 0); }
-
-/* ── pager ───────────────────────────────────────────────────────────── */
-.pager {
-  flex: none;
-  width: 46px; height: 92px;
-  display: grid; place-items: center;
-  margin-inline: 4px;
-  background: rgb(255 255 255 / .78);
-  border: 1px solid var(--tile-edge);
-  border-radius: 26px;
+  border-radius: 20px;
   box-shadow: var(--shadow-tile);
-  color: var(--ink-2);
   cursor: pointer;
-  transition: transform var(--d-fast) var(--ease), box-shadow var(--d-fast) var(--ease);
+  transition: transform var(--d-slow) var(--ease), opacity var(--d-slow) var(--ease),
+              box-shadow var(--d-slow) var(--ease);
 }
-.pager:hover { transform: scale(1.06); box-shadow: var(--shadow-lift); color: var(--ink); }
-.pager[hidden] { display: none; }
-.pager .ico { width: 26px; height: 26px; stroke-width: 2.2; }
+
+/* side cards: smaller, faded, behind */
+/* faint enough to recede, legible enough to read as a real destination */
+.ccard { transform: translateX(calc(var(--d, 0) * clamp(150px, 20vw, 240px))) scale(.74); opacity: .58; z-index: 1; filter: saturate(.8); }
+.ccard.is-centre { transform: translateX(0) scale(1); opacity: 1; z-index: 3; filter: none; }
+
+.ccard__art {
+  display: grid; place-items: center;
+  width: clamp(58px, 9vh, 88px); height: clamp(58px, 9vh, 88px);
+  border-radius: 18px;
+  color: #fff;
+  background: var(--card-tint, #7d8f9c);
+  box-shadow: inset 0 -3px 0 rgb(0 0 0 / .12);
+}
+.ccard__art .ico { width: 56%; height: 56%; stroke-width: 1.8; }
+
+.ccard__label {
+  font-size: clamp(15px, 2.2vh, 21px);
+  font-weight: 800; letter-spacing: .04em; text-align: center;
+}
+.ccard__count {
+  font-family: var(--font-pix);
+  font-size: clamp(10px, 1.4vh, 12px);
+  color: var(--ink-2); text-align: center; line-height: 1.4;
+}
+.ccard__go {
+  margin-top: 2px;
+  padding: 5px 16px;
+  font-family: var(--font-pix); font-size: 11px; letter-spacing: .14em;
+  color: var(--sel-ink); background: var(--sel);
+  border-radius: var(--r-pill);
+  opacity: 0; transform: translateY(4px);
+  transition: opacity var(--d-mid) var(--ease), transform var(--d-mid) var(--ease);
+}
+.ccard.is-centre .ccard__go { opacity: 1; transform: none; }
+.ccard.is-centre:hover { box-shadow: var(--shadow-lift), 0 0 0 3px var(--sel); }
+
+.ccard[data-card='projects'] { --card-tint: var(--card-projects); }
+.ccard[data-card='builds']   { --card-tint: var(--card-builds); }
+.ccard[data-card='resume']   { --card-tint: var(--card-resume); }
+
+/* the caption line under the focused card */
+.coverflow__caption {
+  margin: 0;
+  max-width: 62ch;
+  text-align: center;
+  font-size: clamp(11px, 1.5vh, 13.5px);
+  line-height: 1.5;
+  color: var(--ink-2);
+  min-height: 1.5em;
+}
+
+
+
+/* ── arrows ──────────────────────────────────────────────────────────── */
+.arrow {
+  flex: none;
+  width: clamp(46px, 4vw, 60px); height: clamp(46px, 4vw, 60px);
+  display: grid; place-items: center;
+  background: var(--tile);
+  border: 1px solid var(--tile-edge);
+  border-radius: 50%;
+  box-shadow: var(--shadow-tile);
+  color: var(--ink-2); cursor: pointer;
+  transition: transform var(--d-fast) var(--ease), box-shadow var(--d-fast) var(--ease),
+              color var(--d-fast) var(--ease);
+}
+.arrow:hover { transform: scale(1.08); color: var(--ink); box-shadow: var(--shadow-lift); }
+.arrow .ico { width: 60%; height: 60%; stroke-width: 2.2; }
 
 .loading {
   position: absolute; inset: 0;
-  display: grid; place-items: center;
-  margin: 0;
-  font-family: var(--font-pix);
-  font-size: var(--fs-small);
-  letter-spacing: .1em;
-  color: var(--ink-3);
+  display: grid; place-items: center; margin: 0;
+  font-family: var(--font-pix); font-size: var(--fs-small);
+  letter-spacing: .1em; color: var(--ink-3);
 }
 .loading[hidden] { display: none; }
+
+.ccard--in { animation: pop var(--d-slow) var(--ease-pop) both; animation-delay: var(--delay, 0ms); }
+@keyframes pop { from { opacity: 0; transform: translateY(10px) scale(.9); } }
 
 /* ── dock ────────────────────────────────────────────────────────────── */
 .dock {
   position: relative; z-index: 3;
   flex: none;
-  min-height: var(--dock-h);
+  min-height: 78px;
   display: flex; align-items: center; justify-content: center;
-  gap: clamp(6px, 1.4vw, 16px);
-  padding: 0 12px 8px;
+  gap: clamp(8px, 1.6vw, 20px);
+  padding: 0 12px 12px;
 }
 .dock__btn {
   position: relative;
-  min-width: 62px;
-  padding: 6px 8px 5px;
+  min-width: 92px;
+  padding: 11px 14px 9px;
   display: flex; flex-direction: column; align-items: center; gap: 3px;
   background: var(--tile);
   border: 1px solid var(--tile-edge);
@@ -386,9 +288,10 @@ a { color: inherit; }
   transition: transform var(--d-fast) var(--ease), color var(--d-fast) var(--ease),
               box-shadow var(--d-fast) var(--ease);
 }
+.dock__btn .ico { width: 27px; height: 27px; }
 .dock__btn:hover { transform: translateY(-3px); color: var(--ink); box-shadow: var(--shadow-lift); }
 .dock__label {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: .02em;
   line-height: 1;
@@ -425,8 +328,8 @@ a { color: inherit; }
 .boot__logo {
   font-family: var(--font-pix);
   font-size: 46px; letter-spacing: .12em;
-  color: var(--gb-lightest);
-  text-shadow: 0 0 18px rgb(155 188 15 / .55);
+  color: var(--sel);
+  text-shadow: 0 0 22px color-mix(in oklab, var(--sel) 55%, transparent);
   animation: bootIn var(--d-slow) var(--ease) both;
 }
 .boot__name {
@@ -461,54 +364,74 @@ a { color: inherit; }
 :root[data-motion='off'] .boot__cue { animation: none; }
 :root[data-motion='off'] .page-track { transition: none; }
 
-/* ── reflow ──────────────────────────────────────────────────────────────
- * Two different contracts by width.
- *
- * Above 900px the requirement is absolute: everything fits one screen, no
- * vertical scroll. So the grid takes whatever height is left after the header
- * and dock and divides it between its rows — height comes from the VIEWPORT,
- * not from tile width. The old `aspect-ratio` derived height from width, which
- * is exactly why a short laptop window overflowed.
- *
- * Below 900px there is no honest way to fit ten readable tiles on a phone, so
- * the document scrolls and tiles get their proportions back. */
+/* ── reflow ────────────────────────────────────────────────────────────
+ * Above 900px the page must never scroll. The coverflow is a fixed-height
+ * stage, so this holds by construction rather than by luck. */
 @media (min-width: 901px) {
   html, body { height: 100dvh; overflow: hidden; }
-  .pages, .page-track, .page { height: 100%; }
-  .grid {
-    height: 100%;
-    align-content: center;            /* centre the block, don't stretch the rows */
-    /* Rows shrink to fit a short window but never grow past a sensible tile
-       height — 1fr alone gave a 370px tile holding a 58px icon. */
-    grid-auto-rows: minmax(0, min(212px, 29vh));
-  }
 }
 
 @media (max-width: 900px) {
-  .grid { --cols: 3; }
-  .hud { height: auto; padding-block: 10px; flex-wrap: wrap; }
-  .pager { width: 40px; height: 76px; }
-  .stage { align-items: flex-start; padding-block: 6px 18px; }
-  .tile { height: auto; aspect-ratio: 1 / .8; }
-  .tile__art { width: 52px; height: 52px; }
-  .tile__art .ico { width: 28px; height: 28px; }
+  .hud { height: auto; padding-block: 10px; }
+  .coverflow__rail { height: clamp(190px, 34vh, 260px); }
+  .ccard { width: clamp(180px, 46vw, 240px); }
 }
 
 @media (max-width: 600px) {
-  .grid { --cols: 2; }
-  .tile { aspect-ratio: 1 / .86; }
-  .bubble { display: none; }             /* no hover on touch; the label carries it */
-  .dock { gap: 4px; min-height: auto; padding: 8px 8px 12px; flex-wrap: wrap; }
-  .dock__btn { min-width: 68px; min-height: 52px; }   /* touch target floor */
+  .stage { gap: 2px; padding-inline: 6px; }
+  .arrow { width: 42px; height: 42px; }
+  /* side cards would be off-screen at this width; tuck them tighter */
+  .ccard { width: 62vw; }
+  .ccard { transform: translateX(calc(var(--d, 0) * 46vw)) scale(.68); }
+  .ccard.is-centre { transform: translateX(0) scale(1); }
+  .dock { gap: 5px; padding: 6px 6px 12px; flex-wrap: wrap; }
+  .dock__btn { min-width: 66px; min-height: 56px; padding: 8px 8px 7px; }
+  .dock__label { font-size: 10.5px; }
   .user__plate { display: none; }
   .clock { display: none; }
-  .stage { padding-inline: 8px; }
-  .pager { width: 34px; height: 60px; margin-inline: 2px; }
 }
 
-/* One page means no pager and no dot strip. A lone dot reads as a broken
-   control rather than an indicator. */
-.dots[hidden] { display: none; }
+/* ── ambient drift ───────────────────────────────────────────────────────
+ * Soft shapes wandering behind the grid. One transform per shape, animated on
+ * transform only, so it stays on the compositor. It is also the single worst
+ * offender for vestibular disorders — it is the first thing reduced-motion
+ * kills, below. */
+.ambient {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.ambient > i {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%,
+              rgb(255 255 255 / .85), rgb(255 255 255 / 0) 68%);
+  opacity: .5;
+  will-change: transform;
+  animation: drift 34s linear infinite;
+}
+.ambient > i:nth-child(1) { width: 190px; height: 190px; left:  4%; top: 14%; animation-duration: 41s; }
+.ambient > i:nth-child(2) { width: 120px; height: 120px; left: 26%; top: 68%; animation-duration: 33s; animation-delay: -8s; }
+.ambient > i:nth-child(3) { width: 240px; height: 240px; left: 58%; top:  8%; animation-duration: 47s; animation-delay: -19s; }
+.ambient > i:nth-child(4) { width:  90px; height:  90px; left: 78%; top: 52%; animation-duration: 29s; animation-delay: -4s; }
+.ambient > i:nth-child(5) { width: 150px; height: 150px; left: 88%; top: 78%; animation-duration: 38s; animation-delay: -23s; }
+.ambient > i:nth-child(6) { width: 110px; height: 110px; left: 44%; top: 38%; animation-duration: 44s; animation-delay: -12s; }
+
+@keyframes drift {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  25%  { transform: translate3d(28px, -34px, 0) scale(1.06); }
+  50%  { transform: translate3d(-18px, -58px, 0) scale(.96); }
+  75%  { transform: translate3d(-36px, -22px, 0) scale(1.03); }
+  100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient { display: none; }
+}
+:root[data-motion='off'] .ambient { display: none; }
 
 .noscript { max-width: 46rem; margin: 40px auto; padding: 0 20px; }
 
@@ -523,9 +446,9 @@ a { color: inherit; }
   font-family: var(--font-pix);
   font-size: var(--fs-micro);
   font-variant-numeric: tabular-nums;
-  color: #d8f0a8;
-  background: rgb(8 12 8 / .82);
-  border: 1px solid rgb(155 188 15 / .45);
+  color: var(--sel);
+  background: color-mix(in oklab, var(--ground-edge) 88%, transparent);
+  border: 1px solid color-mix(in oklab, var(--sel) 45%, transparent);
   border-radius: var(--r-sm);
   pointer-events: none;
   letter-spacing: .06em;

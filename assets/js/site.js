@@ -2,8 +2,7 @@
 
 import { asset, announce } from './util.js';
 import * as router from './router.js';
-import * as menu from './menu.js';
-import * as gridnav from './grid-nav.js';
+import * as carousel from './carousel.js';
 import * as panels from './panels.js';
 import * as settings from './settings.js';
 
@@ -66,16 +65,15 @@ async function main() {
        only the generated tiles are missing. Say so rather than spinning. */
     console.error(err);
     if (loading) loading.textContent = 'Channels unavailable — use the dock below.';
-    panels.init({ projects: [], folders: [], layout: [] });
+    panels.init({ projects: [], folders: [], carousel: [] });
     router.start();
     return;
   }
 
   if (loading) loading.hidden = true;
 
-  menu.init(data);
+  carousel.init(data);
   panels.init(data);
-  gridnav.init();
   router.start();
 
   /* Reboot returns to the start screen, which is the only thing on the page
@@ -91,14 +89,7 @@ async function main() {
     bootGate();
   });
 
-  /* Keep the visible page in step with #/page/N so the back button works. */
-  router.onRoute((r) => {
-    if (r.name === 'page') {
-      const n = parseInt(r.arg, 10);
-      if (Number.isFinite(n)) menu.showPage(n - 1);
-    }
-    gridnav.seed();
-  });
+
 }
 
 main();
