@@ -107,6 +107,25 @@ else
   ok "every screenshot exists and is described ($nshots on file)"
 fi
 
+# 12 — the PDF must be derived from the resume.html this build just checked.
+#      Grepping a PDF's text needs a tool that is not guaranteed to be here, and
+#      it would only prove the text looks clean. Provenance is stronger: the
+#      sidecar pins the SHA of the source file, and check 6 has already read
+#      that file for the phone number, home locality and old address. A PDF
+#      exported by hand from a word processor carries all three plus whatever
+#      the document properties say, which is why one is not committed here.
+if [ -f assets/doc/resume.pdf ]; then
+  want=$(sha256sum resume.html | cut -d' ' -f1)
+  got=$(cat assets/doc/resume.pdf.source 2>/dev/null | tr -d '[:space:]')
+  if [ "$want" = "$got" ]; then
+    ok "resume.pdf was rendered from this resume.html"
+  else
+    bad "resume.pdf is stale — run: node scripts/make-resume-pdf.mjs"
+  fi
+else
+  ok "no resume.pdf to verify"
+fi
+
 echo
 [ "$fail" -eq 0 ] || { echo "pre-flight failed."; exit 1; }
 

@@ -10,11 +10,32 @@
 <!-- Absolute, because scrapers do not resolve relative og: values. If this ever
      moves to a custom domain, these four URLs and 404.html are what break. -->
 <link rel="canonical" href="https://wardoep.github.io/portfolio/">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Edward Penna",
+  "jobTitle": "Desktop Support / IT Support",
+  "email": "mailto:pennaeddie1@gmail.com",
+  "url": "https://wardoep.github.io/portfolio/",
+  "alumniOf": { "@type": "CollegeOrUniversity", "name": "University at Albany, SUNY" },
+  "knowsAbout": ["Desktop Support", "Help Desk", "Active Directory", "Windows Server",
+                 "PowerShell", "Linux Administration", "Docker", "Networking",
+                 "Ticketing Systems", "Information Security"],
+  "sameAs": ["https://github.com/wardoep",
+             "https://www.linkedin.com/in/edward-penna-469096245"]
+}
+</script>
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://wardoep.github.io/portfolio/">
 <meta property="og:title" content="Edward Penna — Desktop Support &amp; IT">
 <meta property="og:description" content="Desktop Support / IT Support. B.S. Cybersecurity, SUNY Albany. Thirteen IT and security labs, each documented as a reproducible runbook.">
 <meta property="og:image" content="https://wardoep.github.io/portfolio/assets/img/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Edward Penna — Desktop Support / IT Support. B.S. Cybersecurity, SUNY Albany.">
+<meta property="og:site_name" content="Edward Penna">
 <meta name="twitter:card" content="summary_large_image">
 
 <link rel="icon" href="assets/img/favicon.ico" sizes="any">
@@ -116,7 +137,6 @@
       <strong class="user__name">Edward Penna</strong>
       <span class="user__role">Desktop Support / IT</span>
     </span>
-    <span class="user__badge" aria-hidden="true">1</span>
   </button>
 
 
@@ -244,6 +264,7 @@
     <p class="lead">A plain, printable résumé — no styling to fight, no JavaScript, safe for an applicant tracking system.</p>
     <p class="cta-row">
       <a class="btn btn--primary" href="resume.html">Open the résumé</a>
+      <a class="btn" href="assets/doc/resume.pdf" download>Download PDF<svg class="ico ico--sm" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-download"/></svg></a>
       <a class="btn" href="https://www.linkedin.com/in/edward-penna-469096245" rel="noopener noreferrer" target="_blank">LinkedIn<svg class="ico ico--sm" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-external"/></svg></a>
     </p>
     <h3>The short version</h3>
@@ -267,12 +288,15 @@
   </div>
   <div class="panel__body prose">
     <p class="lead">Open to desktop support, IT support and helpdesk roles.</p>
+    <p>Email me and I'll reply the same day. Happy to walk through any of the labs on
+       this site on a call — including the parts that didn't work the first time.</p>
     <button class="address" type="button" data-copy-email>
       <span class="address__value" data-email>pennaeddie1@gmail.com</span>
       <span class="address__hint" data-copy-text>Click to copy</span>
     </button>
     <ul class="links">
       <li><a href="mailto:pennaeddie1@gmail.com"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mail"/></svg>pennaeddie1@gmail.com</a></li>
+      <li><a href="#/now" data-open="now"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-spark"/></svg>What I'm learning right now</a></li>
       <li><a href="https://github.com/wardoep" rel="noopener noreferrer" target="_blank"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-github"/></svg>github.com/wardoep<svg class="ico ico--sm" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-external"/></svg></a></li>
       <li><a href="https://www.linkedin.com/in/edward-penna-469096245" rel="noopener noreferrer" target="_blank"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-linkedin"/></svg>LinkedIn<svg class="ico ico--sm" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-external"/></svg></a></li>
     </ul>
@@ -295,11 +319,7 @@
     </div>
     <div class="setting">
       <label class="switch"><input type="checkbox" data-toggle-motion><span class="switch__ui" aria-hidden="true"></span><span>Animation</span></label>
-      <p class="setting__note">Tile pop-in, hover lift, page slide, drifting background. Follows your system setting unless you change it here.</p>
-    </div>
-    <div class="setting">
-      <label class="switch"><input type="checkbox" data-toggle-fps><span class="switch__ui" aria-hidden="true"></span><span>Frame-rate counter</span></label>
-      <p class="setting__note">Shows live frames per second in the corner. Should sit at 60 (or your display's refresh rate) while the menu is idle and while paging.</p>
+      <p class="setting__note">Channel pop-in, hover lift and the panel open. Follows your system setting unless you change it here.</p>
     </div>
     <div class="setting setting--action">
       <button class="btn" type="button" data-reboot>Back to the start screen</button>
@@ -329,7 +349,6 @@
 </button>
 
 
-<output class="fps" data-fps hidden aria-label="Frame rate"></output>
 
 <div class="sr-only" role="status" aria-live="polite" data-announce></div>
 
