@@ -8,6 +8,9 @@ const FOCUSABLE = 'a[href], button:not([disabled]), input, select, textarea, [ta
 let data = null;
 let open = null;          /* the open <section class="panel"> */
 let dynamicHost = null;
+/* which card overlay a project was reached through, so closing it can put
+   focus back on that channel rather than on <body> */
+let lastCard = 'projects';
 
 const scrim = () => document.querySelector('[data-scrim]');
 
@@ -63,7 +66,15 @@ export function hide({ restoreFocus = true } = {}) {
 
   if (restoreFocus) {
     const t = router.takeTrigger();
-    if (t && document.contains(t)) t.focus({ preventScroll: true });
+    /* The trigger is often a row INSIDE a card panel, and show() hid that panel
+       on the way in. Calling .focus() on a display:none element is a silent
+       no-op that drops focus to <body>, so being in the document is not enough
+       — it has to still be rendered. offsetParent is the same visibility test
+       the focus trap uses above. */
+    const usable = t && document.contains(t) && t.offsetParent !== null;
+    const fallback = document.querySelector(`[data-card="${lastCard}"]`)
+      || document.querySelector('[data-card]');
+    (usable ? t : fallback)?.focus({ preventScroll: true });
   }
 }
 
@@ -169,7 +180,6 @@ function projectRow(p, cat) {
   b.type = 'button';
   b.dataset.cat = cat;
   b.dataset.route = 'project/' + p.id;
-  b.dataset.tile = '';
 
   const badge = el('span', 'row-item__badge');
   badge.appendChild(icon('i-' + (p.icon || 'default')));
@@ -262,6 +272,7 @@ function panelForRoute(r) {
   }
   if (r.name === 'card') {
     const c = (data.carousel || []).find((x) => x.id === r.arg);
+    if (c) lastCard = c.id;
     return c ? buildCard(c) : null;
   }
   if (r.name === 'folder') {
@@ -285,7 +296,12 @@ export function init(payload) {
     else if (e.target === scrim()) router.home();
     const opener = e.target.closest('[data-open]');
     if (opener) { e.preventDefault(); router.go(opener.dataset.open, opener); }
-    const inner = e.target.closest('.folder-grid [data-route]');
+    /* Scoped to .panel, not to a wrapper class. This listened on
+       '.folder-grid [data-route]' for three commits — a class that exists
+       nowhere in the repo — so every one of the twenty labs was a dead end.
+       Inside a panel, [data-route] means exactly one thing: a row. Nothing on
+       the menu carries it, which is what makes the bare attribute safe here. */
+    const inner = e.target.closest('.panel [data-route]');
     if (inner) { e.preventDefault(); router.go(inner.dataset.route, inner); }
   });
 
