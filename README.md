@@ -90,6 +90,8 @@ data/projects.json  20 repos + the channel list: hand-written fields and a
                     machine-owned `gh` block
 assets/css/         tokens · menu · panels
 assets/js/          site · router · grid · dock · panels · settings · util
+assets/doc/         resume.pdf, generated from resume.html (never hand-exported)
+assets/img/shots/   project screenshots — see notes/SHOTLIST.md
 scripts/            sync-projects · seed-copy · check-contrast
 notes/              DESIGN.md · LEGAL.md
 ```
