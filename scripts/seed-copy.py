@@ -251,6 +251,17 @@ TITLES = {
     "portfolio":                    "This Site",
 }
 
+# Folder order INSIDE the PROJECTS overlay. This lives here, not in
+# merge_projects.py, because that file uses setdefault() — it seeds folders into
+# a fresh document and never touches an existing one, so an order change there
+# is silently ignored on every real run.
+#
+# Infrastructure leads. The target role is desktop support, and opening the
+# overlay to SIEM / Phishing / Vulnerability Mgmt argued for a job that is not
+# being applied for. Helpdesk and Active Directory are the case; security is
+# the supporting evidence.
+FOLDER_ORDER = {"infra": 1, "security": 2, "builds": 3, "unsorted": 9}
+
 # The filled channels, in slot order. The grid fills from the top-left, so this
 # list IS the reading order — PROJECTS takes slot 1 because it is the reason a
 # hiring manager is on the page. (It used to sit at index 1 to be the centre
@@ -258,8 +269,10 @@ TITLES = {
 # A channel can span several folders; the overlay renders one section per folder.
 CHANNELS = [
     {
-        "id": "projects", "label": "PROJECTS", "icon": "shield",
-        "folders": ["security", "infra"],
+        # A ticket, not a shield. The icon on the main content channel is the
+        # first thing read, and a shield announced "security portfolio".
+        "id": "projects", "label": "PROJECTS", "icon": "ticket",
+        "folders": ["infra", "security"],
         "blurb": "Hands-on IT and security labs, each documented as a rebuildable runbook.",
     },
     {
@@ -300,6 +313,10 @@ def main():
         # above must actually clear it, and update() silently would not.
         p["featured"] = bool(fields.get("featured", False))
         p["status"] = "live"
+
+    for f in doc.get("folders", []):
+        if f["id"] in FOLDER_ORDER:
+            f["order"] = FOLDER_ORDER[f["id"]]
 
     doc["channels"] = CHANNELS
     # both are dead keys from earlier home screens; leaving either behind

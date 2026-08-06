@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Edward Penna — Desktop Support &amp; IT</title>
-<meta name="description" content="Edward Penna — Desktop Support / IT Support. B.S. Cybersecurity, SUNY Albany. Twenty documented labs: Active Directory, ticketing, PowerShell, Linux, monitoring, backup and security operations.">
+<meta name="description" content="Edward Penna — Desktop Support / IT Support. B.S. Cybersecurity, SUNY Albany. Thirteen documented IT and security labs: helpdesk ticketing, Active Directory, PowerShell, Linux, Docker, monitoring, backup/DR and security operations.">
 <meta name="author" content="Edward Penna">
 
 <!-- Absolute, because scrapers do not resolve relative og: values. If this ever
@@ -13,7 +13,7 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://wardoep.github.io/portfolio/">
 <meta property="og:title" content="Edward Penna — Desktop Support &amp; IT">
-<meta property="og:description" content="Desktop Support / IT Support. B.S. Cybersecurity, SUNY Albany. Twenty labs documented as reproducible runbooks.">
+<meta property="og:description" content="Desktop Support / IT Support. B.S. Cybersecurity, SUNY Albany. Thirteen IT and security labs, each documented as a reproducible runbook.">
 <meta property="og:image" content="https://wardoep.github.io/portfolio/assets/img/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
 
@@ -225,8 +225,8 @@
     <p>Alongside it I'm working through the gap between "I built this once" and "I could run this for someone else." Recent things that changed how I work:</p>
     <ul class="beats">
       <li><strong>An untested backup is not a backup.</strong> The restore drill in the backup lab is logged for a reason — the first one I ran didn't work.</li>
-      <li><strong>Triage by risk, not by CVSS.</strong> A critical on an isolated box matters less than a medium on the thing everyone logs into.</li>
-      <li><strong>Detection is written, not bought.</strong> Standing up a SIEM is the easy half; the value is in the rules you write after watching your own attacks go through.</li>
+      <li><strong>The ticket is the deliverable.</strong> Fixing it is half the job; the other half is a note the next person can actually use. The helpdesk lab has five worked tickets and the KB article each one produced.</li>
+      <li><strong>Give out the smallest permission that works.</strong> The AD lab delegates password resets to a helpdesk group and nothing else — the boundary I'd be working inside on day one.</li>
       <li><strong>Write it down while it hurts.</strong> Every runbook here exists because I'd already had to rediscover the same fix twice.</li>
     </ul>
   </div>
@@ -249,9 +249,9 @@
     <h3>The short version</h3>
     <ul class="beats">
       <li>B.S. Cybersecurity, University at Albany, May 2025. CompTIA Network+ scheduled July 2026.</li>
-      <li>IT support in a hospital — login, access, hardware and software issues, tracked through tickets.</li>
-      <li>Information Security consulting at Broadridge — access reviews and audit preparation.</li>
-      <li>Twenty documented labs: Active Directory, osTicket, PowerShell, Docker, monitoring, backup/DR and security operations.</li>
+      <li>IT Support Volunteer, Stony Brook Hospital (summer 2023) — login, access, hardware and software issues, tracked through tickets.</li>
+      <li>Summer Consultant, Broadridge (2024) — information security: access reviews and audit preparation.</li>
+      <li>Thirteen documented labs: osTicket helpdesk, Active Directory, PowerShell, Docker, monitoring, backup/DR and security operations.</li>
       <li>A self-hosted Linux server running production-style services with real uptime requirements.</li>
     </ul>
   </div>
@@ -266,7 +266,7 @@
     <h2 id="h-contact">Contact</h2>
   </div>
   <div class="panel__body prose">
-    <p class="lead">Open to IT support, helpdesk, systems administration and SOC analyst roles.</p>
+    <p class="lead">Open to desktop support, IT support and helpdesk roles.</p>
     <button class="address" type="button" data-copy-email>
       <span class="address__value" data-email>pennaeddie1@gmail.com</span>
       <span class="address__hint" data-copy-text>Click to copy</span>
@@ -338,14 +338,6 @@
     <h2>Edward Penna — Desktop Support &amp; IT</h2>
     <p>Desktop Support / IT Support. B.S. Cybersecurity, University at Albany, May 2025. CompTIA Network+ scheduled July 2026.</p>
     <p><a href="resume.html">Résumé</a> · <a href="mailto:pennaeddie1@gmail.com">pennaeddie1@gmail.com</a> · <a href="https://github.com/wardoep">github.com/wardoep</a> · <a href="https://www.linkedin.com/in/edward-penna-469096245">LinkedIn</a></p>
-    <h3>Security labs</h3>
-    <ul>
-      <li><a href="https://github.com/wardoep/soc-siem-lab">soc-siem-lab</a> — Wazuh SIEM, Sysmon agents, self-run attack simulations, custom detection rules.</li>
-      <li><a href="https://github.com/wardoep/phishing-analysis-lab">phishing-analysis-lab</a> — email header, SPF/DKIM/DMARC analysis and a Python IOC extractor.</li>
-      <li><a href="https://github.com/wardoep/vuln-management-lab">vuln-management-lab</a> — Nessus lifecycle: scan, triage, remediate, verify, report.</li>
-      <li><a href="https://github.com/wardoep/linux-hardening-lab">linux-hardening-lab</a> — CIS-inspired Ubuntu hardening measured with Lynis.</li>
-      <li><a href="https://github.com/wardoep/honeypot-lab">honeypot-lab</a> — Cowrie SSH honeypot and a Python log analyzer.</li>
-    </ul>
     <h3>IT &amp; infrastructure</h3>
     <ul>
       <li><a href="https://github.com/wardoep/helpdesk-ticketing-lab">helpdesk-ticketing-lab</a> — osTicket with departments, SLAs, email piping and worked tickets.</li>
@@ -356,6 +348,14 @@
       <li><a href="https://github.com/wardoep/backup-dr-lab">backup-dr-lab</a> — restic 3-2-1 backups with logged restore drills.</li>
       <li><a href="https://github.com/wardoep/docker-selfhosted-lab">docker-selfhosted-lab</a> — Docker Compose behind a reverse proxy.</li>
       <li><a href="https://github.com/wardoep/homelab-vps-setup">homelab-vps-setup</a> — Ubuntu Server runbooks, SSH, Tailscale.</li>
+    </ul>
+    <h3>Security labs</h3>
+    <ul>
+      <li><a href="https://github.com/wardoep/soc-siem-lab">soc-siem-lab</a> — Wazuh SIEM, Sysmon agents, self-run attack simulations, custom detection rules.</li>
+      <li><a href="https://github.com/wardoep/phishing-analysis-lab">phishing-analysis-lab</a> — email header, SPF/DKIM/DMARC analysis and a Python IOC extractor.</li>
+      <li><a href="https://github.com/wardoep/vuln-management-lab">vuln-management-lab</a> — Nessus lifecycle: scan, triage, remediate, verify, report.</li>
+      <li><a href="https://github.com/wardoep/linux-hardening-lab">linux-hardening-lab</a> — CIS-inspired Ubuntu hardening measured with Lynis.</li>
+      <li><a href="https://github.com/wardoep/honeypot-lab">honeypot-lab</a> — Cowrie SSH honeypot and a Python log analyzer.</li>
     </ul>
     <h3>Builds</h3>
     <ul>

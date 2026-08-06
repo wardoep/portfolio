@@ -5,14 +5,14 @@
     {
       "id": "security",
       "label": "SECURITY",
-      "order": 1,
+      "order": 2,
       "icon": "shield",
       "blurb": "Detection, triage and hardening — run against systems I broke on purpose."
     },
     {
       "id": "infra",
       "label": "IT / INFRASTRUCTURE",
-      "order": 2,
+      "order": 1,
       "icon": "rack",
       "blurb": "The plumbing: directory services, ticketing, monitoring, backups."
     },
@@ -32,214 +32,6 @@
     }
   ],
   "projects": [
-    {
-      "ghId": "R_kgDOThgPhg",
-      "id": "soc-siem-lab",
-      "renamedFrom": [],
-      "blurb": "Ran attacks against my own VMs, then wrote the rules that caught them.",
-      "folder": "security",
-      "icon": "siem",
-      "featured": true,
-      "hidden": false,
-      "stack": [
-        "Wazuh",
-        "Sysmon",
-        "Windows Server",
-        "Ubuntu",
-        "Detection rules"
-      ],
-      "highlights": [
-        "Sysmon-instrumented Windows and Linux agents reporting into one Wazuh manager",
-        "Attack simulations I ran myself, then custom detection rules written to catch them",
-        "Incident write-ups in a repeatable format, so the analysis is reviewable"
-      ],
-      "linkLabel": "Read the write-ups",
-      "note": "",
-      "order": 10,
-      "status": "live",
-      "firstSeen": "2026-08-05",
-      "gh": {
-        "name": "soc-siem-lab",
-        "description": "SOC home lab on Wazuh SIEM: Sysmon-instrumented Windows + Linux agents, self-run attack simulations against my own VMs, custom detection rules, and IR write-ups",
-        "language": "PowerShell",
-        "stars": 0,
-        "pushedAt": "2026-07-24T05:20:20Z",
-        "createdAt": "2026-07-23T17:25:02Z",
-        "url": "https://github.com/wardoep/soc-siem-lab",
-        "homepageUrl": "",
-        "defaultBranch": "main",
-        "isArchived": false,
-        "topics": []
-      },
-      "lastSeen": "2026-08-06",
-      "title": "SIEM & Detection"
-    },
-    {
-      "ghId": "R_kgDOTqBZIQ",
-      "id": "phishing-analysis-lab",
-      "renamedFrom": [],
-      "blurb": "Full email triage: headers, SPF/DKIM/DMARC, IOC extraction, written verdict.",
-      "folder": "security",
-      "icon": "mail",
-      "featured": false,
-      "hidden": false,
-      "stack": [
-        "Python",
-        "SPF / DKIM / DMARC",
-        "IOC analysis",
-        "Email headers"
-      ],
-      "highlights": [
-        "Header analysis that walks the full Received chain back to the true origin",
-        "SPF, DKIM and DMARC evaluated together rather than one at a time",
-        "Python IOC extractor with defanged output, so a report can't be clicked by mistake",
-        "A repeatable verdict template — the tier-1 deliverable, not just the analysis"
-      ],
-      "linkLabel": "See the triage template",
-      "note": "",
-      "order": 20,
-      "status": "live",
-      "firstSeen": "2026-08-05",
-      "gh": {
-        "name": "phishing-analysis-lab",
-        "description": "SOC email-triage lab: full header/SPF-DKIM-DMARC analysis, a Python IOC extractor with defanged output, and a repeatable verdict/triage template for writing up phishing analyses",
-        "language": "Python",
-        "stars": 0,
-        "pushedAt": "2026-08-01T08:56:09Z",
-        "createdAt": "2026-08-01T08:56:07Z",
-        "url": "https://github.com/wardoep/phishing-analysis-lab",
-        "homepageUrl": "",
-        "defaultBranch": "main",
-        "isArchived": false,
-        "topics": []
-      },
-      "lastSeen": "2026-08-06",
-      "title": "Phishing Triage"
-    },
-    {
-      "ghId": "R_kgDOTnMEWA",
-      "id": "vuln-management-lab",
-      "renamedFrom": [],
-      "blurb": "The whole lifecycle: scan, triage by risk, remediate, rescan, report up.",
-      "folder": "security",
-      "icon": "scan",
-      "featured": false,
-      "hidden": false,
-      "stack": [
-        "Nessus Essentials",
-        "Ubuntu",
-        "Windows",
-        "Risk triage"
-      ],
-      "highlights": [
-        "Baseline scan, then triage by real risk rather than raw CVSS score",
-        "Remediation followed by a verification rescan that proves the finding is closed",
-        "A management-facing report — the step most labs skip"
-      ],
-      "linkLabel": "Read the report",
-      "note": "",
-      "order": 30,
-      "status": "live",
-      "firstSeen": "2026-08-05",
-      "gh": {
-        "name": "vuln-management-lab",
-        "description": "The full vulnerability-management lifecycle with Nessus Essentials: baseline scan, risk-based triage, remediation, verification rescan, and a management report",
-        "language": "Python",
-        "stars": 0,
-        "pushedAt": "2026-07-29T13:23:32Z",
-        "createdAt": "2026-07-29T13:23:28Z",
-        "url": "https://github.com/wardoep/vuln-management-lab",
-        "homepageUrl": "",
-        "defaultBranch": "main",
-        "isArchived": false,
-        "topics": []
-      },
-      "lastSeen": "2026-08-06",
-      "title": "Vulnerability Mgmt"
-    },
-    {
-      "ghId": "R_kgDOTjMmNQ",
-      "id": "linux-hardening-lab",
-      "renamedFrom": [],
-      "blurb": "CIS-inspired Ubuntu hardening, scored by Lynis before and after.",
-      "folder": "security",
-      "icon": "lock",
-      "featured": false,
-      "hidden": false,
-      "stack": [
-        "Ubuntu",
-        "Lynis",
-        "auditd",
-        "ufw",
-        "sysctl"
-      ],
-      "highlights": [
-        "Measured baseline score before touching anything",
-        "An idempotent harden.sh covering SSH, firewall, auditd and sysctl",
-        "Before/after Lynis delta, so the improvement is a number and not a claim"
-      ],
-      "linkLabel": "View on GitHub",
-      "note": "",
-      "order": 40,
-      "status": "live",
-      "firstSeen": "2026-08-05",
-      "gh": {
-        "name": "linux-hardening-lab",
-        "description": "CIS-inspired Ubuntu hardening measured with Lynis: baseline score, an idempotent harden.sh (SSH, firewall, auditd, sysctl), and a before/after score delta",
-        "language": "Shell",
-        "stars": 0,
-        "pushedAt": "2026-07-25T12:44:10Z",
-        "createdAt": "2026-07-25T12:44:07Z",
-        "url": "https://github.com/wardoep/linux-hardening-lab",
-        "homepageUrl": "",
-        "defaultBranch": "main",
-        "isArchived": false,
-        "topics": []
-      },
-      "lastSeen": "2026-08-06",
-      "title": "Linux Hardening"
-    },
-    {
-      "ghId": "R_kgDOToQUEQ",
-      "id": "honeypot-lab",
-      "renamedFrom": [],
-      "blurb": "A Cowrie SSH honeypot on an isolated VPS, and analysis of what it caught.",
-      "folder": "security",
-      "icon": "honeypot",
-      "featured": false,
-      "hidden": false,
-      "stack": [
-        "Cowrie",
-        "Python",
-        "VPS isolation",
-        "Log analysis"
-      ],
-      "highlights": [
-        "Deliberately isolated so a compromise stays contained",
-        "Python analyzer surfacing top credentials tried and source IPs",
-        "Attacker session replays turned into an attack-data report"
-      ],
-      "linkLabel": "View on GitHub",
-      "note": "",
-      "order": 50,
-      "status": "live",
-      "firstSeen": "2026-08-05",
-      "gh": {
-        "name": "honeypot-lab",
-        "description": "Cowrie SSH honeypot in an isolated VPS with a Python log analyzer: top credentials, source IPs, and attacker session replays turned into an attack-data report",
-        "language": "Python",
-        "stars": 0,
-        "pushedAt": "2026-07-30T13:06:33Z",
-        "createdAt": "2026-07-30T13:06:29Z",
-        "url": "https://github.com/wardoep/honeypot-lab",
-        "homepageUrl": "",
-        "defaultBranch": "main",
-        "isArchived": false,
-        "topics": []
-      },
-      "lastSeen": "2026-08-06",
-      "title": "SSH Honeypot"
-    },
     {
       "ghId": "R_kgDOTmEMXA",
       "id": "helpdesk-ticketing-lab",
@@ -270,7 +62,7 @@
         "description": "A real helpdesk built on osTicket (Docker): departments, SLAs, help topics, email piping, plus five worked tickets with matching KB articles",
         "language": "Dockerfile",
         "stars": 0,
-        "pushedAt": "2026-07-28T12:58:32Z",
+        "pushedAt": "2026-08-06T09:06:01Z",
         "createdAt": "2026-07-28T12:58:29Z",
         "url": "https://github.com/wardoep/helpdesk-ticketing-lab",
         "homepageUrl": "",
@@ -351,7 +143,7 @@
         "description": "PowerShell toolkit for Windows/AD administration: system inventory, event-log triage, health reports, onboarding/offboarding — run against my AD homelab",
         "language": "PowerShell",
         "stars": 0,
-        "pushedAt": "2026-07-24T05:20:19Z",
+        "pushedAt": "2026-08-06T09:06:06Z",
         "createdAt": "2026-07-23T17:24:51Z",
         "url": "https://github.com/wardoep/powershell-admin-toolkit",
         "homepageUrl": "",
@@ -433,7 +225,7 @@
         "description": "Homelab monitoring with Prometheus, node_exporter, Grafana and Alertmanager: dashboards-as-code and disk/CPU/service alerts to Discord",
         "language": null,
         "stars": 0,
-        "pushedAt": "2026-07-26T13:14:10Z",
+        "pushedAt": "2026-08-06T09:06:04Z",
         "createdAt": "2026-07-26T13:14:08Z",
         "url": "https://github.com/wardoep/monitoring-observability-lab",
         "homepageUrl": "",
@@ -473,7 +265,7 @@
         "description": "3-2-1 backup and disaster recovery with restic: encrypted local + offsite repos, systemd timers, retention, and logged restore drills — because I test my restores",
         "language": "Shell",
         "stars": 0,
-        "pushedAt": "2026-07-27T13:32:45Z",
+        "pushedAt": "2026-08-06T09:05:59Z",
         "createdAt": "2026-07-27T13:32:42Z",
         "url": "https://github.com/wardoep/backup-dr-lab",
         "homepageUrl": "",
@@ -515,7 +307,7 @@
         "description": "Docker + Compose homelab: Portainer, Nginx Proxy Manager, Uptime Kuma and more behind a reverse proxy on Ubuntu Server, with volume backups",
         "language": "Shell",
         "stars": 0,
-        "pushedAt": "2026-07-24T05:22:58Z",
+        "pushedAt": "2026-08-06T09:06:00Z",
         "createdAt": "2026-07-24T05:22:55Z",
         "url": "https://github.com/wardoep/docker-selfhosted-lab",
         "homepageUrl": "",
@@ -565,6 +357,214 @@
       },
       "lastSeen": "2026-08-06",
       "title": "Server Runbooks"
+    },
+    {
+      "ghId": "R_kgDOThgPhg",
+      "id": "soc-siem-lab",
+      "renamedFrom": [],
+      "blurb": "Ran attacks against my own VMs, then wrote the rules that caught them.",
+      "folder": "security",
+      "icon": "siem",
+      "featured": true,
+      "hidden": false,
+      "stack": [
+        "Wazuh",
+        "Sysmon",
+        "Windows Server",
+        "Ubuntu",
+        "Detection rules"
+      ],
+      "highlights": [
+        "Sysmon-instrumented Windows and Linux agents reporting into one Wazuh manager",
+        "Attack simulations I ran myself, then custom detection rules written to catch them",
+        "Incident write-ups in a repeatable format, so the analysis is reviewable"
+      ],
+      "linkLabel": "Read the write-ups",
+      "note": "",
+      "order": 10,
+      "status": "live",
+      "firstSeen": "2026-08-05",
+      "gh": {
+        "name": "soc-siem-lab",
+        "description": "SOC home lab on Wazuh SIEM: Sysmon-instrumented Windows + Linux agents, self-run attack simulations against my own VMs, custom detection rules, and IR write-ups",
+        "language": "PowerShell",
+        "stars": 0,
+        "pushedAt": "2026-08-06T09:06:07Z",
+        "createdAt": "2026-07-23T17:25:02Z",
+        "url": "https://github.com/wardoep/soc-siem-lab",
+        "homepageUrl": "",
+        "defaultBranch": "main",
+        "isArchived": false,
+        "topics": []
+      },
+      "lastSeen": "2026-08-06",
+      "title": "SIEM & Detection"
+    },
+    {
+      "ghId": "R_kgDOTqBZIQ",
+      "id": "phishing-analysis-lab",
+      "renamedFrom": [],
+      "blurb": "Full email triage: headers, SPF/DKIM/DMARC, IOC extraction, written verdict.",
+      "folder": "security",
+      "icon": "mail",
+      "featured": false,
+      "hidden": false,
+      "stack": [
+        "Python",
+        "SPF / DKIM / DMARC",
+        "IOC analysis",
+        "Email headers"
+      ],
+      "highlights": [
+        "Header analysis that walks the full Received chain back to the true origin",
+        "SPF, DKIM and DMARC evaluated together rather than one at a time",
+        "Python IOC extractor with defanged output, so a report can't be clicked by mistake",
+        "A repeatable verdict template — the tier-1 deliverable, not just the analysis"
+      ],
+      "linkLabel": "See the triage template",
+      "note": "",
+      "order": 20,
+      "status": "live",
+      "firstSeen": "2026-08-05",
+      "gh": {
+        "name": "phishing-analysis-lab",
+        "description": "SOC email-triage lab: full header/SPF-DKIM-DMARC analysis, a Python IOC extractor with defanged output, and a repeatable verdict/triage template for writing up phishing analyses",
+        "language": "Python",
+        "stars": 0,
+        "pushedAt": "2026-08-06T09:06:05Z",
+        "createdAt": "2026-08-01T08:56:07Z",
+        "url": "https://github.com/wardoep/phishing-analysis-lab",
+        "homepageUrl": "",
+        "defaultBranch": "main",
+        "isArchived": false,
+        "topics": []
+      },
+      "lastSeen": "2026-08-06",
+      "title": "Phishing Triage"
+    },
+    {
+      "ghId": "R_kgDOTnMEWA",
+      "id": "vuln-management-lab",
+      "renamedFrom": [],
+      "blurb": "The whole lifecycle: scan, triage by risk, remediate, rescan, report up.",
+      "folder": "security",
+      "icon": "scan",
+      "featured": false,
+      "hidden": false,
+      "stack": [
+        "Nessus Essentials",
+        "Ubuntu",
+        "Windows",
+        "Risk triage"
+      ],
+      "highlights": [
+        "Baseline scan, then triage by real risk rather than raw CVSS score",
+        "Remediation followed by a verification rescan that proves the finding is closed",
+        "A management-facing report — the step most labs skip"
+      ],
+      "linkLabel": "Read the report",
+      "note": "",
+      "order": 30,
+      "status": "live",
+      "firstSeen": "2026-08-05",
+      "gh": {
+        "name": "vuln-management-lab",
+        "description": "The full vulnerability-management lifecycle with Nessus Essentials: baseline scan, risk-based triage, remediation, verification rescan, and a management report",
+        "language": "Python",
+        "stars": 0,
+        "pushedAt": "2026-08-06T09:06:08Z",
+        "createdAt": "2026-07-29T13:23:28Z",
+        "url": "https://github.com/wardoep/vuln-management-lab",
+        "homepageUrl": "",
+        "defaultBranch": "main",
+        "isArchived": false,
+        "topics": []
+      },
+      "lastSeen": "2026-08-06",
+      "title": "Vulnerability Mgmt"
+    },
+    {
+      "ghId": "R_kgDOTjMmNQ",
+      "id": "linux-hardening-lab",
+      "renamedFrom": [],
+      "blurb": "CIS-inspired Ubuntu hardening, scored by Lynis before and after.",
+      "folder": "security",
+      "icon": "lock",
+      "featured": false,
+      "hidden": false,
+      "stack": [
+        "Ubuntu",
+        "Lynis",
+        "auditd",
+        "ufw",
+        "sysctl"
+      ],
+      "highlights": [
+        "Measured baseline score before touching anything",
+        "An idempotent harden.sh covering SSH, firewall, auditd and sysctl",
+        "Before/after Lynis delta, so the improvement is a number and not a claim"
+      ],
+      "linkLabel": "View on GitHub",
+      "note": "",
+      "order": 40,
+      "status": "live",
+      "firstSeen": "2026-08-05",
+      "gh": {
+        "name": "linux-hardening-lab",
+        "description": "CIS-inspired Ubuntu hardening measured with Lynis: baseline score, an idempotent harden.sh (SSH, firewall, auditd, sysctl), and a before/after score delta",
+        "language": "Shell",
+        "stars": 0,
+        "pushedAt": "2026-08-06T09:06:03Z",
+        "createdAt": "2026-07-25T12:44:07Z",
+        "url": "https://github.com/wardoep/linux-hardening-lab",
+        "homepageUrl": "",
+        "defaultBranch": "main",
+        "isArchived": false,
+        "topics": []
+      },
+      "lastSeen": "2026-08-06",
+      "title": "Linux Hardening"
+    },
+    {
+      "ghId": "R_kgDOToQUEQ",
+      "id": "honeypot-lab",
+      "renamedFrom": [],
+      "blurb": "A Cowrie SSH honeypot on an isolated VPS, and analysis of what it caught.",
+      "folder": "security",
+      "icon": "honeypot",
+      "featured": false,
+      "hidden": false,
+      "stack": [
+        "Cowrie",
+        "Python",
+        "VPS isolation",
+        "Log analysis"
+      ],
+      "highlights": [
+        "Deliberately isolated so a compromise stays contained",
+        "Python analyzer surfacing top credentials tried and source IPs",
+        "Attacker session replays turned into an attack-data report"
+      ],
+      "linkLabel": "View on GitHub",
+      "note": "",
+      "order": 50,
+      "status": "live",
+      "firstSeen": "2026-08-05",
+      "gh": {
+        "name": "honeypot-lab",
+        "description": "Cowrie SSH honeypot in an isolated VPS with a Python log analyzer: top credentials, source IPs, and attacker session replays turned into an attack-data report",
+        "language": "Python",
+        "stars": 0,
+        "pushedAt": "2026-08-06T09:06:02Z",
+        "createdAt": "2026-07-30T13:06:29Z",
+        "url": "https://github.com/wardoep/honeypot-lab",
+        "homepageUrl": "",
+        "defaultBranch": "main",
+        "isArchived": false,
+        "topics": []
+      },
+      "lastSeen": "2026-08-06",
+      "title": "SSH Honeypot"
     },
     {
       "ghId": "R_kgDOTQ5MbQ",
@@ -791,9 +791,9 @@
       "gh": {
         "name": "portfolio",
         "description": "IT support and cybersecurity portfolio — a console-style channel menu backed by 18 hands-on labs",
-        "language": "HTML",
+        "language": "CSS",
         "stars": 0,
-        "pushedAt": "2026-08-06T05:30:12Z",
+        "pushedAt": "2026-08-06T07:02:48Z",
         "createdAt": "2026-08-05T09:38:17Z",
         "url": "https://github.com/wardoep/portfolio",
         "homepageUrl": "",
@@ -846,10 +846,10 @@
     {
       "id": "projects",
       "label": "PROJECTS",
-      "icon": "shield",
+      "icon": "ticket",
       "folders": [
-        "security",
-        "infra"
+        "infra",
+        "security"
       ],
       "blurb": "Hands-on IT and security labs, each documented as a rebuildable runbook."
     },

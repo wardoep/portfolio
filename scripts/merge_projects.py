@@ -77,9 +77,9 @@ def main():
     doc.setdefault("syncVersion", 1)
     doc.setdefault("source", "gh repo list --visibility public --source --limit 200")
     doc.setdefault("folders", [
-        {"id": "security", "label": "SECURITY", "order": 1, "icon": "shield",
+        {"id": "security", "label": "SECURITY", "order": 2, "icon": "shield",
          "blurb": "Detection, triage and hardening — run against systems I broke on purpose."},
-        {"id": "infra", "label": "IT / INFRASTRUCTURE", "order": 2, "icon": "rack",
+        {"id": "infra", "label": "IT / INFRASTRUCTURE", "order": 1, "icon": "rack",
          "blurb": "The plumbing: directory services, ticketing, monitoring, backups."},
         {"id": "builds", "label": "BUILDS", "order": 3, "icon": "wrench",
          "blurb": "Things I built because I wanted them to exist."},
