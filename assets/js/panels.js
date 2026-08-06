@@ -1,6 +1,6 @@
 /* panels.js — opening, closing, focus trapping, and the project templates. */
 
-import { el, icon, safeUrl, announce, copyText, asset } from './util.js';
+import { el, icon, safeUrl, announce, copyText, asset, reduceMotion } from './util.js';
 import * as router from './router.js';
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])';
@@ -38,9 +38,46 @@ function trap(e) {
   else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
 }
 
+/* ── the channel opening ──────────────────────────────────────────────────
+ * On the console this imitates, a channel does not fade in on top of the menu —
+ * it grows out of its own tile and fills the screen. So: a FLIP. Measure the
+ * tile, measure the panel, animate the difference away. Transform and opacity
+ * only, so it never leaves the compositor.
+ *
+ * Uniform scale taken from the width. A separate Y scale distorts a panel full
+ * of text badly enough to notice even at 400ms. */
+let zoomedFrom = null;
+
+function panelZoom(panel, rect, { reverse = false } = {}) {
+  if (reduceMotion() || !rect || !rect.width) return null;
+  const p = panel.getBoundingClientRect();
+  if (!p.width) return null;
+
+  const ms = parseFloat(getComputedStyle(document.documentElement)
+    .getPropertyValue('--d-slow')) || 0;
+  if (!ms) return null;
+
+  const s = Math.max(0.05, rect.width / p.width);
+  const dx = (rect.left + rect.width / 2) - (p.left + p.width / 2);
+  const dy = (rect.top + rect.height / 2) - (p.top + p.height / 2);
+  /* The pixel offset goes FIRST. `translate(-50%, -50%)` is a percentage of the
+     panel's own box, so putting the offset after it would be scaled by s. */
+  const atTile = { transform: `translate(${dx}px, ${dy}px) translate(-50%, -50%) scale(${s})`, opacity: 0 };
+  const atRest = { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 };
+
+  /* the CSS panelIn keyframes would fight this for the same property */
+  panel.classList.add('panel--zoom');
+  const anim = panel.animate(reverse ? [atRest, atTile] : [atTile, atRest],
+    { duration: ms, easing: 'cubic-bezier(.2, .8, .3, 1)', fill: reverse ? 'forwards' : 'none' });
+  if (!reverse) anim.finished.then(() => panel.classList.remove('panel--zoom')).catch(() => {});
+  return anim;
+}
+
 export function show(panel) {
   if (open === panel) return;
-  hide({ restoreFocus: false });
+  /* animate:false — this is the hand-off between two panels, not a close, and
+     an async exit here would leave the outgoing one on screen. */
+  hide({ restoreFocus: false, animate: false });
   if (!panel) return;
 
   open = panel;
@@ -49,6 +86,12 @@ export function show(panel) {
   setBackgroundInert(true);
   document.addEventListener('keydown', trap, true);
 
+  /* peek, not take: the close path still needs the trigger for focus */
+  const t = router.peekTrigger();
+  zoomedFrom = (t && document.contains(t) && t.offsetParent !== null)
+    ? t.getBoundingClientRect() : null;
+  panelZoom(panel, zoomedFrom);
+
   /* Focus the panel itself, not the first link — so the heading is announced
      before the controls. */
   panel.focus({ preventScroll: true });
@@ -56,14 +99,32 @@ export function show(panel) {
   if (h) announce(h.textContent.trim());
 }
 
-export function hide({ restoreFocus = true } = {}) {
+export function hide({ restoreFocus = true, animate = true } = {}) {
   closeLightbox();
   if (!open) return;
-  open.hidden = true;
+  const going = open;
+  const back = zoomedFrom;
+  zoomedFrom = null;
+
   open = null;
   scrim()?.setAttribute('hidden', '');
   setBackgroundInert(false);
   document.removeEventListener('keydown', trap, true);
+
+  /* Shrink back into the tile it came from, then hide. `open` is already null,
+     so a second close, a route change or Escape during the exit all no-op
+     rather than racing this. */
+  const exit = animate ? panelZoom(going, back, { reverse: true }) : null;
+  if (exit) {
+    exit.finished.then(() => {
+      going.hidden = true;
+      going.classList.remove('panel--zoom');
+      exit.cancel();
+    }).catch(() => { going.hidden = true; going.classList.remove('panel--zoom'); });
+  } else {
+    going.hidden = true;
+    going.classList.remove('panel--zoom');
+  }
 
   if (restoreFocus) {
     const t = router.takeTrigger();

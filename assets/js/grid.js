@@ -94,9 +94,19 @@ function enter(host) {
   });
 }
 
+let gridHost = null;
+
+/* Kept separate from init() so the caller decides WHEN it plays. It used to run
+   the moment the grid was built, which was while the opaque start screen was
+   still up. */
+export function playEntrance() {
+  if (gridHost) enter(gridHost);
+}
+
 export function init(data) {
   const host = document.querySelector('[data-grid]');
   if (!host) return;
+  gridHost = host;
 
   const channels = data.channels || [];
   host.textContent = '';
@@ -112,6 +122,4 @@ export function init(data) {
     if (c && c.href) { location.href = c.href; return; }
     router.go(btn.dataset.card, btn);
   });
-
-  enter(host);
 }

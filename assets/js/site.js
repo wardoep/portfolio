@@ -14,23 +14,37 @@ import * as settings from './settings.js';
  *
  * Skipped outright when the URL carries a route: a shared deep link must not
  * put a black gate in front of the thing it points at. */
-function bootGate() {
+/* How long the start screen holds before it lets itself out. It used to wait
+   forever, which put a wall between a busy hiring manager and the content —
+   and the person arriving from a job application is, by definition, a
+   first-time visitor who has never seen it. A key or a click still skips it
+   instantly, so the cue is still true. */
+const BOOT_HOLD_MS = 1800;
+
+function bootGate(onDone) {
   const boot = document.querySelector('[data-boot]');
-  if (!boot) return;
+  const finish = () => { if (onDone) onDone(); };
+  if (!boot) { finish(); return; }
 
   const seen = (() => { try { return sessionStorage.getItem('pf-booted') === '1'; } catch { return false; } })();
   const deepLink = location.hash && location.hash !== '#/' && location.hash !== '#';
 
-  if (seen || deepLink) { boot.hidden = true; return; }
+  if (seen || deepLink) { boot.hidden = true; finish(); return; }
 
+  let timer = null;
   const dismiss = () => {
     if (boot.hidden || boot.classList.contains('is-going')) return;
+    clearTimeout(timer);
     try { sessionStorage.setItem('pf-booted', '1'); } catch { /* private mode */ }
     boot.classList.add('is-going');
     const done = () => {
       boot.hidden = true;
       document.querySelector('.user')?.focus({ preventScroll: true });
       announce('Menu ready');
+      /* Only now is the menu actually visible, so this is when its entrance is
+         worth playing. Running it under an opaque overlay meant the nicest
+         animation on the site was invisible on the one visit that matters. */
+      finish();
     };
     const ms = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--d-slow')) || 0;
     if (ms > 0) setTimeout(done, ms); else done();
@@ -43,6 +57,7 @@ function bootGate() {
     dismiss();
   }, { once: false });
 
+  timer = setTimeout(dismiss, BOOT_HOLD_MS);
   boot.focus({ preventScroll: true });
 }
 
@@ -57,7 +72,9 @@ async function main() {
   /* Before the fetch, and outside the try — the clock is dock furniture and
      must not be hostage to whether projects.json arrives. */
   dock.init();
-  bootGate();
+  let menuVisible = false;
+  const revealed = () => { menuVisible = true; grid.playEntrance(); };
+  bootGate(revealed);
 
   const loading = document.querySelector('[data-loading]');
 
@@ -80,6 +97,9 @@ async function main() {
   if (loading) loading.hidden = true;
 
   grid.init(data);
+  /* If the gate already let go while the data was still in flight, the
+     entrance had nothing to play; play it now. */
+  if (menuVisible) grid.playEntrance();
   panels.init(data);
   router.start();
 
@@ -93,7 +113,9 @@ async function main() {
     boot.classList.remove('is-going');
     boot.hidden = false;
     boot.focus({ preventScroll: true });
-    bootGate();
+    /* same callback, so replaying the start screen also replays the menu
+       arriving behind it — otherwise the second run is silent */
+    bootGate(revealed);
   });
 
 

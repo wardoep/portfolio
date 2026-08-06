@@ -54,6 +54,11 @@ export function takeTrigger() {
   return t;
 }
 
+/* Read it WITHOUT consuming it. The open animation needs to know which element
+   was pressed so it can grow the panel out of it, and that happens long before
+   the close path is entitled to claim the trigger for focus restoration. */
+export const peekTrigger = () => lastTrigger;
+
 export function go(path, trigger) {
   if (trigger !== undefined) setTrigger(trigger);
   const next = path.startsWith('#') ? path : '#/' + String(path).replace(/^\/+/, '');

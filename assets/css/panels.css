@@ -33,6 +33,9 @@
   animation: panelIn var(--d-mid) var(--ease-pop) both;
 }
 .panel[hidden] { display: none; }
+/* While the open/close zoom is running, the scripted animation owns the
+   transform; the CSS keyframes would be a second author of the same property. */
+.panel--zoom { animation: none !important; }
 @keyframes panelIn {
   from { opacity: 0; transform: translate(-50%, -50%) scale(.96); }
   to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }

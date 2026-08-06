@@ -198,7 +198,11 @@ a { color: inherit; }
       rgb(0 0 0 / .10) 100%);
   border: 1px solid rgb(255 255 255 / .30);
   border-radius: var(--r-tile);
-  box-shadow: var(--shadow-tile);
+  /* The inset highlight is written out rather than reading --bevel, which is
+     .9 white in light and .06 in dark. These tiles are the SAME colour in both
+     themes, so their bevel has to be too — the token would make the gloss
+     vanish the moment anyone switched to dark. */
+  box-shadow: var(--shadow-tile), inset 0 1px 0 rgb(255 255 255 / .45);
   cursor: pointer;
   overflow: hidden;
   /* transform only. The lift shadow and the selection ring are PAINT
@@ -206,6 +210,26 @@ a { color: inherit; }
      on ::after and cross-fade with opacity instead. */
   transition: transform var(--d-mid) var(--ease);
 }
+
+/* A shine travelling across the face on hover — the glossy-console detail the
+   flat tint was missing. `overflow: hidden` on the tile clips it, and ::after
+   is already the lift ring, so this is ::before. Absolutely positioned so it is
+   not treated as a flex item. */
+.chan::before {
+  content: '';
+  position: absolute; inset: -1px;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(102deg,
+      rgb(255 255 255 / 0) 38%, rgb(255 255 255 / .30) 50%, rgb(255 255 255 / 0) 62%);
+  transform: translateX(-115%);
+}
+.chan:hover::before,
+.chan:focus-visible::before { animation: sweep var(--d-slow) var(--ease); }
+@keyframes sweep { from { transform: translateX(-115%); } to { transform: translateX(115%); } }
+/* the tile's own children have to sit above the shine */
+.chan > * { position: relative; z-index: 2; }
+
 .chan::after {
   content: '';
   position: absolute; inset: -1px;
@@ -237,7 +261,7 @@ a { color: inherit; }
 }
 .chan__count {
   font-family: var(--font-pix);
-  font-size: clamp(10px, 1.35vh, 12px);
+  font-size: 11px;      /* stepped, never clamped — see the reflow block */
   color: rgb(255 255 255 / .88); text-align: center; line-height: 1.4;
 }
 /* stays in flow at opacity 0, so revealing it never reflows the tile */
@@ -358,7 +382,7 @@ a { color: inherit; }
 }
 .dock__clock .clock {
   font-family: var(--font-pix);
-  font-size: clamp(20px, 2.6vw, 28px);
+  font-size: 22px;      /* stepped, never clamped */
   color: var(--ink-3);
   letter-spacing: .04em;
   font-variant-numeric: tabular-nums;
@@ -418,15 +442,24 @@ a { color: inherit; }
 
 @media (prefers-reduced-motion: reduce) {
   .chan--in { animation: none; }
+  .chan:hover::before, .chan:focus-visible::before { animation: none; }
   .boot__logo, .boot__name, .boot__role, .boot__cue { animation: none; }
 }
 :root[data-motion='off'] .chan--in { animation: none; }
+:root[data-motion='off'] .chan:hover::before,
+:root[data-motion='off'] .chan:focus-visible::before { animation: none; }
 :root[data-motion='off'] .boot__cue { animation: none; }
 
 /* ── reflow ──────────────────────────────────────────────────────────────
  * Above 900px the requirement is absolute: one screen, no vertical scroll.
  * Below it there is no honest way to fit twelve readable slots on a phone, so
  * the document scrolls and the tiles get their proportions back. */
+/* Integer steps for the bitmap face. A clamp() lands on fractional pixels at
+   nearly every window size and Departure Mono smears when it does. */
+@media (min-height: 800px)  { .chan__count { font-size: 12px; } }
+@media (min-width: 1200px)  { .dock__clock .clock { font-size: 26px; } }
+@media (min-width: 1600px)  { .dock__clock .clock { font-size: 28px; } }
+
 @media (min-width: 901px) {
   html, body { height: 100dvh; overflow: hidden; }
   .grid {
