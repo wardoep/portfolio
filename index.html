@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Edward Penna — Desktop Support &amp; IT</title>
-<meta name="description" content="Edward Penna — Desktop Support / IT Support. B.S. Cybersecurity, SUNY Albany. Thirteen documented IT and security labs: helpdesk ticketing, Active Directory, PowerShell, Linux, Docker, monitoring, backup/DR and security operations.">
+<meta name="description" content="Edward Penna — Desktop Support / IT Support. B.S. Cybersecurity, SUNY Albany. Documented IT and security labs: helpdesk ticketing, Active Directory, PowerShell, Linux, Docker, monitoring, backup/DR and security operations.">
 <meta name="author" content="Edward Penna">
 
 <!-- Absolute, because scrapers do not resolve relative og: values. If this ever
@@ -30,7 +30,7 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://wardoep.github.io/portfolio/">
 <meta property="og:title" content="Edward Penna — Desktop Support &amp; IT">
-<meta property="og:description" content="Desktop Support / IT Support. B.S. Cybersecurity, SUNY Albany. Thirteen IT and security labs, each documented as a reproducible runbook.">
+<meta property="og:description" content="Desktop Support / IT Support. B.S. Cybersecurity, SUNY Albany. IT and security labs, each documented as a reproducible runbook.">
 <meta property="og:image" content="https://wardoep.github.io/portfolio/assets/img/og-card.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -126,24 +126,12 @@
 
 <!-- ─── header ─────────────────────────────────────────────────────────── -->
 <header class="hud">
+  <!-- Name, then a small glyph. The hand-drawn avatar and the role line that
+       used to be here are gone: the reference for this is a plain account chip,
+       and "simpler" was the whole ask. Still a real button opening About. -->
   <button class="user" type="button" data-open="about" aria-label="Edward Penna — open About">
-    <span class="user__face">
-      <!-- Hand-drawn avatar. Edit the six values in :root to change it. -->
-      <svg viewBox="0 0 64 64" role="img" aria-hidden="true" focusable="false">
-        <rect class="av-bg" x="0" y="0" width="64" height="64" rx="10"/>
-        <ellipse class="av-skin" cx="32" cy="34" rx="17" ry="19"/>
-        <path class="av-ear" d="M15 32c-3 0-4 2-3.5 4.5S14 40 16 39zM49 32c3 0 4 2 3.5 4.5S50 40 48 39z"/>
-        <path class="av-hair" d="M14 30c0-11 8-17 18-17s18 6 18 17c0 0-2-7-8-8-4.5-.8-8 1.5-13 1-4-.4-6.5 1.6-8 4-1 1.6-1.3 3-1.3 3z"/>
-        <ellipse class="av-eye" cx="25" cy="34" rx="2.4" ry="3"/>
-        <ellipse class="av-eye" cx="39" cy="34" rx="2.4" ry="3"/>
-        <path class="av-brow" d="M21.5 28.5c2-1.4 5-1.4 7 0M35.5 28.5c2-1.4 5-1.4 7 0"/>
-        <path class="av-mouth" d="M27 43.5c2.6 2.4 7.4 2.4 10 0"/>
-      </svg>
-    </span>
-    <span class="user__plate">
-      <strong class="user__name">Edward Penna</strong>
-      <span class="user__role">Desktop Support / IT</span>
-    </span>
+    <span class="user__name">Edward Penna</span>
+    <svg class="ico user__glyph" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-person"/></svg>
   </button>
 
 
@@ -227,11 +215,14 @@
     <h2 id="h-about">About</h2>
   </div>
   <div class="panel__body prose">
-    <p class="lead">Hi — I'm Edward.</p>
-    <p>I like the part of this work most people find annoying: something is broken, nobody knows why, and you have to work backwards until it makes sense. That instinct turned into a cybersecurity degree from the University at Albany, a summer on the front line of a hospital help desk, and a Linux server at home that I have been quietly keeping alive for a couple of years.</p>
-    <p>That server is where most of what I actually know came from. Not from tutorials — from a backup that didn't restore, a service that died quietly and stayed dead for two days before I noticed, a certificate that expired at the worst possible moment. Everything on this site is built the same way: stand it up, break it on purpose, fix it, then write it down well enough that I could rebuild it from the notes.</p>
-    <p>The other half of the job is people. I'm patient with someone who is frustrated with their computer, I explain things without making anyone feel stupid, and I would rather ask a question than guess and be wrong twice.</p>
-    <p>Right now I'm looking for a first full-time role in desktop or IT support, and studying for CompTIA Network+.</p>
+    <!-- Was five paragraphs and 230 words. It named a count of labs, so it went
+         out of date on every push, and it was built out of the constructions
+         that give generated text away: "Not from tutorials — from a backup
+         that…", a three-clause list, "The other half of the job is people."
+         Nothing here needs editing when the next repo lands. -->
+    <p class="lead">I build IT labs and write each one up so someone else could follow it. One's an osTicket helpdesk with SLAs and email piping that I've worked tickets through. There's usually another one half-built.</p>
+    <p>I've had a Linux server at home for a couple of years and it has to stay up. My first restic restore drill didn't restore anything. I fixed it and wrote down what I'd missed.</p>
+    <p>I'm after my first full-time job in desktop support or helpdesk. Degree's in cybersecurity from SUNY Albany and I'm studying for Network+. I did a summer at Broadridge on access reviews and audit prep, and before that I volunteered in IT at Stony Brook Hospital, mostly logins and broken hardware.</p>
     <p class="cta-row">
       <a class="btn btn--primary" href="resume.html">Read the résumé</a>
       <a class="btn" href="#/now">What I'm learning</a>
@@ -298,7 +289,7 @@
       <li>B.S. Cybersecurity, University at Albany, May 2025. Studying for CompTIA Network+.</li>
       <li>IT Support Volunteer, Stony Brook Hospital (summer 2023) — login, access, hardware and software issues, tracked through tickets.</li>
       <li>Summer Consultant, Broadridge (2024) — information security: access reviews and audit preparation.</li>
-      <li>Thirteen documented labs: osTicket helpdesk, Active Directory, PowerShell, Docker, monitoring, backup/DR and security operations.</li>
+      <li>Documented labs covering osTicket helpdesk, Active Directory, PowerShell, Docker, monitoring, backup/DR and security operations.</li>
       <li>A self-hosted Linux server running production-style services with real uptime requirements.</li>
     </ul>
   </div>
@@ -372,12 +363,17 @@
         <rect class="boot__warn-bar" x="11" y="9" width="2" height="6" rx="1"/>
         <rect class="boot__warn-bar" x="11" y="16.5" width="2" height="2" rx="1"/>
       </svg>
-      <span>NOTICE &mdash; EDWARD PENNA</span>
+      <span>NOTICE FROM EDWARD PENNA</span>
     </span>
+    <!-- The old body broke the count rule twice and claimed the work was done
+         by hand. "WORK CONTINUES DURING NORMAL OPERATION" says he is still
+         building without naming an amount, a date or a boast — and unlike
+         "NONE OF IT IS FINISHED", a hiring manager cannot read it as
+         "nothing works". -->
     <span class="boot__body">
-      EVERYTHING BEYOND THIS SCREEN WAS BUILT, BROKEN<br>
-      AND WRITTEN UP BY HAND. THIRTEEN LABS, SIX BUILDS,<br>
-      ONE SERVER THAT HAS TO STAY UP.
+      MOST OF THIS BROKE BEFORE IT WORKED.<br>
+      THE FIX IS WRITTEN DOWN SO IT CAN BE REPEATED.<br>
+      WORK CONTINUES DURING NORMAL OPERATION.
     </span>
     <span class="boot__also">Also online at</span>
     <span class="boot__url">github.com/wardoep</span>

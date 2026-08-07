@@ -7,8 +7,17 @@
  * moment a number changed — it claimed "20 documented labs" long after the
  * site had settled on thirteen.
  *
- * So it is generated, and the lab count is COUNTED, never typed. Run it after
- * any change to the folders or the project list:
+ * The card no longer states a count at all. Computing it instead of typing it
+ * fixed the disagreement but not the actual problem: a preview image is cached
+ * for weeks by every platform that scrapes it, so a number baked into one is
+ * wrong the moment the next repo lands no matter how carefully it was derived.
+ * The card says what the work is; the site says the same. publish.sh check 14
+ * enforces that across every other piece of copy.
+ *
+ * The count is still computed, and only printed to the terminal — it is a
+ * useful thing to see when you run this, and useless on the card.
+ *
+ *   node scripts/make-og-card.mjs
  *
  *   node scripts/make-og-card.mjs
  *
@@ -64,7 +73,7 @@ body{
 <div class="role">Desktop Support / IT Support</div>
 <div class="edu">B.S. Cybersecurity · SUNY Albany</div>
 <div class="rule"></div>
-<div class="labs">${labs} documented IT &amp; security labs</div>`;
+<div class="labs">documented IT &amp; security labs</div>`;
 
 /* ── drive the browser ─────────────────────────────────────────────────── */
 const target = (await (await fetch(`http://127.0.0.1:${PORT}/json/list`)).json())

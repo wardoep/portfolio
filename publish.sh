@@ -159,6 +159,82 @@ else
   ok "no forward-looking date has expired"
 fi
 
+# 14 — copy that has to be maintained by hand every time a repo is pushed.
+#
+#      Nine places shipped a hard count — "thirteen labs", "six builds", "13
+#      entries" — plus a "built by hand" claim. Every one of those is a line
+#      that silently becomes a lie the next time he pushes, and none of them
+#      look wrong while they are still true, which is exactly why this has to
+#      be a check rather than a resolution.
+#
+#      It is also a claim he does not want the site making on his behalf: the
+#      site should say what the work IS, never how much of it there is.
+#
+#      Scope is deliberately prose only. Comments in source, the project data
+#      (a blurb that genuinely says "six alert channels" is describing a
+#      feature, not counting a portfolio), and this file are all exempt —
+#      a gate that flags legitimate text is a gate people learn to skip.
+countable=$(python3 - <<'PY'
+import re, pathlib, html
+
+NUM = (r"(?:\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|"
+       r"thirteen|fourteen|fifteen|twenty|dozen|several|many|numerous|handful)")
+THING = r"(?:labs?|builds?|projects?|repos?|repositories|entries|runbooks?)"
+
+PATTERNS = [
+    # "thirteen labs", "13 entries", and "Thirteen documented IT and security
+    # labs" — the meta description, which is why the gap allows four words and
+    # not two. That description is the version a recruiter sees in a search
+    # result, so it is the LAST place a stale number should survive.
+    (re.compile(rf"\b{NUM}\s+(?:\w+\s+){{0,4}}{THING}\b", re.I), "counts the work"),
+    # "labs: thirteen" and "over ten builds"
+    (re.compile(rf"\b(?:over|more than|upwards of|at least)\s+{NUM}\b", re.I), "counts the work"),
+    (re.compile(r"\b(?:by hand|from scratch|hand-(?:built|written|made|coded))\b", re.I),
+     "claims it was built by hand"),
+]
+
+# Strip <script>, <style> and HTML comments: the sprite, the JSON-LD and the
+# authoring notes are not copy anyone reads.
+STRIP = re.compile(r"<!--.*?-->|<script\b.*?</script>|<style\b.*?</style>", re.S | re.I)
+TAG = re.compile(r"<[^>]+>")
+
+bad = []
+for f in ("index.html", "resume.html", "404.html"):
+    p = pathlib.Path(f)
+    if not p.exists():
+        continue
+    raw = p.read_text()
+    # meta description/og:description are copy even though they live in a tag
+    metas = re.findall(r'<meta[^>]+content="([^"]*)"', raw, re.I)
+    body = TAG.sub(" ", STRIP.sub(" ", raw))
+    for text in [body, *metas]:
+        for pat, why in PATTERNS:
+            for m in pat.finditer(html.unescape(text)):
+                bad.append(f"{f}: {why} — \"{m.group(0).strip()}\"")
+
+for f in sorted(pathlib.Path("assets/js").glob("*.js")):
+    src = f.read_text()
+    # blank comments rather than deleting, so a stray match still reports sanely
+    src = re.sub(r"/\*.*?\*/", lambda c: re.sub(r"[^\n]", " ", c.group(0)), src, flags=re.S)
+    src = re.sub(r"//[^\n]*", "", src)
+    for m in re.finditer(r"'([^'\\\n]{12,})'|\"([^\"\\\n]{12,})\"|`([^`\\]{12,})`", src):
+        text = next(g for g in m.groups() if g is not None)
+        for pat, why in PATTERNS:
+            hit = pat.search(text)
+            if hit:
+                bad.append(f"{f}: {why} — \"{hit.group(0).strip()}\"")
+
+print("\n".join(dict.fromkeys(bad)))
+PY
+)
+if [ -n "$countable" ]; then
+  n=$(echo "$countable" | wc -l | tr -d ' ')
+  bad "copy that needs hand-maintaining ($n): $(echo "$countable" | head -1)"
+  echo "$countable" | sed 's/^/           /'
+else
+  ok "no copy counts the work or claims it was hand-built"
+fi
+
 echo
 [ "$fail" -eq 0 ] || { echo "pre-flight failed."; exit 1; }
 

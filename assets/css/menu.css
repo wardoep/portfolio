@@ -103,69 +103,46 @@ a { color: inherit; }
   padding: 10px clamp(12px, 2.5vw, 28px);
 }
 
-/* ── the identity tile ────────────────────────────────────────────────────
- * A portrait in a square, the way the reference puts the account in its own
- * corner tile. It used to be a soft white pill with two lines of text beside
- * it — rounded and pastel in a design that is otherwise hard rectangles, and
- * the one thing left on screen still speaking the old language.
+/* ── the name chip ────────────────────────────────────────────────────────
+ * A name and a small glyph in a flat box. It has been, in order: a soft pastel
+ * pill, then a portrait tile, then a miniature channel card — each one more
+ * elaborate than the last for something whose entire job is to say whose site
+ * this is and open About.
  *
- * It is a channel tile in miniature: same radius, same ink fill, same flip on
- * hover. The name stays, small, underneath — a console already knows who you
- * are and a visitor does not. */
+ * So: no portrait, no role line, no sheen. The 2px rule and the radius are the
+ * only things tying it to the wall, which is enough. */
 .user {
-  display: flex; align-items: center; gap: 11px;
-  padding: 8px 16px 8px 8px;
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 7px 12px;
   color: var(--card-projects-ink);
   background: var(--card-projects);
-  background-image: var(--card-sheen);
-  border: 3px solid var(--card-rule); border-radius: var(--r-tile);
+  border: 2px solid var(--card-rule); border-radius: var(--r-sm);
   cursor: pointer; font: inherit; text-align: left;
   position: relative;
   transition: transform var(--d-fast) var(--ease);
 }
+.user__glyph { width: 17px; height: 17px; flex: none; stroke-width: 2; opacity: .85; }
 .user::after {
   content: '';
-  position: absolute; inset: -3px;
+  position: absolute; inset: -2px;
   border-radius: inherit;
-  box-shadow: 0 0 0 3px var(--ground), 0 0 0 6px var(--card-rule),
-              0 10px 22px rgb(0 0 0 / .25);
+  box-shadow: 0 0 0 2px var(--ground), 0 0 0 4px var(--card-rule);
   opacity: 0; pointer-events: none;
   transition: opacity var(--d-fast) var(--ease);
 }
 .user:hover, .user:focus-visible { transform: translateY(-2px); }
 .user:hover::after, .user:focus-visible::after { opacity: 1; }
-.user:focus-visible { outline: 3px solid var(--card-projects-ink); outline-offset: -7px; }
+.user:focus-visible { outline: 3px solid var(--card-projects-ink); outline-offset: -6px; }
 
-/* A circle, like every other card's art on this page. The stencil inside is
-   unchanged — only the frame around it moved. */
-.user__face {
-  width: 44px; height: 44px; flex: none;
-  border-radius: 50%; overflow: hidden;
-  color: var(--card-projects);
-  background: var(--card-projects-ink);
-}
-.user__face svg { display: block; width: 100%; height: 100%; }
+/* The seven .av-* rules and the eight-shape portrait they styled are deleted
+   along with the markup. Leaving a stylesheet full of selectors for elements
+   nothing emits is worse than losing the drawing — it reads as live code and
+   the next person to touch this file has to prove otherwise. */
 
-/* The avatar is a white stencil, not a colour portrait. The eight shapes are
-   the same as before — only these six rules changed — so the geometry is
-   untouched and the whole thing inverts with its tile via currentColor. */
-.av-bg    { fill: none; }
-.av-skin  { fill: none; stroke: currentColor; stroke-width: 2.4; }
-.av-ear   { fill: none; stroke: currentColor; stroke-width: 2.2; }
-.av-hair  { fill: currentColor; }
-.av-eye   { fill: currentColor; }
-.av-brow  { fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; }
-.av-mouth { fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; }
-
-.user__plate { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.3; }
-.user__name  {
+.user__name {
   font-family: var(--font-pix);
-  font-size: 13px; letter-spacing: .07em; text-transform: uppercase;
-  color: inherit;
-}
-.user__role {
-  font-size: var(--fs-micro); letter-spacing: .01em;
-  color: inherit; opacity: .72;
+  font-size: 14px; letter-spacing: .06em;
+  color: inherit; white-space: nowrap;
 }
 
 .hud__right { display: flex; align-items: center; gap: 12px; }

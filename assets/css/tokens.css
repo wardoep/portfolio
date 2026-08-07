@@ -156,13 +156,13 @@
 
   --dock-h: 96px;   /* the bar's real height; the grid's width maths
                        reads this, so the two must not drift */
-  --hud-h:  86px;   /* The identity card is horizontal now — portrait BESIDE the
-                       type rather than above it — so the header is shorter than
-                       the 102px the stacked version needed. The grid subtracts
-                       this token, so if the header's real height ever drifts
-                       from it the bottom row clips in silence. That is not
-                       hypothetical: it is the bug this token exists to prevent
-                       and the one the fit gate now catches. */
+  --hud-h:  64px;   /* MEASURED, not guessed: with the portrait and the role line
+                       gone the header needs 60px, and the extra 4 is clearance
+                       for the chip's hover ring. It has been 102, then 86, then
+                       this — once per redesign of the chip, because the grid
+                       subtracts this token to derive its own height and a token
+                       that drifts from the real header clips the bottom row in
+                       silence. That is the bug the fit gate exists to catch. */
 
   /* Everything in the stage that is NOT the grid: the pitch line, the level
      title, the closing CTA. Written by grid.js from a ResizeObserver rather

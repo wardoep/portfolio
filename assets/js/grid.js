@@ -52,7 +52,7 @@ function captionForChannel(c) {
  * The old "Open" pill is gone — it was hover-only so it never appeared on a
  * touch screen, it said nothing a <button> does not already announce, and it
  * cost 21px of height in a card that was overflowing by 8. */
-function tile({ id, iconId, label, sub, chips, caption, route }) {
+function tile({ id, iconId, label, sub, chips, reserveChips, caption, route }) {
   const slot = el('div', 'slot');
 
   const btn = el('button', 'chan');
@@ -67,16 +67,19 @@ function tile({ id, iconId, label, sub, chips, caption, route }) {
   const text = el('span', 'chan__text');
   text.appendChild(el('span', 'chan__label', label));
   if (sub) text.appendChild(el('span', 'chan__count', sub));
-  /* Always appended, even with nothing in it. The text block is vertically
-     centred, so a card missing this row centres its name 11px lower than its
-     neighbours' — which on a wall of three reads as one card being slightly
-     wrong rather than as a missing chip. */
-  const row = el('span', 'chan__chips');
-  /* decoration: the stack is already in the panel, and read aloud after the
-     name it is four more nouns before you learn what the thing does */
-  row.setAttribute('aria-hidden', 'true');
-  (chips || []).forEach((c) => row.appendChild(el('span', 'chan__chip', c)));
-  text.appendChild(row);
+  /* Appended even when empty, but only on a level where SOME card has chips.
+     The text block is vertically centred, so a card missing this row centres
+     its name lower than its neighbours' — one card looking slightly wrong
+     rather than one chip missing. On a level where nobody has chips there is
+     nothing to line up with, and reserving the space just leaves a gap. */
+  if (reserveChips) {
+    const row = el('span', 'chan__chips');
+    /* decoration: the stack is already in the panel, and read aloud after the
+       name it is four more nouns before you learn what the thing does */
+    row.setAttribute('aria-hidden', 'true');
+    (chips || []).forEach((c) => row.appendChild(el('span', 'chan__chip', c)));
+    text.appendChild(row);
+  }
   btn.appendChild(text);
 
   slot.appendChild(btn);
@@ -127,9 +130,13 @@ function centreLastRow(host, count, cols) {
  * forward-looking date that has quietly gone past, and "available now" cannot
  * expire. */
 const PITCH_LEAD = 'Desktop Support / IT — available now';
+/* No count. It named a number of labs and a number of builds, which meant two
+   sentences on the landing screen went quietly out of date every time a repo
+   was pushed, and made the page brag about an amount rather than say what the
+   work is. publish.sh check 14 fails the build if one comes back. */
 const PITCH_SUB =
-  'B.S. Cybersecurity, University at Albany. Thirteen labs and six builds, ' +
-  'each one stood up, broken on purpose, and written up well enough to rebuild from.';
+  'B.S. Cybersecurity, University at Albany. I build IT and security labs at home, ' +
+  'break them on purpose, and write down what it took to fix them.';
 
 const folderLabel = (id) =>
   (data.folders || []).find((f) => f.id === id)?.label || '';
@@ -145,7 +152,9 @@ function render() {
   if (sub) {
     const c = channelById(level.id);
     const ps = channelProjects(c);
+    const anyChips = ps.some((p) => (p.stack || []).length);
     tiles = ps.map((p) => tile({
+      reserveChips: anyChips,
       id: p.id,
       iconId: 'i-' + (p.icon || 'default'),
       label: p.title || p.id,
@@ -157,18 +166,19 @@ function render() {
       route: 'project/' + p.id,
     }));
   } else {
-    tiles = channels().map((c) => {
-      const n = channelProjects(c).length;
-      return tile({
-        id: c.id,
-        iconId: 'i-' + (c.icon || 'default'),
-        label: c.label,
-        sub: c.kind || c.blurb || '',
-        chips: n ? [`${n} ${n === 1 ? 'entry' : 'entries'}`] : [],
-        caption: captionForChannel(c),
-        route: c.id,
-      });
-    });
+    /* No count chip. It read "13 entries", which was derived from the data and
+       so never went stale — but a number was still the wrong thing to put on
+       the landing screen. The tile should say what the channel IS, not how much
+       is currently in it. */
+    tiles = channels().map((c) => tile({
+      id: c.id,
+      iconId: 'i-' + (c.icon || 'default'),
+      label: c.label,
+      sub: c.kind || c.blurb || '',
+      chips: [],
+      caption: captionForChannel(c),
+      route: c.id,
+    }));
   }
 
   tiles.forEach((t) => host.appendChild(t));
