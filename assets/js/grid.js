@@ -43,8 +43,11 @@ function captionForChannel(c) {
   if (!ps.length) return c.blurb || '';
   const featured = ps.filter((p) => p.featured);
   const pick = (featured.length ? featured : ps).slice(0, 5).map((p) => p.title || p.id);
-  const rest = ps.length - pick.length;
-  return pick.join(' · ') + (rest > 0 ? `  +${rest} more` : '');
+  /* An ellipsis, not "+8 more". That was the subtlest count on the page — never
+     typed, derived from the data, and different on every single push. It also
+     hid from the first version of the gate, because the caption is display:none
+     until hover and textContent glued it to the next tile's label. */
+  return pick.join(' · ') + (ps.length > pick.length ? ' · …' : '');
 }
 
 /* ── one card ─────────────────────────────────────────────────────────────
