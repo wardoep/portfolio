@@ -158,8 +158,14 @@ a { color: inherit; }
 
 /* ── channel wall ─────────────────────────────────────────────────────────
  * One row, one tile per channel. --cols is set by grid.js from the data, so a
- * fourth channel needs no CSS. The tiles are SQUARE: a single row of 4:3 tiles
- * filled only 337px of a 730px stage and the whole menu floated.
+ * fourth channel needs no CSS.
+ *
+ * Tiles are CAPPED at the size the coverflow cards were — 330px wide, 4:3 —
+ * rather than stretched to fill the row. Letting them take the whole width made
+ * them 447px squares, which is a lot of black for three words. The cap goes on
+ * --avail-w so every derived value downstream inherits it, instead of clamping
+ * the grid afterwards and leaving the height maths reasoning about a width the
+ * grid no longer has.
  *
  * Row height comes from the REAL stage box (height:100% + 1fr rows), never from
  * token arithmetic, because above 901px the page is overflow:hidden — a grid
@@ -173,15 +179,19 @@ a { color: inherit; }
   --rows: 1;
   --gap: clamp(12px, 2.4vh, 22px);
 
-  /* the stage's inner width, and the tile width a full-width grid implies */
-  --avail-w: calc(100vw - 2 * var(--stage-pad));
+  /* the size a coverflow card was, and the widest the row may therefore get */
+  --tile-max: 330px;
+  --max-w: calc(var(--cols) * var(--tile-max) + (var(--cols) - 1) * var(--gap));
+
+  /* the stage's inner width, capped, and the tile width it implies */
+  --avail-w: min(calc(100vw - 2 * var(--stage-pad)), var(--max-w));
   --col-from-w: calc((var(--avail-w) - (var(--cols) - 1) * var(--gap)) / var(--cols));
-  --h-cap: calc(var(--rows) * var(--col-from-w) + (var(--rows) - 1) * var(--gap));
+  --h-cap: calc(var(--rows) * var(--col-from-w) * 3 / 4 + (var(--rows) - 1) * var(--gap));
 
   /* the stage's height, and the grid width that height implies */
   --stage-h: calc(100dvh - var(--hud-h) - var(--dock-h) - 2 * var(--stage-pad-y));
   --row-from-h: calc((var(--stage-h) - (var(--rows) - 1) * var(--gap)) / var(--rows));
-  --w-cap: calc(var(--cols) * var(--row-from-h) + (var(--cols) - 1) * var(--gap));
+  --w-cap: calc(var(--cols) * var(--row-from-h) * 4 / 3 + (var(--cols) - 1) * var(--gap));
 
   display: grid;
   grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
@@ -445,8 +455,8 @@ a { color: inherit; }
   html, body { height: 100dvh; overflow: hidden; }
   .grid {
     height: 100%;
-    max-height: var(--h-cap);           /* bound by the available WIDTH */
-    width: min(100%, var(--w-cap));     /* bound by the available HEIGHT */
+    max-height: var(--h-cap);                        /* bound by the WIDTH */
+    width: min(100%, var(--w-cap), var(--max-w));    /* bound by the HEIGHT, and capped */
     grid-template-rows: repeat(var(--rows), minmax(0, 1fr));
   }
 }
@@ -455,7 +465,7 @@ a { color: inherit; }
   .hud { height: auto; padding-block: 10px; }
   .stage { align-items: flex-start; padding-block: 10px 20px; }
   .grid { width: 100%; }
-  .slot { aspect-ratio: 1 / 1; }
+  .slot { aspect-ratio: 4 / 3; }
 }
 
 @media (max-width: 600px) {
