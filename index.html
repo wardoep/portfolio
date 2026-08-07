@@ -69,6 +69,13 @@
 
 <a class="skip" href="#main">Skip to content</a>
 
+<!-- ─── the pixel field ────────────────────────────────────────────────────
+     Purely decorative, so aria-hidden and no fallback content: a screen reader
+     announcing "canvas" before the menu would be worse than silence. stars.js
+     sizes it; if the script never runs it is an empty transparent rectangle and
+     the graph paper underneath is what you see. -->
+<canvas class="stars" data-stars aria-hidden="true"></canvas>
+
 <!-- ─── icon sprite ────────────────────────────────────────────────────────
      Drawn from scratch. The font subset carries no arrows, chevrons, ticks or
      stars, so every glyph-shaped thing on this page is one of these. -->
@@ -151,11 +158,21 @@
 <main id="main" class="stage">
   <h1 class="sr-only">Edward Penna — desktop support and IT portfolio</h1>
 
-  <!-- Four across, three down. Three slots are filled and nine are empty
-       sockets; grid.js builds both. A landmark of its own, beside the dock's. -->
-  <p class="level" data-level-title hidden></p>
+  <!-- One slot, two jobs: the pitch at the root, the channel's name inside one.
+       In the flow, NOT absolutely positioned — as an absolute box it took no
+       space in the column, carried no z-index, and the tiles painted over it. -->
+  <p class="level" data-level-title></p>
 
   <nav class="grid" data-grid aria-label="Channels"><!-- built by grid.js --></nav>
+
+  <!-- The closing ask. Says the address rather than hiding it behind the click,
+       because an address you have to work for is one more reason not to bother.
+       Public inbox only — publish.sh check 6 fails the build on the others. -->
+  <button class="cta" type="button" data-open="contact" data-cta>
+    <svg class="ico ico--sm" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mail"/></svg>
+    Hiring for desktop or IT support?
+    <span class="cta__mail">pennaeddie1@gmail.com</span>
+  </button>
 
   <p class="loading" data-loading>Loading…</p>
 </main>
@@ -164,8 +181,10 @@
 <!-- Every item carries a permanent text label. Nine unlabelled glyphs told a
      visitor nothing, and a hover tooltip would never appear on a touch screen. -->
 <nav class="dock" aria-label="Quick actions">
-  <!-- only reachable inside a sub-menu; CSS hides it at the root -->
-  <button class="dock__btn dock__btn--back" type="button" data-menu-back>
+  <!-- Always here, disabled at the root. It used to be display:none until you
+       opened a channel, which re-centred the whole bar and made every other
+       button jump sideways the moment you clicked one. -->
+  <button class="dock__btn dock__btn--back" type="button" data-menu-back disabled>
     <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow-l"/></svg>
     <span class="dock__label">Menu</span>
   </button>

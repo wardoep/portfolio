@@ -6,6 +6,7 @@ import * as grid from './grid.js';
 import * as dock from './dock.js';
 import * as panels from './panels.js';
 import * as settings from './settings.js';
+import * as stars from './stars.js';
 
 /* ── boot gate ────────────────────────────────────────────────────────────
  * A real <button> filling the viewport, not a div with a click handler. It is
@@ -63,9 +64,11 @@ async function loadData() {
 
 async function main() {
   settings.init();
-  /* Before the fetch, and outside the try — the clock is dock furniture and
-     must not be hostage to whether projects.json arrives. */
+  /* Before the fetch, and outside the try — the clock is dock furniture and the
+     background is the page's own background; neither may be hostage to whether
+     projects.json arrives. */
   dock.init();
+  stars.init();
   let menuVisible = false;
   const revealed = () => { menuVisible = true; grid.playEntrance(); };
   bootGate(revealed);

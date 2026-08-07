@@ -354,7 +354,7 @@
   /* .pages was the old grid container and has not existed for three commits,
      which is why the home screen has been printing. .stage is the element
      that is actually there. */
-  .hud, .dock, .scrim, .boot, .stage, .lightbox { display: none !important; }
+  .hud, .dock, .scrim, .boot, .stage, .lightbox, .stars { display: none !important; }
   .panel { position: static; transform: none; max-height: none; box-shadow: none; border: 0; width: auto; }
   .panel[hidden] { display: block !important; }
 }

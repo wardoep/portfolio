@@ -34,16 +34,23 @@
   /* --- ground and surfaces ---
    * Black and white, no hue anywhere. The greys that remain are the ones text
    * sits on, so they are the only values here that can fail a contrast pair —
-   * the pure ends are 20:1 and take care of themselves. */
-  --ground:      #e9e9e7;
-  --ground-lift: #f4f4f2;
-  --ground-edge: #d8d8d5;
+   * the pure ends are 20:1 and take care of themselves.
+   *
+   * The ground is a MID grey, not near-white, and that is load-bearing rather
+   * than taste: the cards are paper now, and paper on a near-white ground is
+   * separated only by its border. Darkening the ground buys a real 1.5:1
+   * luminance step between card and ground while every text pair on the ground
+   * keeps its headroom (ink lands at 11.4:1, the dimmest grey at 3.5:1). It is
+   * also what the reference actually shows — light cards on a grey board. */
+  --ground:      #cbcbc9;
+  --ground-lift: #d9d9d7;
+  --ground-edge: #bcbcba;
 
   /* graph paper: a fine rule, a heavier one every fifth, and a dot where the
      heavy ones cross. Three values so the whole texture retunes from here. */
-  --grid-fine:   rgb(20 24 28 / .055);
-  --grid-heavy:  rgb(20 24 28 / .14);
-  --grid-node:   rgb(20 24 28 / .42);
+  --grid-fine:   rgb(20 24 28 / .06);
+  --grid-heavy:  rgb(20 24 28 / .15);
+  --grid-node:   rgb(20 24 28 / .40);
   --grid-step:   34px;
   --tile:        #ffffff;
   --tile-2:      #f4f4f4;
@@ -74,6 +81,17 @@
 
   /* --- shape --- */
   --r-tile:  20px;   /* properly rounded, like the reference's channel tiles */
+
+  /* The card's aspect ratio, as TWO multiply-only tokens rather than one that
+     gets divided. `calc()` dividing by a variable is legal and widely supported
+     and still the kind of clever that fails quietly on the one browser you did
+     not test, and the grid's whole size derivation hangs off it. They are
+     reciprocals — 12/5 and 5/12 — and check-contrast.mjs asserts that, because
+     editing one and forgetting the other produces tiles that are subtly the
+     wrong shape rather than an error anyone would notice. */
+  --ar:      2.4;      /* width  ÷ height */
+  --ar-inv:  .4166667; /* height ÷ width  */
+
   --stage-pad:   clamp(10px, 2.5vw, 28px);  /* the stage's inline padding */
   --stage-pad-y: clamp(8px, 1.6vh, 16px);   /* and its vertical padding — the
                         grid's maths subtracts exactly these two, so a change
@@ -95,15 +113,25 @@
      way the reference does it.
      Kept as three tokens rather than one because panels.js reads
      var(--card-<id>) for each panel badge. */
-  --card-projects: #b9bcbd;
-  --card-builds:   #b9bcbd;
-  --card-resume:   #b9bcbd;
+  --card-projects: #f6f6f4;
+  --card-builds:   #f6f6f4;
+  --card-resume:   #f6f6f4;
   --card-projects-ink: #0f1214;
   --card-builds-ink:   #0f1214;
   --card-resume-ink:   #0f1214;
-  /* the face is a vertical brushed sweep, not a flat fill */
-  --card-sheen: linear-gradient(180deg, #f2f3f4 0%, #d8dadb 38%, #b0b3b5 62%, #9a9d9f 100%);
+  /* Near-flat paper with the faintest top lift. The old face was a four-stop
+     brushed sweep running to #9a9d9f — a lot of gradient for something the
+     3px rule was already doing the work of. */
+  --card-sheen: linear-gradient(180deg, #ffffff 0%, #f6f6f4 46%, #ececea 100%);
   --card-rule:  #0f1214;
+
+  /* --- the pixel field ---
+   * The background canvas. Dark theme gets white stars on black; light theme
+   * gets the same code with the ink inverted, so it reads as dust settling on
+   * the board rather than a starfield printed on paper. */
+  --star-ink:    #14181c;
+  --star-alpha:  .34;
+  --star-streak: #14181c;
 
 
   /* --- motion --- */
@@ -128,9 +156,20 @@
 
   --dock-h: 96px;   /* the bar's real height; the grid's width maths
                        reads this, so the two must not drift */
-  --hud-h:  102px;  /* the identity tile is a portrait over two lines of type;
-                       74px cropped it. The grid subtracts this token, so the
-                       wall re-derives its own height rather than overflowing. */
+  --hud-h:  86px;   /* The identity card is horizontal now — portrait BESIDE the
+                       type rather than above it — so the header is shorter than
+                       the 102px the stacked version needed. The grid subtracts
+                       this token, so if the header's real height ever drifts
+                       from it the bottom row clips in silence. That is not
+                       hypothetical: it is the bug this token exists to prevent
+                       and the one the fit gate now catches. */
+
+  /* Everything in the stage that is NOT the grid: the pitch line, the level
+     title, the closing CTA. Written by grid.js from a ResizeObserver rather
+     than guessed at here, because the pitch wraps to two lines on a narrow
+     window and a hardcoded value would under-count exactly when it matters and
+     push the last row under the dock. 0 is the correct value before JS runs. */
+  --stage-chrome: 0px;
 }
 
 /* ── DARK ─────────────────────────────────────────────────────────────────
@@ -162,14 +201,19 @@
   --row-active: linear-gradient(180deg, #202020 0%, #171717 100%);
   --badge-ring: #0a0a0a;
 
-  --card-projects: #3a3d3f;
-  --card-builds:   #3a3d3f;
-  --card-resume:   #3a3d3f;
+  --card-projects: #34383a;
+  --card-builds:   #34383a;
+  --card-resume:   #34383a;
   --card-projects-ink: #f2f3f4;
   --card-builds-ink:   #f2f3f4;
   --card-resume-ink:   #f2f3f4;
-  --card-sheen: linear-gradient(180deg, #55595c 0%, #3f4346 38%, #2c2f32 62%, #232629 100%);
+  --card-sheen: linear-gradient(180deg, #3d4144 0%, #34383a 46%, #2b2f31 100%);
   --card-rule:  #f2f3f4;
+
+  /* white stars on black, at the opacity the ink version cannot use */
+  --star-ink:    #ffffff;
+  --star-alpha:  .82;
+  --star-streak: #ffffff;
 
   --ok:   #f5f5f5;
   --warn: #c4c4c4;

@@ -9,6 +9,10 @@ import { announce } from './util.js';
 
 const root = document.documentElement;
 
+/* Nothing in here notifies the background canvas. It watches data-theme and
+   data-motion on <html> itself, which is the only way it stays correct for a
+   caller that has not been written yet. See stars.js. */
+
 const read = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
 const write = (k, v) => { try { localStorage.setItem(k, v); } catch { /* private mode */ } };
 

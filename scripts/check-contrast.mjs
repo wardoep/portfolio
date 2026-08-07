@@ -79,11 +79,17 @@ const PAIRS = [
   ['ink on RESUME face',       'card-resume-ink',   'card-resume',   4.5],
 
   /* Every face is the same value, so one pair covers all three.
-     The threshold is 1.4, not 3.0, and that is a deliberate loosening: the face
-     is a mid grey sheen now rather than flat ink, and what makes it read as a
-     tile is the 3px rule drawn around it. So the RULE is what gets gated hard —
-     lowering the face pair without raising the rule pair would be moving a
-     goalpost rather than measuring the thing that carries the design. */
+     The threshold is 1.4 rather than 3.0 because what makes a card read as a
+     card is the 3px rule drawn around it, not a luminance step — so the RULE is
+     what gets gated hard, and lowering the face pair without raising the rule
+     pair would be moving a goalpost rather than measuring the design.
+
+     The face is PAPER now, and the separation was bought by darkening the
+     GROUND to a mid grey rather than by relaxing this number: paper on the old
+     near-white ground measured 1.07 and would have needed the threshold moved,
+     which is the tell that the change was wrong. It measures 1.50 in light and
+     1.64 in dark against an unchanged 1.4, and every text-on-ground pair above
+     kept its headroom (ink lands at 12.19, the dimmest grey at 3.87). */
   ['face vs ground',           'card-projects', 'ground',      1.4],
   ['tile rule vs ground',      'card-rule',     'ground',      7.0],
   ['tile rule vs its own face', 'card-rule',    'card-projects', 4.5],
@@ -131,6 +137,37 @@ for (const theme of ['light', 'dark']) {
     console.log(`  ok    all three faces are ${faces[0]} in ${theme}`);
   }
 }
+/* The background canvas draws in --star-ink. If a theme forgets to flip it, the
+   field is black-on-black or white-on-white — a background that is simply not
+   there, and one that no screenshot diff would flag because "nothing visible"
+   is what an empty canvas looks like anyway. 1.4 is the same bar the card face
+   clears: enough to see, not so much it competes with text. */
+for (const theme of ['light', 'dark']) {
+  const r = ratio(get('star-ink', theme), get('ground', theme));
+  if (r < 1.4) {
+    console.log(`  FAIL  --star-ink is invisible on the ${theme} ground (${r.toFixed(2)}) — ` +
+                `it must invert between themes.`);
+    failed++;
+  } else {
+    console.log(`  ok    the pixel field reads at ${r.toFixed(2)} on the ${theme} ground`);
+  }
+}
+
+/* --ar and --ar-inv are hand-maintained reciprocals, kept apart so the grid's
+   calc() never divides by a variable. Editing one and forgetting the other
+   yields tiles that are subtly the wrong shape rather than an error. */
+{
+  const ar = parseFloat(token('ar', LIGHT));
+  const inv = parseFloat(token('ar-inv', LIGHT));
+  if (Math.abs(ar * inv - 1) > 0.005) {
+    console.log(`  FAIL  --ar (${ar}) and --ar-inv (${inv}) are not reciprocal — ` +
+                `product is ${(ar * inv).toFixed(4)}`);
+    failed++;
+  } else {
+    console.log(`  ok    --ar and --ar-inv are reciprocal (${ar} x ${inv})`);
+  }
+}
+
 for (const theme of ['light', 'dark']) {
   const white = ratio('#ffffff', get('sel', theme));
   console.log(`  note  white on --sel would be ${white.toFixed(2)} in ${theme} — ` +

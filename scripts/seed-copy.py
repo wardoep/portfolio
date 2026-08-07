@@ -267,23 +267,31 @@ FOLDER_ORDER = {"infra": 1, "security": 2, "builds": 3, "unsorted": 9}
 # hiring manager is on the page. (It used to sit at index 1 to be the centre
 # card of a carousel; that carousel is gone.)
 # A channel can span several folders; the overlay renders one section per folder.
+#
+# `kind` is the line UNDER the name on the card \u2014 what the thing actually is, in
+# five or six words. The wall used to say "13 projects", which tells a hiring
+# manager the count and not the point. Deliberately not derived from the count:
+# the claim about the work is the sentence, and the number is its smaller half.
 CHANNELS = [
     {
         # A ticket, not a shield. The icon on the main content channel is the
         # first thing read, and a shield announced "security portfolio".
         "id": "projects", "label": "PROJECTS", "icon": "ticket",
         "folders": ["infra", "security"],
+        "kind": "IT & security labs, each written up",
         "blurb": "Hands-on IT and security labs, each documented as a rebuildable runbook.",
     },
     {
         "id": "builds", "label": "BUILDS", "icon": "wrench",
         "folders": ["builds"],
+        "kind": "Things I wanted to exist, so I built them",
         "blurb": "Things I built because I wanted them to exist.",
     },
     {
         # Opens the panel, NOT a navigation away. The panel links on to
         # resume.html, which is the URL that goes on an application.
         "id": "resume", "label": "R\u00c9SUM\u00c9", "icon": "doc",
+        "kind": "One page, printable, ATS-safe",
         "blurb": "Printable and ATS-safe.",
     },
 ]

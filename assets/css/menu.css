@@ -35,6 +35,21 @@ body {
   overflow-x: hidden;
 }
 
+/* ── the pixel field ──────────────────────────────────────────────────────
+ * A fixed canvas between the graph paper and everything else. It is BELOW the
+ * hud (3), the stage (2) and the dock (3) and above nothing, so no text ever
+ * sits on a moving pixel — the stars pass behind the cards, not through them.
+ * pointer-events:none because a full-viewport canvas over the page would
+ * otherwise swallow every click on the site. */
+.stars {
+  position: fixed; inset: 0; z-index: 1;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  /* the backing store is deliberately CSS-sized (see stars.js) — this keeps the
+     browser's own upscale nearest-neighbour so the pixels stay square */
+  image-rendering: pixelated;
+}
+
 .sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
 
 /* Icons are stroked, never filled. One rule keeps 40 glyphs consistent. */
@@ -98,30 +113,36 @@ a { color: inherit; }
  * hover. The name stays, small, underneath — a console already knows who you
  * are and a visitor does not. */
 .user {
-  display: flex; flex-direction: column; align-items: center; gap: 5px;
-  padding: 7px 9px 6px;
-  background: var(--ink);
-  color: var(--ground);
-  border: 0; border-radius: var(--r-tile);
-  cursor: pointer; font: inherit;
+  display: flex; align-items: center; gap: 11px;
+  padding: 8px 16px 8px 8px;
+  color: var(--card-projects-ink);
+  background: var(--card-projects);
+  background-image: var(--card-sheen);
+  border: 3px solid var(--card-rule); border-radius: var(--r-tile);
+  cursor: pointer; font: inherit; text-align: left;
   position: relative;
   transition: transform var(--d-fast) var(--ease);
 }
 .user::after {
   content: '';
-  position: absolute; inset: 0;
+  position: absolute; inset: -3px;
   border-radius: inherit;
-  box-shadow: 0 0 0 2px var(--ground), 0 0 0 4px var(--ink), 0 8px 18px rgb(0 0 0 / .2);
+  box-shadow: 0 0 0 3px var(--ground), 0 0 0 6px var(--card-rule),
+              0 10px 22px rgb(0 0 0 / .25);
   opacity: 0; pointer-events: none;
   transition: opacity var(--d-fast) var(--ease);
 }
 .user:hover, .user:focus-visible { transform: translateY(-2px); }
 .user:hover::after, .user:focus-visible::after { opacity: 1; }
-.user:focus-visible { outline: 3px solid var(--ground); outline-offset: -6px; }
+.user:focus-visible { outline: 3px solid var(--card-projects-ink); outline-offset: -7px; }
 
+/* A circle, like every other card's art on this page. The stencil inside is
+   unchanged — only the frame around it moved. */
 .user__face {
-  width: 46px; height: 46px; flex: none;
-  border-radius: 2px; overflow: hidden;
+  width: 44px; height: 44px; flex: none;
+  border-radius: 50%; overflow: hidden;
+  color: var(--card-projects);
+  background: var(--card-projects-ink);
 }
 .user__face svg { display: block; width: 100%; height: 100%; }
 
@@ -136,16 +157,15 @@ a { color: inherit; }
 .av-brow  { fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; }
 .av-mouth { fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; }
 
-.user__plate { display: flex; flex-direction: column; align-items: center; line-height: 1.25; }
+.user__plate { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.3; }
 .user__name  {
   font-family: var(--font-pix);
-  font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+  font-size: 13px; letter-spacing: .07em; text-transform: uppercase;
   color: inherit;
 }
 .user__role {
-  font-family: var(--font-pix);
-  font-size: 9.5px; letter-spacing: .06em; text-transform: uppercase;
-  color: inherit; opacity: .66;
+  font-size: var(--fs-micro); letter-spacing: .01em;
+  color: inherit; opacity: .72;
 }
 
 .hud__right { display: flex; align-items: center; gap: 12px; }
@@ -169,27 +189,75 @@ a { color: inherit; }
   letter-spacing: .06em;
 }
 
-/* ── stage ───────────────────────────────────────────────────────────── */
+/* ── stage ────────────────────────────────────────────────────────────────
+ * A COLUMN, and the title is a real item in it. It used to be
+ * `position: absolute; top: 0`, which took no space in the flex layout, carried
+ * no z-index and sat before .grid in the DOM — so the positioned tiles painted
+ * straight over the word PROJECTS at four of the eight viewports. Absolute
+ * positioning to "get something out of the way" is the whole bug: it does not
+ * get out of the way, it just stops being told where the way is. */
 .stage {
   position: relative; z-index: 2;
   flex: 1 1 auto;
-  display: flex; align-items: center; justify-content: center;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: clamp(10px, 1.8vh, 18px);
   padding: var(--stage-pad-y) var(--stage-pad);
   min-height: 0;
 }
 
+/* ── the pitch, and the level title ───────────────────────────────────────
+ * One slot, two jobs. At the root it says what this is and why you would
+ * bother; inside a channel it says which channel. Same element either way, so
+ * the wall never shifts by a line when you open one. */
 .level {
-  position: absolute; top: 0; left: 0; right: 0;
-  margin: 0; padding: 4px 0 0;
-  font-family: var(--font-pix);
-  font-size: 13px; letter-spacing: .18em; text-transform: uppercase;
-  color: var(--ink-2); text-align: center;
+  flex: none;
+  margin: 0; max-width: 62rem;
+  text-align: center; text-wrap: balance;
 }
 .level[hidden] { display: none; }
 
-/* Back only exists inside a sub-menu; at the root there is nowhere to go. */
-.dock__btn--back { display: none; }
-body.is-sub .dock__btn--back { display: flex; }
+.level__lead {
+  display: block;
+  font-family: var(--font-pix);
+  font-size: clamp(13px, 1.5vw, 16px); letter-spacing: .1em;
+  text-transform: uppercase; color: var(--ink);
+}
+.level__sub {
+  display: block; margin-top: 5px;
+  font-size: var(--fs-small); line-height: 1.5; color: var(--ink-2);
+}
+/* Inside a channel there is only the one line, and it is quieter — the wall is
+   the content there, not the sentence above it. */
+body.is-sub .level__lead { font-size: 13px; letter-spacing: .18em; color: var(--ink-2); }
+
+/* ── the closing CTA ──────────────────────────────────────────────────────
+ * The reference wall ends on a button that asks for the next step. This one
+ * does the same thing and says the actual address, because "get in touch" that
+ * hides the address behind a click is one more thing to not bother doing. */
+.cta {
+  flex: none;
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 9px 20px;
+  font: inherit; font-size: var(--fs-small); font-weight: 800;
+  color: var(--card-projects-ink);
+  background: var(--card-projects);
+  background-image: var(--card-sheen);
+  border: 3px solid var(--card-rule); border-radius: var(--r-pill);
+  cursor: pointer;
+  transition: transform var(--d-fast) var(--ease);
+}
+.cta:hover, .cta:focus-visible { transform: translateY(-2px); }
+.cta__mail { font-family: var(--font-pix); letter-spacing: .04em; }
+.cta[hidden] { display: none; }
+
+/* The Menu button is PERMANENT. It used to be display:none at the root, which
+   re-centred the entire dock the moment you opened a channel — every other
+   button jumped sideways. It is disabled at the root instead: the geometry
+   stops moving and the way back is visible before you need it. */
+.dock__btn:disabled { opacity: .3; cursor: default; }
+.dock__btn:disabled:hover { transform: none; color: var(--ink-2); }
+.dock__btn:disabled:hover::before { background: var(--tile); }
 
 /* ── channel wall ─────────────────────────────────────────────────────────
  * One row, one tile per channel. --cols is set by grid.js from the data, so a
@@ -214,38 +282,63 @@ body.is-sub .dock__btn--back { display: flex; }
   --rows: 1;
   --gap: clamp(12px, 2.4vh, 22px);
 
-  /* the size a coverflow card was, and the widest the row may therefore get */
-  --tile-max: 330px;
+  /* Wider than the old 330px, because the card is wider than it is tall now.
+     460 x 192 against the old 330 x 247 is very nearly the same area — a card
+     that grew in the dimension it needed and shrank in the one it did not. */
+  --tile-max: 460px;
   --max-w: calc(var(--cols) * var(--tile-max) + (var(--cols) - 1) * var(--gap));
 
   /* the stage's inner width, capped, and the tile width it implies */
   --avail-w: min(calc(100vw - 2 * var(--stage-pad)), var(--max-w));
   --col-from-w: calc((var(--avail-w) - (var(--cols) - 1) * var(--gap)) / var(--cols));
-  --h-cap: calc(var(--rows) * var(--col-from-w) * 3 / 4 + (var(--rows) - 1) * var(--gap));
+  --h-cap: calc(var(--rows) * var(--col-from-w) * var(--ar-inv) + (var(--rows) - 1) * var(--gap));
 
-  /* the stage's height, and the grid width that height implies */
-  --stage-h: calc(100dvh - var(--hud-h) - var(--dock-h) - 2 * var(--stage-pad-y));
+  /* The stage's height, and the grid width that height implies. --stage-chrome
+     is the pitch line and the CTA, measured by grid.js — subtracting it is what
+     stops the title from taking space the grid has already spent. */
+  --stage-h: calc(100dvh - var(--hud-h) - var(--dock-h)
+                  - 2 * var(--stage-pad-y) - var(--stage-chrome));
   --row-from-h: calc((var(--stage-h) - (var(--rows) - 1) * var(--gap)) / var(--rows));
-  --w-cap: calc(var(--cols) * var(--row-from-h) * 4 / 3 + (var(--cols) - 1) * var(--gap));
+  --w-cap: calc(var(--cols) * var(--row-from-h) * var(--ar) + (var(--cols) - 1) * var(--gap));
 
   display: grid;
   grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
   gap: var(--gap);
   margin-inline: auto;
+  /* A short final row centres rather than hanging off the left. Thirteen cards
+     four across is 4/4/4/1, and that lone card belongs under the middle of the
+     wall, not under its first column. */
+  justify-content: center;
 }
+/* Set by grid.js on a short final row: how many columns to slide it right so
+   it sits under the middle of the wall. Half-column values are the whole point
+   — one card left over from four wants 1.5 — which a grid line cannot express
+   and a transform can. */
+.slot[style*='--shift'] { transform: translateX(calc(var(--shift) * (100% + var(--gap)))); }
 
 .slot { position: relative; min-width: 0; min-height: 0; }
 
-/* ── a filled channel ─────────────────────────────────────────────────── */
+/* ── a filled channel ─────────────────────────────────────────────────────
+ * A HORIZONTAL card: circle on the left, name and what-it-is on the right,
+ * stack chips underneath. Two reasons, and the second is the important one.
+ *
+ * It is the shape in the reference. And it is the fix for the clipping bug: the
+ * old vertical stack put art, label, count and a hover button in a column, and
+ * at 1440x900 the projects level computed a 259x195 tile whose children came to
+ * exactly 195px WITH A ONE-LINE LABEL. Every title that wrapped overflowed, and
+ * above 901px `body { overflow: hidden }` meant it clipped in silence instead
+ * of scrolling. Sideways, the art costs nothing vertically and the text column
+ * gets the whole card height to itself. */
 .chan {
   position: relative;
   width: 100%; height: 100%;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 10px;
-  padding: 18px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(10px, 1.4vw, 18px);
+  padding: clamp(10px, 1.4vh, 18px) clamp(12px, 1.4vw, 20px);
+  text-align: left;
   font: inherit; text-decoration: none;
-  /* Flat. No gloss, no bevel, no gradient — the tile IS its polarity, and any
-     highlight laid over it immediately reads as a colour. */
   color: var(--card-ink);
   background: var(--card-tint);
   background-image: var(--card-sheen);
@@ -278,43 +371,66 @@ body.is-sub .dock__btn--back { display: flex; }
    half of what read as reversed. */
 .chan:hover, .chan:focus-visible { transform: translateY(-5px); }
 .chan:hover::after, .chan:focus-visible::after { opacity: 1; }
-.chan:focus-visible { outline: 3px solid var(--card-ink); outline-offset: -10px; }
+.chan:focus-visible { outline: 3px solid var(--card-ink); outline-offset: -7px; }
 .chan:active { transform: translateY(-1px); }
 
+/* The circle. This is the one element carrying weight, the way the reference's
+   profile photos do — inked, so it reads at a glance from across the wall. */
 .chan__art {
   display: grid; place-items: center;
-  width: clamp(44px, 7vh, 62px); height: clamp(44px, 7vh, 62px);
-  border-radius: 0;
-  color: inherit;
-  background: transparent;
-  box-shadow: none;
+  width: clamp(38px, 6.2vh, 58px); height: clamp(38px, 6.2vh, 58px);
+  border-radius: 50%;
+  color: var(--card-tint);
+  background: var(--card-ink);
 }
-.chan__art .ico { stroke-width: 2.4; }
 .chan__art .ico { width: 56%; height: 56%; stroke-width: 1.9; }
+
+/* min-width:0 on a grid child is what lets the text actually shrink instead of
+   forcing the column wider than the card and pushing the circle off the edge */
+.chan__text { min-width: 0; display: grid; gap: 3px; }
 
 .chan__label {
   font-family: var(--font-pix);
-  font-size: clamp(15px, 2.1vh, 19px);
-  letter-spacing: .1em; text-align: center; text-transform: uppercase;
+  font-size: clamp(13px, 1.65vh, 17px);
+  letter-spacing: .07em; text-transform: uppercase; line-height: 1.25;
   color: inherit;
+  /* Long repository names are one unbroken token. Without this they either
+     force the card wider or spill straight out of it. */
+  overflow-wrap: anywhere;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+  overflow: hidden;
 }
+/* What this actually IS — the reference puts a plain descriptor under every
+   name, and it is the difference between a wall of labels and a wall that
+   tells you what you are looking at. */
 .chan__count {
-  font-family: var(--font-pix);
-  font-size: 11px;      /* stepped, never clamped — see the reflow block */
-  color: inherit; opacity: .74; text-align: center; line-height: 1.4;
+  font-size: var(--fs-micro);
+  color: inherit; opacity: .72; line-height: 1.35;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 1;
+  overflow: hidden;
 }
-/* stays in flow at opacity 0, so revealing it never reflows the tile */
-.chan__go {
-  margin-top: 2px;
-  padding: 5px 16px;
-  font-family: var(--font-pix); font-size: 11px; letter-spacing: .14em;
-  color: var(--card-tint); background: currentColor;
-  border-radius: 0;
-  opacity: 0; transform: translateY(4px);
-  transition: opacity var(--d-mid) var(--ease), transform var(--d-mid) var(--ease);
+
+/* min-height, not height: the row is always in the DOM so every card's text
+   block has the same number of rows and their names line up, whether or not
+   there are chips to put in it. */
+.chan__chips {
+  display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px;
+  overflow: hidden; min-height: 19px; max-height: 20px;
 }
-.chan:hover .chan__go,
-.chan:focus-visible .chan__go { opacity: 1; transform: none; }
+.chan__chip {
+  padding: 2px 7px;
+  font-family: var(--font-pix); font-size: 9.5px; letter-spacing: .04em;
+  line-height: 1.5; white-space: nowrap;
+  color: inherit;
+  border: 1.5px solid currentColor; border-radius: var(--r-pill);
+  opacity: .8;
+}
+/* Below this the card is too short to hold three rows honestly, and a chip row
+   that half-shows is worse than no chip row. Hidden with display, not opacity,
+   so it stops taking height as well as ink. */
+@media (max-height: 780px), (max-width: 1100px) {
+  .chan__chips { display: none; }
+}
 
 /* All three the same face. The icon and the name carry the difference. */
 .chan[data-card='projects'] { --card-tint: var(--card-projects); --card-ink: var(--card-projects-ink); }
@@ -322,20 +438,22 @@ body.is-sub .dock__btn--back { display: flex; }
 .chan[data-card='resume']   { --card-tint: var(--card-resume);   --card-ink: var(--card-resume-ink); }
 
 /* ── hover description ────────────────────────────────────────────────────
- * Hangs BELOW the tile. Every filled slot is in the top row and .hud sits at a
- * higher stacking level than .stage, so a bubble opening upward would slide
- * under the header. Downward it covers row two, which is empty anyway. */
+ * Hangs BELOW the card. Speaks the card's language now — same 3px rule, same
+ * radius — rather than the soft pastel-and-blur pill it was, which was the last
+ * element on the page still using the vocabulary the identity tile was
+ * rejected for. It is also no longer load-bearing: every card carries its own
+ * descriptor, so this is elaboration rather than the only place the text
+ * lives. */
 .bubble {
   position: absolute;
-  left: 50%; top: calc(100% + 12px);
+  left: 50%; top: calc(100% + 10px);
   transform: translate(-50%, -6px);
   z-index: 9;
-  width: max-content; max-width: 300px;
-  padding: 10px 15px;
-  background: var(--tile); color: var(--ink);
-  border: 1px solid var(--tile-edge);
-  border-radius: 13px;
-  box-shadow: var(--shadow-lift);
+  width: max-content; max-width: 320px;
+  padding: 9px 14px;
+  background: var(--card-projects); color: var(--card-projects-ink);
+  border: 3px solid var(--card-rule);
+  border-radius: var(--r-sm);
   font-size: var(--fs-small); line-height: 1.4; text-align: center;
   opacity: 0; pointer-events: none;
   transition: opacity var(--d-fast) var(--ease), transform var(--d-fast) var(--ease);
@@ -343,7 +461,7 @@ body.is-sub .dock__btn--back { display: flex; }
 .bubble::after {
   content: ''; position: absolute; bottom: 100%; left: 50%;
   transform: translateX(-50%);
-  border: 8px solid transparent; border-bottom-color: var(--tile);
+  border: 7px solid transparent; border-bottom-color: var(--card-rule);
 }
 .chan:hover + .bubble,
 .chan:focus-visible + .bubble { opacity: 1; transform: translate(-50%, 0); }
@@ -525,14 +643,18 @@ body.is-sub .dock__btn--back { display: flex; }
  * the document scrolls and the tiles get their proportions back. */
 /* Integer steps for the bitmap face. A clamp() lands on fractional pixels at
    nearly every window size and Departure Mono smears when it does. */
-@media (min-height: 800px)  { .chan__count { font-size: 12px; } }
+@media (min-height: 900px)  { .chan__count { font-size: var(--fs-small); } }
 @media (min-width: 1200px)  { .dock__clock .clock { font-size: 26px; } }
 @media (min-width: 1600px)  { .dock__clock .clock { font-size: 28px; } }
 
 @media (min-width: 901px) {
   html, body { height: 100dvh; overflow: hidden; }
   .grid {
-    height: 100%;
+    /* flex-grow, not height:100% — the stage is a column with the pitch line
+       and the CTA in it now, and 100% would resolve against the WHOLE stage and
+       push those two straight off the bottom. Growing into what is left is the
+       same intent expressed against the right box. */
+    flex: 1 1 auto; min-height: 0;
     max-height: var(--h-cap);                        /* bound by the WIDTH */
     width: min(100%, var(--w-cap), var(--max-w));    /* bound by the HEIGHT, and capped */
     grid-template-rows: repeat(var(--rows), minmax(0, 1fr));
@@ -541,9 +663,19 @@ body.is-sub .dock__btn--back { display: flex; }
 
 @media (max-width: 900px) {
   .hud { height: auto; padding-block: 10px; }
-  .stage { align-items: flex-start; padding-block: 10px 20px; }
+  .stage { justify-content: flex-start; padding-block: 10px 20px; }
   .grid { width: 100%; }
-  .slot { aspect-ratio: 4 / 3; }
+  .slot { aspect-ratio: var(--ar); }
+  /* Two columns, not four. Thirteen cards four across on an 820px tablet
+     computes a 182 x 76 card — too small to hold a circle and two lines of
+     type, which is the bug this whole change exists to stop shipping.
+     !important because grid.js writes --cols inline from the item count, and an
+     inline style outranks a stylesheet rule. */
+  .grid { --cols: 2 !important; }
+  /* grid.js computed the shift for its own column count; with the breakpoint
+     overriding --cols the offset is meaningless and would slide cards off the
+     edge. The last row simply hangs left here. */
+  .slot[style*='--shift'] { transform: none; }
 }
 
 @media (max-width: 600px) {
@@ -551,17 +683,12 @@ body.is-sub .dock__btn--back { display: flex; }
   /* One column of wide banners. Two columns would strand RÉSUMÉ at half width,
      and an empty socket reads as broken rather than deliberate once there is no
      grid shape left for it to belong to. */
-  /* one column of wide banners; !important because grid.js sets --cols inline
-     from the channel count and an inline style outranks a stylesheet rule */
   .grid { --cols: 1 !important; --gap: 12px; }
-  .slot { aspect-ratio: 5 / 2; }
   .bubble { display: none; }        /* no hover on touch; the label carries it */
-  .chan__go { display: none; }      /* hover-only, so it could never appear */
   .chan__art { width: 42px; height: 42px; }
   .dock { gap: 5px; padding: 6px 6px 12px; flex-wrap: wrap; }
   .dock__btn { min-width: 66px; min-height: 56px; padding: 8px 8px 7px; }
   .dock__label { font-size: 10.5px; }
-  .user__plate { display: none; }
   .clock { display: none; }
 }
 

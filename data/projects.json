@@ -851,6 +851,7 @@
         "infra",
         "security"
       ],
+      "kind": "IT & security labs, each written up",
       "blurb": "Hands-on IT and security labs, each documented as a rebuildable runbook."
     },
     {
@@ -860,12 +861,14 @@
       "folders": [
         "builds"
       ],
+      "kind": "Things I wanted to exist, so I built them",
       "blurb": "Things I built because I wanted them to exist."
     },
     {
       "id": "resume",
       "label": "RÉSUMÉ",
       "icon": "doc",
+      "kind": "One page, printable, ATS-safe",
       "blurb": "Printable and ATS-safe."
     }
   ]
