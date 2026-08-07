@@ -76,13 +76,11 @@ const PAIRS = [
   ['ink on BUILDS face',       'card-builds-ink',   'card-builds',   4.5],
   ['ink on RESUME face',       'card-resume-ink',   'card-resume',   4.5],
 
-  /* The inked tiles separate from the ground on their own. The paper one does
-     NOT — white on #ececec is 1.19, and its dark opposite is just as close — so
-     the only thing making it a tile at all is the rule around it. That rule is
-     what gets gated, and it is gated hard. */
-  ['inked face vs ground',     'card-projects', 'ground',      3.0],
+  /* Every face is the same value now, so one pair covers all three — but the
+     faces still have to separate from the ground on their own, because nothing
+     else draws their edge. */
+  ['face vs ground',           'card-projects', 'ground',      3.0],
   ['tile rule vs ground',      'tile-edge',     'ground',      3.0],
-  ['tile rule vs paper face',  'tile-edge',     'card-resume', 3.0],
 ];
 
 let failed = 0;
@@ -111,8 +109,21 @@ for (const theme of ['light', 'dark']) {
   }
 }
 
-/* Assert the two mistakes that are invisible by eye. */
+/* Assert the mistakes that are invisible by eye. */
 console.log('\nGUARDS');
+/* The three faces are deliberately identical: the icon and the name do the
+   distinguishing. An odd one out is what the previous look was rejected for, so
+   a face drifting away from the others is a design regression, not a taste
+   call — and it is the kind of thing a diff hides in plain sight. */
+for (const theme of ['light', 'dark']) {
+  const faces = ['card-projects', 'card-builds', 'card-resume'].map((t) => get(t, theme));
+  if (new Set(faces).size !== 1) {
+    console.log(`  FAIL  the three faces have drifted apart in ${theme} — ${faces.join(', ')}`);
+    failed++;
+  } else {
+    console.log(`  ok    all three faces are ${faces[0]} in ${theme}`);
+  }
+}
 for (const theme of ['light', 'dark']) {
   const white = ratio('#ffffff', get('sel', theme));
   console.log(`  note  white on --sel would be ${white.toFixed(2)} in ${theme} — ` +

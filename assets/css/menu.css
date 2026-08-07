@@ -88,16 +88,14 @@ a { color: inherit; }
   border: 0; border-radius: var(--r-tile);
   cursor: pointer; font: inherit;
   position: relative;
-  transition: background-color var(--d-fast) var(--ease),
-              color var(--d-fast) var(--ease),
+  transition: transform var(--d-fast) var(--ease),
               box-shadow var(--d-fast) var(--ease);
 }
 .user:hover, .user:focus-visible {
-  background: var(--ground);
-  color: var(--ink);
-  box-shadow: inset 0 0 0 3px var(--ink);
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 2px var(--ground), 0 0 0 4px var(--ink), 0 8px 18px rgb(0 0 0 / .2);
 }
-.user:focus-visible { outline: 3px solid var(--ground); outline-offset: -8px; }
+.user:focus-visible { outline: 3px solid var(--ground); outline-offset: -6px; }
 
 .user__face {
   width: 46px; height: 46px; flex: none;
@@ -215,16 +213,16 @@ a { color: inherit; }
               transform var(--d-fast) var(--ease);
 }
 
-/* Touch it and the polarity flips: an inked tile turns to paper and back.
-   That inversion IS the interaction. There is no lift and no selection ring,
-   because a ring in this palette is just another black rectangle. */
+/* Lift and ring, not an inversion. Flipping the tile to paper on hover was the
+   other half of what read as reversed — the face changing colour under the
+   pointer is a lot of movement for "you are hovering this". */
 .chan:hover, .chan:focus-visible {
-  background: var(--card-ink);
-  color: var(--card-tint);
-  box-shadow: inset 0 0 0 3px var(--card-ink);
+  transform: translateY(-5px);
+  box-shadow: 0 0 0 3px var(--ground), 0 0 0 6px var(--card-tint),
+              0 14px 30px rgb(0 0 0 / .22);
 }
-.chan:focus-visible { outline: 3px solid var(--card-tint); outline-offset: -10px; }
-.chan:active { transform: scale(.985); }
+.chan:focus-visible { outline: 3px solid var(--card-ink); outline-offset: -10px; }
+.chan:active { transform: translateY(-1px); }
 
 .chan__art {
   display: grid; place-items: center;
@@ -259,12 +257,10 @@ a { color: inherit; }
 .chan:hover .chan__go,
 .chan:focus-visible .chan__go { opacity: 1; transform: none; }
 
-/* Two inked, one paper. The paper tile sits a hair off the ground, so the RULE
-   is what makes it a tile at all — without it the third channel is a hole. */
+/* All three the same face. The icon and the name carry the difference. */
 .chan[data-card='projects'] { --card-tint: var(--card-projects); --card-ink: var(--card-projects-ink); }
 .chan[data-card='builds']   { --card-tint: var(--card-builds);   --card-ink: var(--card-builds-ink); }
-.chan[data-card='resume']   { --card-tint: var(--card-resume);   --card-ink: var(--card-resume-ink);
-                              box-shadow: inset 0 0 0 3px var(--card-ink); }
+.chan[data-card='resume']   { --card-tint: var(--card-resume);   --card-ink: var(--card-resume-ink); }
 
 /* ── hover description ────────────────────────────────────────────────────
  * Hangs BELOW the tile. Every filled slot is in the top row and .hud sits at a

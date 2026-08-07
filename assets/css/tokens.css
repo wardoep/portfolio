@@ -66,7 +66,7 @@
   --focus-halo: #0a0a0a;
 
   /* --- shape --- */
-  --r-tile:  3px;    /* hard corners: the softness belonged to the old look */
+  --r-tile:  20px;   /* properly rounded, like the reference's channel tiles */
   --stage-pad:   clamp(10px, 2.5vw, 28px);  /* the stage's inline padding */
   --stage-pad-y: clamp(8px, 1.6vh, 16px);   /* and its vertical padding — the
                         grid's maths subtracts exactly these two, so a change
@@ -82,18 +82,18 @@
   --bevel: inset 0 1px 0 rgb(255 255 255 / .9);
   --scrim: rgb(0 0 0 / .55);
 
-  /* The three faces. With no colour to separate them the distinction is
-     POLARITY — two tiles inked, one left as paper — and that difference is the
-     only thing telling them apart, so it lives in the tokens rather than in a
-     one-off rule. Kept as tokens (rather than deleted) because panels.js reads
-     var(--card-<id>) for the panel badge and the gate measures these pairs. */
+  /* All three faces are the same. They used to be two inked and one paper —
+     polarity as the thing telling them apart — and that odd one out is exactly
+     what read as wrong. The icon and the name do the distinguishing now, the
+     way the reference does it.
+     Kept as three tokens rather than one because panels.js reads
+     var(--card-<id>) for each panel badge. */
   --card-projects: #0a0a0a;
   --card-builds:   #0a0a0a;
-  --card-resume:   #ffffff;
-  /* what text sits on each face */
+  --card-resume:   #0a0a0a;
   --card-projects-ink: #ffffff;
   --card-builds-ink:   #ffffff;
-  --card-resume-ink:   #0a0a0a;
+  --card-resume-ink:   #ffffff;
 
 
   /* --- motion --- */
@@ -150,10 +150,10 @@
 
   --card-projects: #f5f5f5;
   --card-builds:   #f5f5f5;
-  --card-resume:   #141414;
+  --card-resume:   #f5f5f5;
   --card-projects-ink: #0a0a0a;
   --card-builds-ink:   #0a0a0a;
-  --card-resume-ink:   #f5f5f5;
+  --card-resume-ink:   #0a0a0a;
 
   --ok:   #f5f5f5;
   --warn: #c4c4c4;
