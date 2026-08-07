@@ -14,8 +14,21 @@ body {
   line-height: 1.55;
   color: var(--ink);
   background: var(--ground);
-  background-image: radial-gradient(ellipse 90% 70% at 50% 0%,
-                    var(--ground-lift) 0%, var(--ground) 52%, var(--ground-edge) 100%);
+  /* Graph paper. Layer order is top-down: the nodes sit above the heavy rules,
+     which sit above the fine ones, over a soft vertical lift. Every layer is a
+     repeating gradient rather than an image, so it costs nothing to download
+     and retunes from four tokens. */
+  background-image:
+    radial-gradient(var(--grid-node) 1.1px, transparent 1.2px),
+    repeating-linear-gradient(90deg, var(--grid-heavy) 0 1px, transparent 1px calc(var(--grid-step) * 5)),
+    repeating-linear-gradient(180deg, var(--grid-heavy) 0 1px, transparent 1px calc(var(--grid-step) * 5)),
+    repeating-linear-gradient(90deg, var(--grid-fine) 0 1px, transparent 1px var(--grid-step)),
+    repeating-linear-gradient(180deg, var(--grid-fine) 0 1px, transparent 1px var(--grid-step)),
+    linear-gradient(180deg, var(--ground-lift) 0%, var(--ground) 58%, var(--ground-edge) 100%);
+  background-size:
+    calc(var(--grid-step) * 5) calc(var(--grid-step) * 5),
+    auto, auto, auto, auto, auto;
+  background-position: calc(var(--grid-step) * 5 - .5px) calc(var(--grid-step) * 5 - .5px), 0 0, 0 0, 0 0, 0 0, 0 0;
   background-attachment: fixed;
   display: flex;
   flex-direction: column;
@@ -222,7 +235,10 @@ a { color: inherit; }
      highlight laid over it immediately reads as a colour. */
   color: var(--card-ink);
   background: var(--card-tint);
-  border: 0;
+  background-image: var(--card-sheen);
+  /* the thick rule is the whole reason these read as old hardware rather than
+     as flat cards; it is drawn as a border so the sheen stays inside it */
+  border: 3px solid var(--card-rule);
   border-radius: var(--r-tile);
   cursor: pointer;
   overflow: hidden;
@@ -239,8 +255,8 @@ a { color: inherit; }
   content: '';
   position: absolute; inset: 0;
   border-radius: inherit;
-  box-shadow: 0 0 0 3px var(--ground), 0 0 0 6px var(--card-tint),
-              0 14px 30px rgb(0 0 0 / .22);
+  box-shadow: 0 0 0 3px var(--ground), 0 0 0 6px var(--card-rule),
+              0 14px 30px rgb(0 0 0 / .28);
   opacity: 0; pointer-events: none;
   transition: opacity var(--d-mid) var(--ease);
 }
@@ -255,16 +271,18 @@ a { color: inherit; }
 .chan__art {
   display: grid; place-items: center;
   width: clamp(44px, 7vh, 62px); height: clamp(44px, 7vh, 62px);
-  border-radius: 50%;
+  border-radius: 0;
   color: inherit;
   background: transparent;
-  box-shadow: inset 0 0 0 2px currentColor;
+  box-shadow: none;
 }
+.chan__art .ico { stroke-width: 2.4; }
 .chan__art .ico { width: 56%; height: 56%; stroke-width: 1.9; }
 
 .chan__label {
-  font-size: clamp(15px, 2.1vh, 20px);
-  font-weight: 800; letter-spacing: .05em; text-align: center;
+  font-family: var(--font-pix);
+  font-size: clamp(15px, 2.1vh, 19px);
+  letter-spacing: .1em; text-align: center; text-transform: uppercase;
   color: inherit;
 }
 .chan__count {

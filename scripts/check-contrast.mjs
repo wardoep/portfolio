@@ -76,11 +76,16 @@ const PAIRS = [
   ['ink on BUILDS face',       'card-builds-ink',   'card-builds',   4.5],
   ['ink on RESUME face',       'card-resume-ink',   'card-resume',   4.5],
 
-  /* Every face is the same value now, so one pair covers all three — but the
-     faces still have to separate from the ground on their own, because nothing
-     else draws their edge. */
-  ['face vs ground',           'card-projects', 'ground',      3.0],
-  ['tile rule vs ground',      'tile-edge',     'ground',      3.0],
+  /* Every face is the same value, so one pair covers all three.
+     The threshold is 1.4, not 3.0, and that is a deliberate loosening: the face
+     is a mid grey sheen now rather than flat ink, and what makes it read as a
+     tile is the 3px rule drawn around it. So the RULE is what gets gated hard —
+     lowering the face pair without raising the rule pair would be moving a
+     goalpost rather than measuring the thing that carries the design. */
+  ['face vs ground',           'card-projects', 'ground',      1.4],
+  ['tile rule vs ground',      'card-rule',     'ground',      7.0],
+  ['tile rule vs its own face', 'card-rule',    'card-projects', 4.5],
+  ['panel rule vs ground',     'tile-edge',     'ground',      3.0],
 ];
 
 let failed = 0;
