@@ -12,7 +12,9 @@
 .scrim {
   position: fixed; inset: 0; z-index: 990;
   background: var(--scrim);
-  backdrop-filter: blur(2px);
+  /* No backdrop-filter. A full-viewport blur has to be recomputed on every
+     frame the panel scales over it, which is the single most expensive thing
+     that was happening during the open. The scrim is opaque enough without it. */
   animation: fade var(--d-mid) var(--ease) both;
 }
 .scrim[hidden] { display: none; }
@@ -106,10 +108,17 @@
   box-shadow: var(--bevel);
   font: inherit; font-weight: 800; color: var(--ink);
   cursor: pointer;
-  transition: transform var(--d-fast) var(--ease), box-shadow var(--d-fast) var(--ease),
-              background var(--d-fast) var(--ease);
+  position: relative;
+  transition: transform var(--d-fast) var(--ease), background var(--d-fast) var(--ease);
 }
-.panel__back:hover { transform: translateY(-1px); background: var(--tile-2); box-shadow: var(--shadow-lift); }
+.panel__back::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit;
+  box-shadow: var(--shadow-lift);
+  opacity: 0; pointer-events: none;
+  transition: opacity var(--d-fast) var(--ease);
+}
+.panel__back:hover { transform: translateY(-1px); background: var(--tile-2); }
+.panel__back:hover::after { opacity: 1; }
 .panel__back .ico { width: 19px; height: 19px; stroke-width: 2.2; }
 .panel__foot .btn { flex: 0 0 auto; min-height: 46px; }
 
@@ -171,10 +180,10 @@
   border: 1px solid var(--tile-edge);
   border-radius: var(--r-sm);
   overflow: hidden; cursor: zoom-in;
-  transition: transform var(--d-fast) var(--ease), box-shadow var(--d-fast) var(--ease);
+  transition: transform var(--d-fast) var(--ease);
 }
 .shot__open:hover,
-.shot__open:focus-visible { transform: translateY(-2px); box-shadow: var(--shadow-lift); }
+.shot__open:focus-visible { transform: translateY(-2px); }
 /* aspect-ratio + object-fit so a mixed bag of capture sizes still tiles evenly,
    and the reserved box stops the panel reflowing as lazy images arrive */
 .shot__open img {
@@ -245,10 +254,17 @@
   border-radius: var(--r-pill);
   box-shadow: var(--shadow-tile);
   font-weight: 500; text-decoration: none; color: var(--ink);
-  cursor: pointer;
-  transition: transform var(--d-fast) var(--ease), box-shadow var(--d-fast) var(--ease);
+  cursor: pointer; position: relative;
+  transition: transform var(--d-fast) var(--ease);
 }
-.btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-lift); }
+.btn::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit;
+  box-shadow: var(--shadow-lift);
+  opacity: 0; pointer-events: none;
+  transition: opacity var(--d-fast) var(--ease);
+}
+.btn:hover { transform: translateY(-2px); }
+.btn:hover::after { opacity: 1; }
 .btn--primary { background: var(--sel); border-color: var(--sel); color: var(--sel-ink); font-weight: 800; }
 
 .links { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
@@ -404,16 +420,25 @@
   border-radius: var(--r-row);
   box-shadow: var(--bevel);
   font: inherit; color: var(--ink); text-align: left;
-  cursor: pointer;
-  transition: transform var(--d-fast) var(--ease), box-shadow var(--d-fast) var(--ease),
+  cursor: pointer; position: relative;
+  /* Thirteen of these render in the PROJECTS overlay. Transitioning the shadow
+     repainted every one the pointer crossed, which is most of them. */
+  transition: transform var(--d-fast) var(--ease),
               border-color var(--d-fast) var(--ease);
 }
+.row-item::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit;
+  box-shadow: var(--shadow-lift);
+  opacity: 0; pointer-events: none;
+  transition: opacity var(--d-fast) var(--ease);
+}
+.row-item:hover::after,
+.row-item:focus-visible::after { opacity: 1; }
 .row-item:hover,
 .row-item:focus-visible {
   background: var(--row-active);
   border-color: color-mix(in oklab, var(--sel-deep) 45%, var(--tile-edge));
   transform: translateX(3px);
-  box-shadow: var(--shadow-lift);
 }
 
 .row-item__badge {

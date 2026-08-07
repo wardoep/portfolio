@@ -67,9 +67,19 @@ function panelZoom(panel, rect, { reverse = false } = {}) {
 
   /* the CSS panelIn keyframes would fight this for the same property */
   panel.classList.add('panel--zoom');
+  /* Promote for the duration only. The panel carries a 60px-blur shadow; on a
+     promoted layer that is rasterised once and then transformed, instead of
+     being repainted at every scale step. Left on permanently it would pin a
+     full-size layer in memory for a panel that is usually closed. */
+  panel.style.willChange = 'transform, opacity';
   const anim = panel.animate(reverse ? [atRest, atTile] : [atTile, atRest],
     { duration: ms, easing: 'cubic-bezier(.2, .8, .3, 1)', fill: reverse ? 'forwards' : 'none' });
-  if (!reverse) anim.finished.then(() => panel.classList.remove('panel--zoom')).catch(() => {});
+  const release = () => { panel.style.willChange = ''; };
+  if (!reverse) anim.finished.then(() => {
+    panel.classList.remove('panel--zoom');
+    release();
+  }).catch(release);
+  else anim.finished.then(release).catch(release);
   return anim;
 }
 

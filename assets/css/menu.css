@@ -43,13 +43,17 @@ body {
 }
 
 .skip {
-  position: absolute; left: 12px; top: -60px; z-index: 1200;
+  position: absolute; left: 12px; top: 12px; z-index: 1200;
   background: var(--ink); color: var(--tile);
   padding: 10px 16px; border-radius: var(--r-sm);
   font-weight: 500; text-decoration: none;
-  transition: top var(--d-fast) var(--ease);
+  /* transform, not top — animating `top` re-solves the box tree every frame.
+     It is one small element fired once on Tab, but it is the same mistake and
+     the gate does not know the difference. */
+  transform: translateY(-200%);
+  transition: transform var(--d-fast) var(--ease);
 }
-.skip:focus { top: 12px; }
+.skip:focus { transform: none; }
 
 /* A ring that has to stay visible on any ground the site has: white cards, the
    dark ground, the black boot screen, and the pale active row. */
@@ -88,13 +92,18 @@ a { color: inherit; }
   border: 0; border-radius: var(--r-tile);
   cursor: pointer; font: inherit;
   position: relative;
-  transition: transform var(--d-fast) var(--ease),
-              box-shadow var(--d-fast) var(--ease);
+  transition: transform var(--d-fast) var(--ease);
 }
-.user:hover, .user:focus-visible {
-  transform: translateY(-2px);
+.user::after {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: inherit;
   box-shadow: 0 0 0 2px var(--ground), 0 0 0 4px var(--ink), 0 8px 18px rgb(0 0 0 / .2);
+  opacity: 0; pointer-events: none;
+  transition: opacity var(--d-fast) var(--ease);
 }
+.user:hover, .user:focus-visible { transform: translateY(-2px); }
+.user:hover::after, .user:focus-visible::after { opacity: 1; }
 .user:focus-visible { outline: 3px solid var(--ground); outline-offset: -6px; }
 
 .user__face {
@@ -217,20 +226,29 @@ a { color: inherit; }
   border-radius: var(--r-tile);
   cursor: pointer;
   overflow: hidden;
-  transition: background-color var(--d-mid) var(--ease),
-              color var(--d-mid) var(--ease),
-              box-shadow var(--d-mid) var(--ease),
-              transform var(--d-fast) var(--ease);
+  /* TRANSFORM ONLY. The lift shadow and the ring are PAINT properties —
+     transitioning them repaints a 330px tile plus a 30px blur every frame, and
+     hovering is what happens immediately before every click. They sit on
+     ::after and cross-fade with opacity, which the compositor does for free.
+     This rule was documented here, then broken, then restored. */
+  transition: transform var(--d-mid) var(--ease);
 }
 
-/* Lift and ring, not an inversion. Flipping the tile to paper on hover was the
-   other half of what read as reversed — the face changing colour under the
-   pointer is a lot of movement for "you are hovering this". */
-.chan:hover, .chan:focus-visible {
-  transform: translateY(-5px);
+/* the hover state, pre-rendered and faded in rather than animated */
+.chan::after {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: inherit;
   box-shadow: 0 0 0 3px var(--ground), 0 0 0 6px var(--card-tint),
               0 14px 30px rgb(0 0 0 / .22);
+  opacity: 0; pointer-events: none;
+  transition: opacity var(--d-mid) var(--ease);
 }
+
+/* Lift and ring, not an inversion — flipping the face to paper was the other
+   half of what read as reversed. */
+.chan:hover, .chan:focus-visible { transform: translateY(-5px); }
+.chan:hover::after, .chan:focus-visible::after { opacity: 1; }
 .chan:focus-visible { outline: 3px solid var(--card-ink); outline-offset: -10px; }
 .chan:active { transform: translateY(-1px); }
 
