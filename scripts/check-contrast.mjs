@@ -66,7 +66,9 @@ const PAIRS = [
   ['ink on the accent pill',   'sel-ink',  'sel',        4.5],
   ['body text on ground',      'ink',      'ground',     7.0],
   ['muted text on ground',     'ink-2',    'ground',     4.5],
-  ['boot cue on black',        '#7f8f7c',  '#05070a',    4.5],
+  /* the start screen is its own world — white on black, not the site palette */
+  ['boot body on black',       '#e9e9e9',  '#000000',    7.0],
+  ['boot "also" on black',     '#cfcfcf',  '#000000',    4.5],
 
   /* Each face carries its OWN ink, because the three channels are told apart by
      polarity: two are inked and one is left as paper, and that flips wholesale

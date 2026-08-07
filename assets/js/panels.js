@@ -367,79 +367,6 @@ function buildProject(p) {
   return panel;
 }
 
-/* ── card overlay ─────────────────────────────────────────────────────────
- * A card can span several folders. PROJECTS covers thirteen labs, and thirteen
- * undifferentiated items is its own kind of unorganised — so each folder gets
- * its own labelled section inside the one overlay. */
-function projectRow(p, cat) {
-  const b = el('button', 'row-item');
-  b.type = 'button';
-  b.dataset.cat = cat;
-  b.dataset.route = 'project/' + p.id;
-
-  const badge = el('span', 'row-item__badge');
-  badge.appendChild(icon('i-' + (p.icon || 'default')));
-  b.appendChild(badge);
-
-  const text = el('div', 'row-item__text');
-  text.appendChild(el('span', 'row-item__name', p.title || p.id));
-  /* the blurb is the reason rows beat the old icon grid — a grid had nowhere
-     to put it, and it is what someone scanning thirteen labs actually reads */
-  if (p.blurb) text.appendChild(el('span', 'row-item__blurb', p.blurb));
-  b.appendChild(text);
-
-  const go = el('span', 'row-item__go');
-  go.appendChild(icon('i-arrow-r'));
-  b.appendChild(go);
-  return b;
-}
-
-function buildCard(card) {
-  const id = 'p-card-' + card.id;
-  let panel = document.getElementById(id);
-  if (panel) return panel;
-
-  panel = el('section', 'panel panel--wide');
-  panel.id = id;
-  panel.setAttribute('role', 'dialog');
-  panel.setAttribute('aria-modal', 'true');
-  panel.setAttribute('aria-labelledby', id + '-h');
-  panel.tabIndex = -1;
-  panel.hidden = true;
-
-  panel.appendChild(panelBar(id, 'i-' + (card.icon || 'box'), card.label, null,
-                             `var(--card-${card.id})`));
-
-  const body = el('div', 'panel__body');
-  const folders = (card.folders || [])
-    .map((fid) => data.folders.find((f) => f.id === fid))
-    .filter(Boolean);
-
-  folders.forEach((f) => {
-    const items = data.projects
-      .filter((p) => p.folder === f.id && !p.hidden && p.status !== 'missing');
-    if (!items.length) return;
-
-    const sec = el('section', 'group');
-    if (folders.length > 1) {
-      const head = el('div', 'group__head');
-      head.appendChild(el('h3', 'group__name', f.label));
-      head.appendChild(el('span', 'group__n', String(items.length)));
-      sec.appendChild(head);
-    }
-    if (f.blurb) sec.appendChild(el('p', 'group__blurb', f.blurb));
-    const rows = el('div', 'rows');
-    items.forEach((p) => rows.appendChild(projectRow(p, f.id)));
-    sec.appendChild(rows);
-    body.appendChild(sec);
-  });
-
-  panel.appendChild(body);
-  panel.appendChild(panelFoot());
-  dynamicHost.appendChild(panel);
-  return panel;
-}
-
 /* ── contact copy ─────────────────────────────────────────────────────── */
 function wireCopy() {
   const btn = document.querySelector('[data-copy-email]');
@@ -459,6 +386,16 @@ function wireCopy() {
   });
 }
 
+/* Closing goes UP one level, not all the way home. A project was opened from
+   its channel's menu, and dropping the visitor back at the root loses their
+   place — the thing that made the overlay feel like a dead end in the first
+   place. Anything not opened from a menu has no parent but home. */
+function closeToParent() {
+  const r = router.route();
+  if (r.name === 'project' && lastCard) router.go(lastCard);
+  else router.home();
+}
+
 /* ── route -> panel ───────────────────────────────────────────────────── */
 function panelForRoute(r) {
   if (r.name === 'project') {
@@ -466,16 +403,8 @@ function panelForRoute(r) {
       || (x.renamedFrom || []).includes(r.arg));
     return p ? buildProject(p) : null;
   }
-  if (r.name === 'card') {
-    const c = (data.channels || []).find((x) => x.id === r.arg);
-    if (c) lastCard = c.id;
-    return c ? buildCard(c) : null;
-  }
-  if (r.name === 'folder') {
-    /* kept so an older shared link still resolves */
-    const f = data.folders.find((x) => x.id === r.arg);
-    return f ? buildCard({ id: f.id, label: f.label, icon: f.icon, folders: [f.id] }) : null;
-  }
+  /* 'menu' never reaches here — a channel swaps the stage rather than opening
+     a panel, and the router handler below sends it to the grid instead. */
   const stat = document.getElementById('p-' + r.name);
   return stat || null;
 }
@@ -488,8 +417,8 @@ export function init(payload) {
   /* Close: every route back to the menu goes through the router, so this one
      handler covers the button, the scrim, Escape and the back button. */
   document.addEventListener('click', (e) => {
-    if (e.target.closest('[data-close]')) { e.preventDefault(); router.home(); }
-    else if (e.target === scrim()) router.home();
+    if (e.target.closest('[data-close]')) { e.preventDefault(); closeToParent(); }
+    else if (e.target === scrim()) closeToParent();
     const opener = e.target.closest('[data-open]');
     if (opener) { e.preventDefault(); router.go(opener.dataset.open, opener); }
     /* Scoped to .panel, not to a wrapper class. This listened on
@@ -510,10 +439,13 @@ export function init(payload) {
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
     if (isLightboxOpen()) { e.preventDefault(); closeLightbox(); return; }
-    if (open) { e.preventDefault(); router.home(); }
+    if (open) { e.preventDefault(); closeToParent(); }
   });
 
   router.onRoute((r) => {
+    /* Remember which channel a project was reached through, so closing it can
+       put focus back on that tile rather than on <body>. */
+    if (r.name === 'menu') lastCard = r.arg;
     if (!router.isPanelRoute(r)) { hide(); return; }
     const p = panelForRoute(r);
     if (p) show(p);

@@ -413,65 +413,7 @@
 /* A grid of bordered cards rather than a stack of soft pills — the panel used
    to share no language at all with the wall outside it. Two columns because a
    blurb needs the width; auto-fit so a narrow window collapses to one. */
-.rows { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(268px, 1fr)); }
 
-.row-item {
-  display: flex; align-items: center; gap: 14px;
-  width: 100%;
-  padding: 12px 14px;
-  background: var(--tile);
-  border: 2px solid var(--ink);
-  border-radius: 6px;
-  box-shadow: none;
-  font: inherit; color: var(--ink); text-align: left;
-  cursor: pointer; position: relative;
-  /* Thirteen of these render in the PROJECTS overlay. Transitioning the shadow
-     repainted every one the pointer crossed, which is most of them. */
-  transition: transform var(--d-fast) var(--ease),
-              border-color var(--d-fast) var(--ease);
-}
-.row-item::after {
-  content: ''; position: absolute; inset: 0; border-radius: inherit;
-  box-shadow: var(--shadow-lift);
-  opacity: 0; pointer-events: none;
-  transition: opacity var(--d-fast) var(--ease);
-}
-.row-item:hover::after,
-.row-item:focus-visible::after { opacity: 1; }
-.row-item:hover,
-.row-item:focus-visible {
-  background: var(--row-active);
-  transform: translateX(3px);
-}
-
-.row-item__badge {
-  flex: none;
-  width: 42px; height: 42px;
-  display: grid; place-items: center;
-  border-radius: 4px;
-  color: var(--ink);
-  background: var(--ground);
-  background-image: var(--card-sheen);
-  box-shadow: inset 0 0 0 2px var(--ink);
-}
-.row-item__badge .ico { width: 23px; height: 23px; stroke-width: 2; }
-
-.row-item__text { flex: 1 1 auto; min-width: 0; display: grid; gap: 2px; }
-.row-item__name {
-  font-family: var(--font-pix);
-  font-size: 14px; letter-spacing: .05em; line-height: 1.3;
-}
-.row-item__blurb {
-  font-size: var(--fs-small); color: var(--ink-2); line-height: 1.4;
-  overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
-}
-.row-item__go { flex: none; color: var(--ink-3); }
-.row-item__go .ico { width: 18px; height: 18px; stroke-width: 2.4; }
-.row-item:hover .row-item__go { color: var(--sel-deep); }
-
-.row-item[data-cat='security'] { --row-tint: #b4453c; }
-.row-item[data-cat='infra']    { --row-tint: var(--card-projects); }
-.row-item[data-cat='builds']   { --row-tint: var(--card-builds); }
 
 /* a setting that is a plain button, not a switch — no toggle to indent past */
 .setting--action .setting__note { margin-left: 0; }

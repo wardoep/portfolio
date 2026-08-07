@@ -14,13 +14,6 @@ import * as settings from './settings.js';
  *
  * Skipped outright when the URL carries a route: a shared deep link must not
  * put a black gate in front of the thing it points at. */
-/* How long the start screen holds before it lets itself out. It used to wait
-   forever, which put a wall between a busy hiring manager and the content —
-   and the person arriving from a job application is, by definition, a
-   first-time visitor who has never seen it. A key or a click still skips it
-   instantly, so the cue is still true. */
-const BOOT_HOLD_MS = 1800;
-
 function bootGate(onDone) {
   const boot = document.querySelector('[data-boot]');
   const finish = () => { if (onDone) onDone(); };
@@ -31,10 +24,12 @@ function bootGate(onDone) {
 
   if (seen || deepLink) { boot.hidden = true; finish(); return; }
 
-  let timer = null;
+  /* No auto-dismiss. It held for 1.8s at one point, which I added because the
+     screen is a wall in front of the content — but a screen that says PRESS A
+     TO CONTINUE while letting itself out is incoherent, and a deep link still
+     skips it entirely, which is the case that actually mattered. */
   const dismiss = () => {
     if (boot.hidden || boot.classList.contains('is-going')) return;
-    clearTimeout(timer);
     try { sessionStorage.setItem('pf-booted', '1'); } catch { /* private mode */ }
     boot.classList.add('is-going');
     const done = () => {
@@ -57,7 +52,6 @@ function bootGate(onDone) {
     dismiss();
   }, { once: false });
 
-  timer = setTimeout(dismiss, BOOT_HOLD_MS);
   boot.focus({ preventScroll: true });
 }
 
@@ -101,6 +95,24 @@ async function main() {
      entrance had nothing to play; play it now. */
   if (menuVisible) grid.playEntrance();
   panels.init(data);
+
+  /* The stage follows the route: a channel swaps the wall, anything else
+     leaves it at the root behind whatever panel is open. A channel with no
+     projects — RÉSUMÉ — reports back that it is not a menu, and the hash is
+     rewritten so its panel opens instead of leaving a dead route. */
+  let cameFrom = null;
+  router.onRoute((r) => {
+    if (r.name === 'menu') {
+      if (!grid.showChannel(r.arg)) grid.showRoot();
+      /* put focus back on the tile that was opened, once it exists again */
+      if (cameFrom) { grid.focusTile(cameFrom); cameFrom = null; }
+    } else if (r.name === 'project') {
+      cameFrom = r.arg;          /* remember where to land on the way back */
+    } else {
+      grid.showRoot();
+    }
+  });
+
   router.start();
 
   /* Reboot returns to the start screen, which is the only thing on the page

@@ -153,6 +153,8 @@
 
   <!-- Four across, three down. Three slots are filled and nine are empty
        sockets; grid.js builds both. A landmark of its own, beside the dock's. -->
+  <p class="level" data-level-title hidden></p>
+
   <nav class="grid" data-grid aria-label="Channels"><!-- built by grid.js --></nav>
 
   <p class="loading" data-loading>Loading…</p>
@@ -162,6 +164,11 @@
 <!-- Every item carries a permanent text label. Nine unlabelled glyphs told a
      visitor nothing, and a hover tooltip would never appear on a touch screen. -->
 <nav class="dock" aria-label="Quick actions">
+  <!-- only reachable inside a sub-menu; CSS hides it at the root -->
+  <button class="dock__btn dock__btn--back" type="button" data-menu-back>
+    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow-l"/></svg>
+    <span class="dock__label">Menu</span>
+  </button>
   <button class="dock__btn" type="button" data-open="about">
     <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-person"/></svg>
     <span class="dock__label">About</span>
@@ -340,10 +347,22 @@
      scraper or a reader-mode parser sees first. -->
 <button class="boot" type="button" data-boot>
   <span class="boot__inner">
-    <span class="boot__logo">EP</span>
-    <span class="boot__name">Edward Penna</span>
-    <span class="boot__role">Desktop Support / IT</span>
-    <span class="boot__cue" aria-hidden="true">Press any key to start</span>
+    <span class="boot__head">
+      <svg class="boot__warn" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 3 1.5 21h21L12 3z"/>
+        <rect class="boot__warn-bar" x="11" y="9" width="2" height="6" rx="1"/>
+        <rect class="boot__warn-bar" x="11" y="16.5" width="2" height="2" rx="1"/>
+      </svg>
+      <span>NOTICE &mdash; EDWARD PENNA</span>
+    </span>
+    <span class="boot__body">
+      EVERYTHING BEYOND THIS SCREEN WAS BUILT, BROKEN<br>
+      AND WRITTEN UP BY HAND. THIRTEEN LABS, SIX BUILDS,<br>
+      ONE SERVER THAT HAS TO STAY UP.
+    </span>
+    <span class="boot__also">Also online at</span>
+    <span class="boot__url">github.com/wardoep</span>
+    <span class="boot__cue" aria-hidden="true">Press <b class="boot__key">A</b> to continue.</span>
   </span>
   <span class="sr-only">Press any key or click to enter the portfolio</span>
 </button>
