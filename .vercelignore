@@ -1,0 +1,24 @@
+# Everything the site does not serve. On GitHub Pages the whole branch was
+# public whether it was site or not; this is the first chance to draw that line.
+#
+# Nothing here is secret — the repo is public — but the internal notes, the
+# build scripts and the test harness are not the site, and shipping them to a
+# CDN means they get crawled and indexed alongside it.
+#
+# Do NOT add: index.html, 404.html, resume.html, assets/, data/projects.json.
+# The page fetches data/projects.json at runtime; without it the wall is empty
+# and the site falls back to "Channels unavailable".
+
+tests/
+scripts/
+notes/
+dist/
+
+serve.py
+serve.sh
+publish.sh
+deploy.sh
+README.md
+
+.nojekyll
+data/.cache/

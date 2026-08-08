@@ -1,15 +1,16 @@
 /* live.mjs — run the checks against the deployed site, not the local server.
  *
- *   node tests/live.mjs
+ *   node tests/live.mjs                       the live domain
+ *   PF_LIVE=https://foo.vercel.app/ node ...  a preview deployment
  *
- * Pages serves stale assets from some edges for several minutes after a push,
+ * A CDN can serve stale assets from some edges for minutes after a push,
  * and it will happily hand you a NEW index.html with OLD css on the same load.
  * That produced a verification run where the start screen was current and the
  * stylesheet was two commits behind. So this reports what it actually got.
  */
 import { connect, reporter } from './cdp.mjs';
 
-const LIVE = 'https://wardoep.github.io/portfolio/';
+const LIVE = process.env.PF_LIVE || 'https://penna.lol/';
 const { send, ev, wait, errors } = await connect({ width: 1440, height: 900 });
 const { check, done } = reporter();
 

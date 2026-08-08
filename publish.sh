@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# publish.sh — pre-flight checks, then a dist/ copy of exactly what Pages serves.
+# publish.sh — pre-flight checks, then a dist/ copy of exactly what ships.
 #
-# This is NOT the deploy step. Pages deploys from the branch, so what you commit
-# is what ships. dist/ exists only so you can eyeball the published tree, and
-# the checks exist because every one of them corresponds to a bug that is
+# This is NOT the deploy step. Vercel builds from the pushed commit, so what you
+# commit is what ships. dist/ exists only so you can eyeball the published tree,
+# and the checks exist because every one of them corresponds to a bug that is
 # invisible locally and obvious in production.
 set -euo pipefail
 cd "$(dirname "$0")"
@@ -15,10 +15,13 @@ ok()   { note "ok" "$1"; }
 
 echo "pre-flight"
 
-# 1 — absolute asset paths. On a subpath these resolve to the domain root and
-#     404. 404.html is the one legitimate exception (see the comment in it).
+# 1 — absolute asset paths. Kept relative even though the site now lives at a
+#     domain root and `/assets/...` would resolve fine there: relative paths
+#     work at BOTH, so a preview deployment on a *.vercel.app subpath, a local
+#     server mounted anywhere, and the domain root all behave the same.
+#     404.html is the one legitimate exception (see the comment in it).
 if grep -nE '(href|src)="/[^/]' index.html resume.html assets/css/*.css assets/js/*.js 2>/dev/null; then
-  bad "absolute asset path — must be relative on a /portfolio/ subpath"
+  bad "absolute asset path — keep these relative so previews work too"
 else
   ok "no absolute asset paths"
 fi
@@ -30,11 +33,13 @@ else
   ok "no <base> tag"
 fi
 
-# 3 — Pages runs on Linux; a case-only collision works locally and 404s live
+# 3 — the CDN runs on Linux; a case-only collision works locally and 404s live
 dupes=$(find . -path ./.git -prune -o -type f -print | tr 'A-Z' 'a-z' | sort | uniq -d)
 if [ -n "$dupes" ]; then bad "case-only filename collision: $dupes"; else ok "no case collisions"; fi
 
-# 4 — Jekyll would refuse to publish _-prefixed paths and dies on stray Liquid
+# 4 — Jekyll would refuse to publish _-prefixed paths and dies on stray Liquid.
+#     Vercel does not run Jekyll, but GitHub Pages is still serving the old URL
+#     as a fallback, so this stays until that is switched off.
 [ -f .nojekyll ] && ok ".nojekyll present" || bad ".nojekyll missing"
 
 # 5 — the trademark rule from notes/LEGAL.md, enforced rather than remembered
@@ -235,6 +240,43 @@ else
   ok "no copy counts the work or claims it was hand-built"
 fi
 
+# 15 — the canonical host, in one place and one place only.
+#
+#      Absolute URLs are unavoidable in og: and canonical tags — scrapers do not
+#      resolve relative ones. That means the live hostname is typed into seven
+#      places across two files, and a stale one is invisible: the page renders
+#      perfectly while telling Google, LinkedIn and every job application that
+#      the real site is somewhere else.
+#
+#      The site moved from a GitHub Pages subpath to a domain root. Both of
+#      those failure modes matter, so this checks the host AND that nothing
+#      still hardcodes the old /portfolio/ prefix.
+SITE_URL="https://penna.lol"
+stray=$(grep -rn "wardoep\.github\.io" index.html resume.html 404.html assets/ data/ 2>/dev/null || true)
+if [ -n "$stray" ]; then
+  bad "an absolute URL still points at the old Pages host: $(echo "$stray" | head -1)"
+else
+  ok "no shipped file references the old host"
+fi
+
+prefix=$(grep -rnE '(href|src|content)="/portfolio/' index.html resume.html 404.html 2>/dev/null || true)
+if [ -n "$prefix" ]; then
+  bad "a /portfolio/ subpath survived the move: $(echo "$prefix" | head -1)"
+else
+  ok "no /portfolio/ subpath left in shipped markup"
+fi
+
+# Every absolute URL that IS present must agree with SITE_URL. A canonical
+# pointing one place and og:url another is worse than either alone.
+wrong=$(grep -rhoE 'https://[a-z0-9.-]+' index.html resume.html 2>/dev/null \
+        | grep -vE "^(${SITE_URL}|https://schema\.org|https://github\.com|https://www\.linkedin\.com)$" \
+        | sort -u || true)
+if [ -n "$wrong" ]; then
+  bad "an unexpected absolute host in shipped markup: $(echo "$wrong" | head -1)"
+else
+  ok "every absolute URL agrees with $SITE_URL"
+fi
+
 echo
 [ "$fail" -eq 0 ] || { echo "pre-flight failed."; exit 1; }
 
@@ -253,3 +295,4 @@ sed -i -E "s#(assets/(css|js)/[a-z-]+\.(css|js))\"#\1?v=$STAMP\"#g" dist/portfol
 
 echo "built dist/portfolio  ($(du -sh dist/portfolio | cut -f1), stamp $STAMP)"
 echo "serve it with ./serve.sh and open http://localhost:8091/portfolio/"
+echo "(the local mount keeps a subpath on purpose — it is the stricter test)"

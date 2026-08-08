@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
-# deploy.sh — check, commit, push. GitHub Pages serves the branch, so pushing
-# IS the deploy; publish.sh only builds dist/ for local inspection.
+# deploy.sh — check, commit, push. Vercel builds from the pushed commit, so
+# pushing IS the deploy; publish.sh only builds dist/ for local inspection.
+#
+# There is no build step and no Vercel CLI in the loop on purpose: the project
+# is served exactly as it sits in the repo, which is the whole reason publish.sh
+# can assert what production serves by reading these files.
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -16,8 +20,8 @@ fi
 
 git push -u origin main
 echo
-echo "pushed. Pages builds in ~1 minute (up to 10 on a brand-new site):"
-echo "  https://wardoep.github.io/portfolio/"
+echo "pushed. Vercel deploys in ~20 seconds:"
+echo "  https://penna.lol/"
 echo
-echo "check the build:"
-echo "  gh api repos/wardoep/portfolio/pages/builds/latest --jq .status"
+echo "verify what actually went live (not what you think did):"
+echo "  node tests/live.mjs"

@@ -6,15 +6,16 @@
 <title>Not found — Edward Penna</title>
 <meta name="robots" content="noindex">
 
-<!-- ⚠ THE ONE FILE THAT HARDCODES /portfolio/ ⚠
-     A 404 served at /portfolio/a/b/c resolves RELATIVE urls against
-     /portfolio/a/b/ — so `assets/img/favicon.ico` would itself 404. Absolute
-     paths are correct here and wrong everywhere else in this project.
+<!-- ⚠ THE ONE FILE THAT HARDCODES AN ABSOLUTE PATH ⚠
+     A 404 served at /a/b/c resolves RELATIVE urls against /a/b/ — so
+     `assets/img/favicon.ico` would itself 404. Absolute paths are correct here
+     and wrong everywhere else in this project.
 
-     If the repo is ever renamed, or a CNAME moves the site to a domain root,
-     these paths break. The other three places that hardcode the URL are
-     index.html's canonical/og:url/og:image. -->
-<link rel="icon" href="/portfolio/assets/img/favicon.ico" sizes="any">
+     This comment used to warn that "a CNAME moving the site to a domain root
+     would break these paths". It did, and this is that change: the site lives
+     at https://penna.lol/ now, so the prefix is / rather than /portfolio/.
+     publish.sh check 15 fails the build if the old host reappears anywhere. -->
+<link rel="icon" href="/assets/img/favicon.ico" sizes="any">
 <style>
   body {
     margin: 0; min-height: 100dvh;
@@ -37,7 +38,7 @@
     <p class="code">404</p>
     <h1>No channel here</h1>
     <p>That page does not exist.</p>
-    <a href="/portfolio/">Back to the menu</a>
+    <a href="/">Back to the menu</a>
   </div>
 </body>
 </html>
