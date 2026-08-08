@@ -168,40 +168,52 @@
 <!-- ─── dock ───────────────────────────────────────────────────────────── -->
 <!-- Every item carries a permanent text label. Nine unlabelled glyphs told a
      visitor nothing, and a hover tooltip would never appear on a touch screen. -->
+<!-- Three tracks, not one centred row. Four buttons sit left of the clock and
+     two sit right, so centring the ROW left the clock 80px right of the middle
+     of the screen — and the clock is what the eye reads as the centre of the
+     bar. The side groups take equal 1fr tracks with the clock in the auto one
+     between them, which pins it to the true centre whatever flanks it. Making
+     the Menu button permanent is what doubled the old 40px offset. -->
 <nav class="dock" aria-label="Quick actions">
+  <div class="dock__side dock__side--l">
   <!-- Always here, disabled at the root. It used to be display:none until you
-       opened a channel, which re-centred the whole bar and made every other
-       button jump sideways the moment you clicked one. -->
-  <button class="dock__btn dock__btn--back" type="button" data-menu-back disabled>
-    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow-l"/></svg>
-    <span class="dock__label">Menu</span>
-  </button>
-  <button class="dock__btn" type="button" data-open="about">
-    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-person"/></svg>
-    <span class="dock__label">About</span>
-  </button>
-  <button class="dock__btn" type="button" data-open="skills">
-    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-sliders"/></svg>
-    <span class="dock__label">Skills</span>
-  </button>
-  <button class="dock__btn" type="button" data-open="contact">
-    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-chat"/></svg>
-    <span class="dock__label">Contact</span>
-  </button>
+         opened a channel, which re-centred the whole bar and made every other
+         button jump sideways the moment you clicked one. -->
+    <button class="dock__btn dock__btn--back" type="button" data-menu-back disabled>
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow-l"/></svg>
+      <span class="dock__label">Menu</span>
+    </button>
+    <button class="dock__btn" type="button" data-open="about">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-person"/></svg>
+      <span class="dock__label">About</span>
+    </button>
+    <button class="dock__btn" type="button" data-open="skills">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-sliders"/></svg>
+      <span class="dock__label">Skills</span>
+    </button>
+    <button class="dock__btn" type="button" data-open="contact">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-chat"/></svg>
+      <span class="dock__label">Contact</span>
+    </button>
+  </div>
+
   <div class="dock__clock">
     <time class="clock" data-clock aria-label="Current time, Eastern">--:--</time>
     <span class="dock__date" data-date></span>
   </div>
+
+  <div class="dock__side dock__side--r">
   <a class="dock__btn" href="https://github.com/wardoep" rel="noopener noreferrer" target="_blank">
-    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-github"/></svg>
-    <span class="dock__label">GitHub</span>
-    <span class="sr-only">(opens in a new tab)</span>
-  </a>
-  <a class="dock__btn" href="https://www.linkedin.com/in/edward-penna-469096245" rel="noopener noreferrer" target="_blank">
-    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-linkedin"/></svg>
-    <span class="dock__label">LinkedIn</span>
-    <span class="sr-only">(opens in a new tab)</span>
-  </a>
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-github"/></svg>
+      <span class="dock__label">GitHub</span>
+      <span class="sr-only">(opens in a new tab)</span>
+    </a>
+    <a class="dock__btn" href="https://www.linkedin.com/in/edward-penna-469096245" rel="noopener noreferrer" target="_blank">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-linkedin"/></svg>
+      <span class="dock__label">LinkedIn</span>
+      <span class="sr-only">(opens in a new tab)</span>
+    </a>
+  </div>
 </nav>
 
 <!-- ─── panels ─────────────────────────────────────────────────────────────

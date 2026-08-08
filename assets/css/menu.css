@@ -461,14 +461,32 @@ body.is-sub .level__lead { font-size: 13px; letter-spacing: .18em; color: var(--
   position: relative; z-index: 3;
   flex: none;
   min-height: var(--dock-h);
-  display: flex; align-items: center; justify-content: center;
-  gap: clamp(10px, 2vw, 26px);
+  /* THREE TRACKS, not one centred row. Four buttons sit left of the clock and
+     two sit right, so centring the row put the clock 80px right of the middle
+     of the screen at every viewport — and the clock is what the eye reads as
+     the centre of the bar. Equal 1fr tracks either side of an auto one pin it
+     to the true centre no matter how many buttons flank it, which also means
+     adding a seventh button cannot quietly knock it off again.
+     minmax(0, 1fr): a plain 1fr is minmax(auto, 1fr) and would let an
+     over-wide side group grow its own track and shove the clock across —
+     re-creating the bug with extra steps. */
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
   padding: 12px clamp(14px, 4vw, 46px) 14px;
   background: var(--tile);
   border-top: 3px solid var(--ink);
   border-radius: 0;
   box-shadow: none;
 }
+
+.dock__side {
+  display: flex; align-items: center;
+  gap: clamp(10px, 2vw, 26px);
+  min-width: 0;
+}
+.dock__side--l { justify-content: flex-end; }
+.dock__side--r { justify-content: flex-start; }
 
 .dock__btn {
   position: relative;
@@ -663,10 +681,21 @@ body.is-sub .level__lead { font-size: 13px; letter-spacing: .18em; color: var(--
   .grid { --cols: 1 !important; --gap: 12px; }
   .bubble { display: none; }        /* no hover on touch; the label carries it */
   .chan__art { width: 42px; height: 42px; }
-  .dock { gap: 5px; padding: 6px 6px 12px; flex-wrap: wrap; }
+  /* Back to a wrapping row on a phone. Three tracks needs the clock between two
+     groups, and the clock is hidden here — so the middle track would collapse
+     to nothing and the two side groups would sit apart with a hole between
+     them. Centring the row is correct once there is no clock to centre ON. */
+  .dock {
+    display: flex; flex-wrap: wrap; justify-content: center;
+    gap: 5px; padding: 6px 6px 12px;
+  }
+  .dock__side { flex-wrap: wrap; justify-content: center; gap: 5px; }
   .dock__btn { min-width: 66px; min-height: 56px; padding: 8px 8px 7px; }
   .dock__label { font-size: 10.5px; }
-  .clock { display: none; }
+  /* The whole clock block, not just the time. Hiding only .clock left the date
+     behind — a bare "Fri 8/7" adrift between the buttons of a wrapped bar,
+     which is neither useful nor centred nor deliberate-looking. */
+  .dock__clock { display: none; }
 }
 
 
