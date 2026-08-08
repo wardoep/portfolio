@@ -45,11 +45,27 @@ function trap(e) {
  * only, so it never leaves the compositor.
  *
  * Uniform scale taken from the width. A separate Y scale distorts a panel full
- * of text badly enough to notice even at 400ms. */
+ * of text badly enough to notice even at 400ms.
+ *
+ * ONE AUTHOR. This used to be a scripted animation plus a CSS `panelIn`
+ * keyframe on .panel, with `.panel--zoom { animation: none !important }`
+ * supposedly keeping them apart. It did not, at either end of the open:
+ *
+ *   - show() unhid the panel and then forced two style flushes before that
+ *     class was added, so panelIn genuinely started at opacity 0;
+ *   - and removing the class when the zoom FINISHED lifted `animation: none`
+ *     and re-armed the keyframe, so the panel settled into place and then
+ *     flashed and re-scaled from .96. Measured: opacity 1.00 -> 0.00,
+ *     scale 1.00 -> 0.96, about 420ms after the click.
+ *
+ * That second one is the flicker. The fix is not to reorder two lines — it is
+ * for .panel to have no CSS animation at all, so there is nothing to race. A
+ * panel with no trigger to grow out of fades in place, through this same
+ * function, so there is exactly one mechanism to reason about. */
 let zoomedFrom = null;
 
 function panelZoom(panel, rect, { reverse = false } = {}) {
-  if (reduceMotion() || !rect || !rect.width) return null;
+  if (reduceMotion()) return null;
   const p = panel.getBoundingClientRect();
   if (!p.width) return null;
 
@@ -57,15 +73,29 @@ function panelZoom(panel, rect, { reverse = false } = {}) {
     .getPropertyValue('--d-slow')) || 0;
   if (!ms) return null;
 
-  const s = Math.max(0.05, rect.width / p.width);
-  const dx = (rect.left + rect.width / 2) - (p.left + p.width / 2);
-  const dy = (rect.top + rect.height / 2) - (p.top + p.height / 2);
-  /* The pixel offset goes FIRST. `translate(-50%, -50%)` is a percentage of the
-     panel's own box, so putting the offset after it would be scaled by s. */
-  const atTile = { transform: `translate(${dx}px, ${dy}px) translate(-50%, -50%) scale(${s})`, opacity: 0 };
-  const atRest = { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 };
+  /* The panel's resting transform, read rather than assumed. It is
+     translate(-50%, -50%) on desktop and `none` on a phone, where the panel is
+     full-screen — hardcoding the desktop value put the mobile panel through a
+     half-viewport jump on every open. */
+  const base = getComputedStyle(panel).transform;
+  const rest = base && base !== 'none' ? base : '';
 
-  /* the CSS panelIn keyframes would fight this for the same property */
+  /* No trigger — a deep link, or a keyboard open with nothing on screen to grow
+     out of. Fade up in place instead of skipping the animation entirely. */
+  const from = (rect && rect.width)
+    ? (() => {
+        const s = Math.max(0.05, rect.width / p.width);
+        const dx = (rect.left + rect.width / 2) - (p.left + p.width / 2);
+        const dy = (rect.top + rect.height / 2) - (p.top + p.height / 2);
+        /* The pixel offset goes FIRST: `rest` centres the panel by a percentage
+           of its own box, so putting the offset after it would be scaled by s. */
+        return `translate(${dx}px, ${dy}px) ${rest} scale(${s})`;
+      })()
+    : `${rest} scale(.96)`;
+
+  const atTile = { transform: from, opacity: 0 };
+  const atRest = { transform: `${rest} scale(1)`, opacity: 1 };
+
   panel.classList.add('panel--zoom');
   /* Promote for the duration only. The panel carries a 60px-blur shadow; on a
      promoted layer that is rasterised once and then transformed, instead of

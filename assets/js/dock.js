@@ -9,7 +9,8 @@
 
 /* Intl with a named zone, never a fixed offset: it has to follow EDT/EST. */
 const TIME = new Intl.DateTimeFormat('en-US', {
-  hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'America/New_York',
+  hour: '2-digit', minute: '2-digit', second: '2-digit',
+  hour12: false, timeZone: 'America/New_York',
 });
 /* the reference shows a date under the clock — "Sun 5/27" */
 const DATE = new Intl.DateTimeFormat('en-US', {
@@ -27,5 +28,12 @@ export function init() {
     if (date) date.textContent = DATE.format(now).replace(',', '');
   };
   tick();
-  setInterval(tick, 15_000);
+  /* Seconds, so it has to be a one-second tick. The clock is the element that
+     centres the whole bottom bar, so it is also the one place where digits
+     changing width would shove everything sideways twice a second — hence
+     `font-variant-numeric: tabular-nums` on .clock, which is now load-bearing
+     rather than tidy.
+     Aligned to the next whole second first, so it does not sit visibly half a
+     beat behind the system clock for the life of the page. */
+  setTimeout(() => { tick(); setInterval(tick, 1000); }, 1000 - (Date.now() % 1000));
 }

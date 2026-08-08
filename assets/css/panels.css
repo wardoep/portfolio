@@ -33,16 +33,19 @@
   border-radius: 10px;
   box-shadow: 0 0 0 var(--panel-rule) var(--ink), var(--shadow-panel);
   overflow: hidden;
-  animation: panelIn var(--d-mid) var(--ease-pop) both;
+  /* NO ANIMATION HERE. panels.js owns the open, start to finish.
+     This used to carry `animation: panelIn ... both`, disarmed by
+     `.panel--zoom { animation: none !important }` while the scripted FLIP ran.
+     Two authors of the same properties, and the class arrived too late at one
+     end and was removed too early at the other: when the zoom finished and the
+     class came off, `animation: none` lifted and the keyframe re-armed, so the
+     panel settled into place and then flashed and re-scaled from .96. That was
+     the reported flicker, and it is why there is nothing to disarm now. */
 }
 .panel[hidden] { display: none; }
-/* While the open/close zoom is running, the scripted animation owns the
-   transform; the CSS keyframes would be a second author of the same property. */
-.panel--zoom { animation: none !important; }
-@keyframes panelIn {
-  from { opacity: 0; transform: translate(-50%, -50%) scale(.96); }
-  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-}
+/* Purely a state marker now — it carries no animation of its own. Kept because
+   the suites and the close path both ask whether a zoom is in flight. */
+.panel--zoom { will-change: transform, opacity; }
 
 /* ── header ───────────────────────────────────────────────────────────────
  * The icon lives in a circular badge rather than sitting flat beside the text.
@@ -138,7 +141,7 @@
   color: var(--ink-2);
 }
 .prose code {
-  font-family: var(--font-pix); font-size: .92em;
+  font-family: var(--font-pix); font-size: 14px;   /* integer: .92em landed on 13.8 */
   background: var(--ground); padding: 1px 5px; border-radius: 4px;
 }
 /* :not(.btn) matters. `.prose a` is specificity (0,1,1) and was beating
@@ -339,8 +342,12 @@
 
 
 @media (max-width: 600px) {
+  /* Full screen, and transform:none rather than the desktop centring. panelZoom
+     READS this resting transform instead of assuming translate(-50%, -50%), so
+     the phone panel no longer animates from half a viewport away. The
+     phone-only @keyframes panelIn that used to live here went with the keyframe
+     it overrode. */
   .panel { width: 100vw; max-height: 100vh; height: 100%; border-radius: 0; border: 0; top: 0; left: 0; transform: none; }
-  @keyframes panelIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
   .panel__body { padding: 16px 18px 30px; }
 }
 

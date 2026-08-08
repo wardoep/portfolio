@@ -124,22 +124,12 @@ function centreLastRow(host, count, cols) {
   }
 }
 
-/* ── the pitch ────────────────────────────────────────────────────────────
- * What this is and why anyone should care, above the wall, on the screen a
- * hiring manager actually lands on. Three abstract tiles and an 11px name plate
- * made someone work out the answer for themselves, and nobody does.
- *
- * No month or year in here on purpose: publish.sh check 13 fails the build on a
- * forward-looking date that has quietly gone past, and "available now" cannot
- * expire. */
-const PITCH_LEAD = 'Desktop Support / IT — available now';
-/* No count. It named a number of labs and a number of builds, which meant two
-   sentences on the landing screen went quietly out of date every time a repo
-   was pushed, and made the page brag about an amount rather than say what the
-   work is. publish.sh check 14 fails the build if one comes back. */
-const PITCH_SUB =
-  'B.S. Cybersecurity, University at Albany. I build IT and security labs at home, ' +
-  'break them on purpose, and write down what it took to fix them.';
+/* The root used to carry two lines of pitch above the wall. Gone by request —
+   the home screen is the three cards and the closing ask, nothing else.
+   `.level` still names the channel you are inside; at the root it is hidden,
+   and measureChrome() hands the reclaimed height straight back to the grid
+   with no hand-tuning, which is the whole reason that value is measured
+   rather than declared. */
 
 const folderLabel = (id) =>
   (data.folders || []).find((f) => f.id === id)?.label || '';
@@ -191,16 +181,13 @@ function render() {
   host.style.setProperty('--rows', String(rows));
   centreLastRow(host, tiles.length, cols);
 
-  /* One slot, two jobs: the pitch at the root, the channel's name inside it. */
+  /* The channel's name inside a channel, and nothing at all at the root. Hidden
+     rather than emptied: an empty box still takes its line-height, and
+     measureChrome() would charge the wall for a line of nothing. */
   if (titleNode) {
     titleNode.textContent = '';
-    if (sub) {
-      titleNode.appendChild(el('span', 'level__lead', channelById(level.id).label));
-    } else {
-      titleNode.appendChild(el('span', 'level__lead', PITCH_LEAD));
-      titleNode.appendChild(el('span', 'level__sub', PITCH_SUB));
-    }
-    titleNode.hidden = false;
+    if (sub) titleNode.appendChild(el('span', 'level__lead', channelById(level.id).label));
+    titleNode.hidden = !sub;
   }
   /* The closing ask belongs on the screen that is the end of a visit, not
      halfway down a channel. */

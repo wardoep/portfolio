@@ -16,19 +16,38 @@ const root = document.documentElement;
 const read = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
 const write = (k, v) => { try { localStorage.setItem(k, v); } catch { /* private mode */ } };
 
+/* ── the theme, in one place ──────────────────────────────────────────────
+ * The corner button is a TOGGLE, not a menu, and its icon shows what you are
+ * switching TO — a moon while the site is light, a sun while it is dark. A
+ * toggle that never renames itself is unusable with a screen reader, so the
+ * label and aria-pressed move with the glyph.
+ *
+ * Everything that changes the theme goes through here, so there is one place
+ * that knows how to leave the button telling the truth. */
+function paintThemeButton() {
+  const btn = document.querySelector('[data-toggle-theme-btn]');
+  if (!btn) return;
+  const dark = root.dataset.theme === 'dark';
+  btn.setAttribute('aria-pressed', String(dark));
+  btn.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+  btn.querySelector('[data-theme-icon]')?.setAttribute('href', dark ? '#i-sun' : '#i-moon');
+}
+
+function setTheme(dark, { remember = true } = {}) {
+  root.dataset.theme = dark ? 'dark' : 'light';
+  if (remember) write('pf-theme', dark ? 'dark' : 'light');
+  paintThemeButton();
+  /* stars.js watches data-theme on <html> itself, so the field re-inks without
+     being told. See the note there about why that is not a callback. */
+  announce(dark ? 'Dark mode on' : 'Light mode on');
+}
+
 export function init() {
-  const themeBox = document.querySelector('[data-toggle-theme]');
   const motionBox = document.querySelector('[data-toggle-motion]');
 
-  if (themeBox) {
-    themeBox.checked = root.dataset.theme === 'dark';
-    themeBox.addEventListener('change', () => {
-      const dark = themeBox.checked;
-      root.dataset.theme = dark ? 'dark' : 'light';
-      write('pf-theme', dark ? 'dark' : 'light');
-      announce(dark ? 'Dark mode on' : 'Light mode on');
-    });
-  }
+  paintThemeButton();
+  document.querySelector('[data-toggle-theme-btn]')
+    ?.addEventListener('click', () => setTheme(root.dataset.theme !== 'dark'));
 
   if (motionBox) {
     const systemOff = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -46,13 +65,12 @@ export function init() {
   }
 
   /* With nothing stored, keep following the OS. Once the user picks, their
-     choice is stored and this stops overriding it. */
+     choice is stored and this stops overriding it — remember:false so following
+     the system does not silently become a stored preference. */
   if (read('pf-theme') === null) {
-    const mq = matchMedia('(prefers-color-scheme: dark)');
-    mq.addEventListener('change', (e) => {
+    matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
       if (read('pf-theme') !== null) return;
-      root.dataset.theme = e.matches ? 'dark' : 'light';
-      if (themeBox) themeBox.checked = e.matches;
+      setTheme(e.matches, { remember: false });
     });
   }
 

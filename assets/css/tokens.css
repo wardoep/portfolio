@@ -143,6 +143,14 @@
   --ease-pop: cubic-bezier(.34, 1.42, .48, 1);
 
   /* --- type --- */
+  /* Departure Mono is the face of the whole site now — every label, every
+     paragraph. --font-ui survives for the one page that must not use a bitmap
+     monospace: resume.html is what goes on job applications, gets printed, and
+     gets parsed by applicant tracking systems, and this face makes all three
+     materially worse.
+     The scale below is integers ON PURPOSE and it matters more than it used to:
+     Departure Mono is a bitmap face and smears at fractional sizes, so any
+     clamp() on text has to be stepped at breakpoints instead. */
   --font-ui:  'M PLUS Rounded 1c', 'Hiragino Maru Gothic ProN', 'Varela Round',
               -apple-system, 'Segoe UI', system-ui, sans-serif;
   --font-pix: 'Departure Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -154,8 +162,12 @@
   --fs-h3:    16px;
   --fs-h2:    20px;
 
-  --dock-h: 96px;   /* the bar's real height; the grid's width maths
-                       reads this, so the two must not drift */
+  --dock-h: 100px;  /* MEASURED. The bar's real height is 99px now — the pixel
+                       face has different label metrics and pushed it past the
+                       96 it sat at for months. The grid subtracts this token to
+                       derive its own height, so a token 3px under the truth
+                       gives the wall 3px it does not have and the bottom row
+                       clips at the tightest viewport first. */
   --hud-h:  64px;   /* MEASURED, not guessed: with the portrait and the role line
                        gone the header needs 60px, and the extra 4 is clearance
                        for the chip's hover ring. It has been 102, then 86, then

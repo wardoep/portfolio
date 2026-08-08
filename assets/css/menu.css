@@ -2,6 +2,15 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
+/* Form controls do NOT inherit `font` from the document — a <button> is handed
+   the UA's own family and size, so every button on this page was still Arial at
+   13.333px after the whole site moved to the pixel face. The dock labels were
+   the visible half of that; the invisible half is that 13.333px is fractional,
+   and a bitmap face smears at fractional sizes.
+   One reset instead of `font: inherit` sprinkled across seven rules, three of
+   which already had it and four of which had been missed. */
+button, input, select, textarea { font: inherit; }
+
 /* min-height, not height: on a phone the content can exceed the viewport, and a
    hard 100% clipped it under the header. Desktop is pinned to 100dvh below. */
 html { height: 100%; }
@@ -9,9 +18,13 @@ html { height: 100%; }
 body {
   min-height: 100dvh;
   margin: 0;
-  font-family: var(--font-ui);
+  /* One face for the whole site — the same one the name chip has always used.
+     resume.html deliberately keeps --font-ui; see the note in tokens.css. */
+  font-family: var(--font-pix);
   font-size: var(--fs-body);
-  line-height: 1.55;
+  /* Monospace runs wider per character and its glyphs are shorter, so the
+     rounded face's 1.55 leaves paragraphs looking airy and hard to track. */
+  line-height: 1.7;
   color: var(--ink);
   background: var(--ground);
   /* Graph paper. Layer order is top-down: the nodes sit above the heavy rules,
@@ -197,7 +210,7 @@ a { color: inherit; }
 .level__lead {
   display: block;
   font-family: var(--font-pix);
-  font-size: clamp(13px, 1.5vw, 16px); letter-spacing: .1em;
+  font-size: 14px; letter-spacing: .1em;   /* stepped below; see the reflow block */
   text-transform: uppercase; color: var(--ink);
 }
 .level__sub {
@@ -368,7 +381,7 @@ body.is-sub .level__lead { font-size: 13px; letter-spacing: .18em; color: var(--
 
 .chan__label {
   font-family: var(--font-pix);
-  font-size: clamp(13px, 1.65vh, 17px);
+  font-size: 13px;                         /* stepped below; see the reflow block */
   letter-spacing: .07em; text-transform: uppercase; line-height: 1.25;
   color: inherit;
   /* Long repository names are one unbroken token. Without this they either
@@ -383,7 +396,11 @@ body.is-sub .level__lead { font-size: 13px; letter-spacing: .18em; color: var(--
 .chan__count {
   font-size: var(--fs-micro);
   color: inherit; opacity: .72; line-height: 1.35;
-  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 1;
+  /* Two lines, not one. The pixel face is monospace and runs wider per
+     character, so a descriptor that fitted on one line in the rounded face now
+     truncates — "Things I wanted to exist, so I built…" was cut mid-sentence.
+     The root cards have the vertical room and the fit gate checks the rest. */
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
   overflow: hidden;
 }
 
@@ -396,7 +413,7 @@ body.is-sub .level__lead { font-size: 13px; letter-spacing: .18em; color: var(--
 }
 .chan__chip {
   padding: 2px 7px;
-  font-family: var(--font-pix); font-size: 9.5px; letter-spacing: .04em;
+  font-family: var(--font-pix); font-size: 10px; letter-spacing: .04em;
   line-height: 1.5; white-space: nowrap;
   color: inherit;
   border: 1.5px solid currentColor; border-radius: var(--r-pill);
@@ -487,6 +504,10 @@ body.is-sub .level__lead { font-size: 13px; letter-spacing: .18em; color: var(--
 }
 .dock__side--l { justify-content: flex-end; }
 .dock__side--r { justify-content: flex-start; }
+/* Back sits in the corner of the bar; everything else keeps hugging the clock.
+   margin-right:auto rather than a fourth grid track, so the clock's centring is
+   completely untouched by it. */
+.dock__side--l .dock__btn--back { margin-right: auto; }
 
 .dock__btn {
   position: relative;
@@ -514,7 +535,7 @@ body.is-sub .level__lead { font-size: 13px; letter-spacing: .18em; color: var(--
 }
 .dock__label {
   position: relative;
-  font-size: 11.5px; font-weight: 800; letter-spacing: .02em;
+  font-size: 12px; font-weight: 800; letter-spacing: .02em;
   line-height: 1; white-space: nowrap; color: var(--ink-2);
   margin-top: 12px;
 }
@@ -572,7 +593,7 @@ body.is-sub .level__lead { font-size: 13px; letter-spacing: .18em; color: var(--
    option even before taste came into it. */
 .boot__head {
   display: flex; align-items: center; gap: 12px;
-  font-size: clamp(20px, 3vw, 30px); font-weight: 800; letter-spacing: .01em;
+  font-size: 22px; font-weight: 800; letter-spacing: .01em;
   animation: bootIn var(--d-slow) var(--ease) both;
 }
 .boot__warn { width: 1em; height: 1em; flex: none; fill: #fff; stroke: none; }
@@ -580,24 +601,24 @@ body.is-sub .level__lead { font-size: 13px; letter-spacing: .18em; color: var(--
 
 .boot__body {
   margin-top: 34px;
-  font-size: clamp(13px, 1.6vw, 17px); line-height: 1.85; letter-spacing: .02em;
+  font-size: 14px; line-height: 1.85; letter-spacing: .02em;
   color: #e9e9e9;
   animation: bootIn var(--d-slow) var(--ease) 90ms both;
 }
 .boot__also {
   margin-top: 34px;
-  font-size: clamp(12px, 1.3vw, 14px); color: #cfcfcf;
+  font-size: 12px; color: #cfcfcf;
   animation: bootIn var(--d-slow) var(--ease) 160ms both;
 }
 .boot__url {
   margin-top: 8px;
-  font-size: clamp(13px, 1.5vw, 17px); font-weight: 800;
+  font-size: 14px; font-weight: 800;
   animation: bootIn var(--d-slow) var(--ease) 200ms both;
 }
 .boot__cue {
   margin-top: 40px;
   display: flex; align-items: center; gap: 8px;
-  font-size: clamp(14px, 1.7vw, 19px); font-weight: 800; letter-spacing: .01em;
+  font-size: 15px; font-weight: 800; letter-spacing: .01em;
   color: #fff;
   /* A hard step, not a soft pulse. The old 2.4s ease read as breathing; a
      prompt waiting for input blinks. */
@@ -608,7 +629,7 @@ body.is-sub .level__lead { font-size: 13px; letter-spacing: .18em; color: var(--
   display: inline-grid; place-items: center;
   width: 1.5em; height: 1.5em;
   border: 2px solid #fff; border-radius: 50%;
-  font-size: .82em; font-weight: 800; line-height: 1;
+  font-size: 12px; font-weight: 800; line-height: 1;
 }
 
 @keyframes bootIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
@@ -638,9 +659,19 @@ body.is-sub .level__lead { font-size: 13px; letter-spacing: .18em; color: var(--
  * the document scrolls and the tiles get their proportions back. */
 /* Integer steps for the bitmap face. A clamp() lands on fractional pixels at
    nearly every window size and Departure Mono smears when it does. */
+/* Every text size on this page is an INTEGER at every window size. Departure
+   Mono is a bitmap face: a clamp() lands on a fractional pixel at nearly every
+   viewport width and the glyphs smear when it does. That was survivable while
+   the face was confined to labels; it is the whole site's body text now, so the
+   sizes step at breakpoints instead of sliding. */
 @media (min-height: 900px)  { .chan__count { font-size: var(--fs-small); } }
-@media (min-width: 1200px)  { .dock__clock .clock { font-size: 26px; } }
-@media (min-width: 1600px)  { .dock__clock .clock { font-size: 28px; } }
+@media (min-width: 1280px)  { .chan__label { font-size: 15px; } .level__lead { font-size: 15px; } }
+@media (min-width: 1600px)  { .chan__label { font-size: 16px; } .level__lead { font-size: 16px; } }
+@media (min-width: 1200px)  { .dock__clock .clock { font-size: 24px; } }
+@media (min-width: 1600px)  { .dock__clock .clock { font-size: 26px; } }
+@media (min-width: 900px)   { .boot__head { font-size: 26px; } .boot__body { font-size: 15px; }
+                              .boot__url  { font-size: 15px; } .boot__cue  { font-size: 16px; } }
+@media (min-width: 1400px)  { .boot__head { font-size: 30px; } }
 
 @media (min-width: 901px) {
   html, body { height: 100dvh; overflow: hidden; }
@@ -691,7 +722,7 @@ body.is-sub .level__lead { font-size: 13px; letter-spacing: .18em; color: var(--
   }
   .dock__side { flex-wrap: wrap; justify-content: center; gap: 5px; }
   .dock__btn { min-width: 66px; min-height: 56px; padding: 8px 8px 7px; }
-  .dock__label { font-size: 10.5px; }
+  .dock__label { font-size: 11px; }
   /* The whole clock block, not just the time. Hiding only .clock left the date
      behind — a bare "Fri 8/7" adrift between the buttons of a wrapped bar,
      which is neither useful nor centred nor deliberate-looking. */
