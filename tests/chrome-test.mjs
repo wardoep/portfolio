@@ -80,6 +80,20 @@ console.log('\nTHE SUN AND THE MOON');
   check('it toggles rather than opening a panel', !s.opensPanel);
   check('no panel opened', (await ev(`document.querySelector('.panel:not([hidden])')?.id || 'none'`)) === 'none');
 
+  /* Set the attribute WITHOUT clicking, the way the screenshot harness and a
+     devtools poke both do. The button used to repaint only on its own click, so
+     it sat showing a moon on a black page — a control lying about what it will
+     do. It observes data-theme now, like the star field. */
+  await ev(`document.documentElement.dataset.theme = 'dark'`);
+  await wait(150);
+  s = JSON.parse(await read());
+  check('the icon follows the theme even when nothing clicked it',
+    s.icon === '#i-sun' && s.pressed === 'true', `${s.icon}, pressed ${s.pressed}`);
+  await ev(`document.documentElement.dataset.theme = 'light'`);
+  await wait(150);
+  check('and back again',
+    JSON.parse(await read()).icon === '#i-moon');
+
   /* The gear is still there, because the Display panel holds the animation
      switch and the legal line notes/LEGAL.md requires stay on the site. */
   check('the gear is still beside it and still opens Display',

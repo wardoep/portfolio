@@ -49,6 +49,14 @@ export function init() {
   document.querySelector('[data-toggle-theme-btn]')
     ?.addEventListener('click', () => setTheme(root.dataset.theme !== 'dark'));
 
+  /* And watch the attribute itself, exactly as stars.js does. Anything that
+     sets data-theme without going through setTheme — a devtools poke, a future
+     caller, a test harness — would otherwise leave a moon on a black page,
+     which is a button lying about what it will do. Observing is the only
+     version of this that cannot be forgotten. */
+  new MutationObserver(paintThemeButton).observe(root,
+    { attributes: true, attributeFilter: ['data-theme'] });
+
   if (motionBox) {
     const systemOff = matchMedia('(prefers-reduced-motion: reduce)').matches;
     motionBox.checked = root.dataset.motion !== 'off' && !systemOff;
