@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # publish.sh — pre-flight checks, then a dist/ copy of exactly what ships.
 #
-# This is NOT the deploy step. Vercel builds from the pushed commit, so what you
-# commit is what ships. dist/ exists only so you can eyeball the published tree,
+# This is NOT the deploy step. Pages serves the branch, so what you commit is
+# what ships. dist/ exists only so you can eyeball the published tree,
 # and the checks exist because every one of them corresponds to a bug that is
 # invisible locally and obvious in production.
 set -euo pipefail
@@ -33,13 +33,12 @@ else
   ok "no <base> tag"
 fi
 
-# 3 — the CDN runs on Linux; a case-only collision works locally and 404s live
+# 3 — Pages runs on Linux; a case-only collision works locally and 404s live
 dupes=$(find . -path ./.git -prune -o -type f -print | tr 'A-Z' 'a-z' | sort | uniq -d)
 if [ -n "$dupes" ]; then bad "case-only filename collision: $dupes"; else ok "no case collisions"; fi
 
 # 4 — Jekyll would refuse to publish _-prefixed paths and dies on stray Liquid.
-#     Vercel does not run Jekyll, but GitHub Pages is still serving the old URL
-#     as a fallback, so this stays until that is switched off.
+#     Load-bearing: Pages is the host.
 [ -f .nojekyll ] && ok ".nojekyll present" || bad ".nojekyll missing"
 
 # 5 — the trademark rule from notes/LEGAL.md, enforced rather than remembered
