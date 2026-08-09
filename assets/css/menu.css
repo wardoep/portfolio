@@ -221,25 +221,6 @@ a { color: inherit; }
    the content there, not the sentence above it. */
 body.is-sub .level__lead { font-size: 13px; letter-spacing: .18em; color: var(--ink-2); }
 
-/* ── the closing CTA ──────────────────────────────────────────────────────
- * The reference wall ends on a button that asks for the next step. This one
- * does the same thing and says the actual address, because "get in touch" that
- * hides the address behind a click is one more thing to not bother doing. */
-.cta {
-  flex: none;
-  display: inline-flex; align-items: center; gap: 10px;
-  padding: 9px 20px;
-  font: inherit; font-size: var(--fs-small); font-weight: 800;
-  color: var(--card-projects-ink);
-  background: var(--card-projects);
-  background-image: var(--card-sheen);
-  border: 3px solid var(--card-rule); border-radius: var(--r-pill);
-  cursor: pointer;
-  transition: transform var(--d-fast) var(--ease);
-}
-.cta:hover, .cta:focus-visible { transform: translateY(-2px); }
-.cta__mail { font-family: var(--font-pix); letter-spacing: .04em; }
-.cta[hidden] { display: none; }
 
 /* The Menu button is PERMANENT. It used to be display:none at the root, which
    re-centred the entire dock the moment you opened a channel — every other
@@ -378,6 +359,20 @@ body.is-sub .level__lead { font-size: 13px; letter-spacing: .18em; color: var(--
 /* min-width:0 on a grid child is what lets the text actually shrink instead of
    forcing the column wider than the card and pushing the circle off the edge */
 .chan__text { min-width: 0; display: grid; gap: 3px; }
+
+/* At the ROOT the card is a name and its glyph, centred as one group. Inside a
+   channel it stays left-aligned: thirteen cards scanned down a column read far
+   faster off a shared left edge, and those cards still carry a folder and a
+   stack that the eye needs to line up. Two levels, two jobs. */
+body:not(.is-sub) .chan {
+  grid-template-columns: auto auto;
+  justify-content: center;
+}
+body:not(.is-sub) .chan__label {
+  font-size: 18px;                 /* stepped below; the name is alone now */
+  letter-spacing: .1em;
+  -webkit-line-clamp: 2;
+}
 
 .chan__label {
   font-family: var(--font-pix);
@@ -665,8 +660,10 @@ body.is-sub .level__lead { font-size: 13px; letter-spacing: .18em; color: var(--
    the face was confined to labels; it is the whole site's body text now, so the
    sizes step at breakpoints instead of sliding. */
 @media (min-height: 900px)  { .chan__count { font-size: var(--fs-small); } }
-@media (min-width: 1280px)  { .chan__label { font-size: 15px; } .level__lead { font-size: 15px; } }
-@media (min-width: 1600px)  { .chan__label { font-size: 16px; } .level__lead { font-size: 16px; } }
+@media (min-width: 1280px)  { .chan__label { font-size: 15px; } .level__lead { font-size: 15px; }
+                              body:not(.is-sub) .chan__label { font-size: 20px; } }
+@media (min-width: 1600px)  { .chan__label { font-size: 16px; } .level__lead { font-size: 16px; }
+                              body:not(.is-sub) .chan__label { font-size: 22px; } }
 @media (min-width: 1200px)  { .dock__clock .clock { font-size: 24px; } }
 @media (min-width: 1600px)  { .dock__clock .clock { font-size: 26px; } }
 @media (min-width: 900px)   { .boot__head { font-size: 26px; } .boot__body { font-size: 15px; }

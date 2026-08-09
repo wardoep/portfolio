@@ -19,7 +19,6 @@ import * as router from './router.js';
 let data = null;
 let host = null;
 let titleNode = null;
-let ctaNode = null;
 let level = { kind: 'root' };
 /* The wall is built before the start screen lets go. Playing the entrance on
    render would run it under an opaque overlay — which is exactly the bug that
@@ -124,8 +123,9 @@ function centreLastRow(host, count, cols) {
   }
 }
 
-/* The root used to carry two lines of pitch above the wall. Gone by request —
-   the home screen is the three cards and the closing ask, nothing else.
+/* The root used to carry two lines of pitch above the wall, and a closing ask
+   below it. Both gone by request — the home screen is the three cards and
+   nothing else.
    `.level` still names the channel you are inside; at the root it is hidden,
    and measureChrome() hands the reclaimed height straight back to the grid
    with no hand-tuning, which is the whole reason that value is measured
@@ -163,11 +163,16 @@ function render() {
        so never went stale — but a number was still the wrong thing to put on
        the landing screen. The tile should say what the channel IS, not how much
        is currently in it. */
+    /* Name only, centred. The descriptor line under each channel went the same
+       way as the pitch and the closing ask: the home screen is three cards and
+       nothing else. The blurb still lives on the hover caption and in the
+       channel itself, so nothing is lost — it just is not all on screen at
+       once. */
     tiles = channels().map((c) => tile({
       id: c.id,
       iconId: 'i-' + (c.icon || 'default'),
       label: c.label,
-      sub: c.kind || c.blurb || '',
+      sub: '',
       chips: [],
       caption: captionForChannel(c),
       route: c.id,
@@ -189,10 +194,6 @@ function render() {
     if (sub) titleNode.appendChild(el('span', 'level__lead', channelById(level.id).label));
     titleNode.hidden = !sub;
   }
-  /* The closing ask belongs on the screen that is the end of a visit, not
-     halfway down a channel. */
-  if (ctaNode) ctaNode.hidden = sub;
-
   document.body.classList.toggle('is-sub', sub);
   /* The Menu button is always in the dock; at the root there is simply nowhere
      to go back to. Disabling beats hiding — hiding re-centred the whole bar. */
@@ -292,7 +293,6 @@ export function init(payload) {
   data = payload;
   host = document.querySelector('[data-grid]');
   titleNode = document.querySelector('[data-level-title]');
-  ctaNode = document.querySelector('[data-cta]');
   if (!host) return;
 
   level = { kind: 'root' };
@@ -303,7 +303,7 @@ export function init(payload) {
      listener because the font swap is not a resize. */
   if (typeof ResizeObserver === 'function') {
     const ro = new ResizeObserver(() => measureChrome());
-    for (const node of [titleNode, ctaNode]) if (node) ro.observe(node);
+    if (titleNode) ro.observe(titleNode);
   }
   addEventListener('resize', measureChrome);
 

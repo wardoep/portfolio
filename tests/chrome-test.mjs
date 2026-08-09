@@ -22,8 +22,6 @@ console.log('\nTHE FACE');
     ['body', 'body'],
     ['name chip', '.user__name'],
     ['card title', '.chan__label'],
-    ['card descriptor', '.chan__count'],
-    ['the closing ask', '.cta'],
     ['clock', '.clock'],
     ['dock label', '.dock__label'],
   ];
@@ -46,6 +44,15 @@ console.log('\nTHE FACE');
   })()`);
   check('no visible text lands on a fractional pixel size',
     JSON.parse(frac).length === 0, JSON.parse(frac).join(', '));
+
+  /* The descriptor lives one level down now, not on the root cards. Checked
+     there rather than dropped, or the pixel face could quietly stop applying
+     to the only text on the projects wall. */
+  await load('#/projects');
+  check('card descriptor is the pixel face, one level down',
+    (await ev(`getComputedStyle(document.querySelector('.chan__count'))
+       .fontFamily.split(',')[0].replace(/"/g, '')`)) === 'Departure Mono');
+  await load();
 }
 
 /* ── the theme toggle ──────────────────────────────────────────────────── */
@@ -148,8 +155,26 @@ console.log('\nTHE HOME SCREEN');
   check('no pitch above the wall', await ev(`document.querySelector('.level').hidden`));
   check('and no stray text where it was',
     (await ev(`document.querySelector('.level').textContent.trim()`)) === '');
-  check('the closing ask is still there',
-    await ev(`!document.querySelector('[data-cta]').hidden`));
+  /* Name only, centred. No descriptor line, no chips, nothing under the wall. */
+  check('the root cards carry only their name',
+    (await ev(`JSON.stringify([...document.querySelectorAll('.chan')]
+      .map((c) => c.innerText.trim()))`)) === '["PROJECTS","BUILDS","RÉSUMÉ"]',
+    await ev(`JSON.stringify([...document.querySelectorAll('.chan')].map((c) => c.innerText.trim()))`));
+  check('and centre it rather than hugging the left',
+    await ev(`getComputedStyle(document.querySelector('.chan')).justifyContent === 'center'`));
+  /* The closing ask is gone by request. Asserted as ABSENT rather than just
+     deleted from the suite: leaving no check at all would let it drift back in
+     unnoticed, and the whole point of removing it was that the home screen is
+     three cards and nothing else. */
+  check('nothing else sits under the wall',
+    await ev(`document.querySelector('[data-cta]') === null`));
+  check('and no email address is on the home screen',
+    !(await ev(`document.body.innerText`)).includes('@gmail.com'));
+  /* Contact is still one click away in the bar — removing the ask must not
+     remove the way to reach him. */
+  check('Contact is still in the dock',
+    await ev(`[...document.querySelectorAll('.dock__label')]
+      .some((n) => n.textContent.trim() === 'Contact')`));
   check('three cards', (await count('.chan')) === 3, String(await count('.chan')));
 
   /* Inside a channel the same slot names the channel. */

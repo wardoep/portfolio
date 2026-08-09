@@ -40,7 +40,9 @@ await one('dock labels too (buttons do not inherit font)',
   `getComputedStyle(document.querySelector('.dock__label')).fontFamily.split(',')[0].replace(/"/g,'')`,
   'Departure Mono');
 await one('no pitch above the wall', `document.querySelector('.level').hidden`, true);
-await one('the closing ask survives', `!document.querySelector('[data-cta]').hidden`, true);
+await one('the closing ask is gone', `document.querySelector('[data-cta]') === null`, true);
+await one('no email address on the home screen',
+  `document.body.innerText.includes('@gmail.com')`, false);
 await one('the bar reads Back first, no About',
   `[...document.querySelectorAll('.dock__label')].map(n=>n.textContent.trim()).join(',')`,
   'Back,Skills,Contact,GitHub,LinkedIn');
