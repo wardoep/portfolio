@@ -117,9 +117,15 @@ async function main() {
   });
 
   /* ── the editor ─────────────────────────────────────────────────────────
-   * Lazy in two senses: the module is only fetched when the route is hit, AND
-   * only if the local write endpoint answers first. A visitor on penna.lol
-   * never downloads a byte of it, and there is no editor there to find. */
+   * Lazy: the module is fetched only when the #/admin route is hit, so an
+   * ordinary visit never downloads it.
+   *
+   * It DOES mount on penna.lol — that is the point of committing from a
+   * browser, and this comment used to claim the opposite long after it stopped
+   * being true. What makes the published editor safe is not that it is absent
+   * but that it can do nothing without a GitHub token: the gate is a token
+   * GitHub itself validates on every write, not a check in this file, which
+   * anyone could step over from devtools. */
   let admin = null;
   const adminHost = document.querySelector('[data-admin-host]');
   router.onRoute(async (r) => {

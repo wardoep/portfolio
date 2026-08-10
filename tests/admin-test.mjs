@@ -15,34 +15,34 @@
  */
 import { connect, reporter, BASE } from './cdp.mjs';
 import { readFileSync } from 'node:fs';
-import { PRIVATE } from '../assets/js/rules.js';
 
 const PW = readFileSync(new URL('../.admin-pw', import.meta.url), 'utf8').trim();
 const API = BASE + '__admin/';
 
-/* A string this file must never contain, built from the rule meant to catch it.
+/* The probe this file feeds to the rules.
  *
- * Pages serves the whole branch, so tests/ is as public as index.html —
- * https://penna.lol/tests/admin-test.mjs is a live URL. Typing a real phone
- * number here to prove the rule catches phone numbers would publish it, and
- * splitting the digits across two literals only hides them from publish.sh's
- * grep, not from anyone reading the file. So the probe is derived: strip a
- * pattern back to the plainest text that still matches it.
+ * It used to be a real phone number, then the same number split across two
+ * literals to get past publish.sh's grep, then a function that rebuilt it from
+ * the rule's own pattern. All three published it: Pages serves the whole
+ * branch, so https://penna.lol/tests/admin-test.mjs is a live URL, and the
+ * third was worst of all — a mechanical de-obfuscator shipped next to the thing
+ * it de-obfuscated.
  *
- * The rules keep their secrets in character classes (`797[1]`) precisely so the
- * source never spells them out; this reverses that, in memory, at run time. */
-const probeFor = (re) => re.source
-  .replace(/\\b/g, '')            /* a word boundary is not a character */
-  .replace(/\[[^\]]*\]\?/g, '')   /* an optional class: leave it out entirely */
-  .replace(/\\.\?/g, '')          /* an optional literal: likewise */
-  .replace(/\[(.)\]/g, '$1')      /* a one-character class IS that character */
-  .replace(/\\(.)/g, '$1');       /* and unescape whatever is left */
-
-const PROBES = PRIVATE.map(([re, what]) => [probeFor(re), what]);
-/* Every private rule, plus a count, a by-hand claim and a date that has gone
-   past — one sentence that should trip six rules at once. */
-const BAD_SENTENCE = `Ring ${PROBES[0][0]} or ${PROBES[1][0]}, ${PROBES[2][0]} `
+ * rules.js no longer holds any real value to rebuild. It matches SHAPES, so an
+ * invented number proves the rule fires exactly as well as a real one does, and
+ * publishes nothing. 555-0100 is reserved for fiction (RFC 3849's phone-number
+ * equivalent) and belongs to nobody. */
+const BAD_SENTENCE = 'Ring 212-555-0100 or mail nobody@example.net '
   + 'about my 13 labs, built by hand, exam scheduled March 2020.';
+
+/* what rules.js should say about each part of that sentence */
+const EXPECTED = [
+  'shaped like a phone number',
+  'email address that is not the published one',
+  'counts',
+  'how the work',
+  'expire',
+];
 
 const { ev, send, wait, load, count, errors } = await connect({ width: 1440, height: 900 });
 const { check, done } = reporter();
@@ -287,14 +287,11 @@ console.log('\nTHE RULES');
   })()`);
   const r = JSON.parse(found);
   check('the live content passes its own rules', r.clean === 0, String(r.clean));
-  /* Each private rule by name, so adding one to rules.js without a working
-     pattern shows up here rather than passing on the strength of the others. */
-  for (const [, what] of PROBES) {
-    check(`${what} is caught`, r.dirty.some((w) => w.includes(what)), r.dirty.join(' | '));
+  /* Each rule by name, so a rule that stops working shows up here rather than
+     passing on the strength of the others. */
+  for (const what of EXPECTED) {
+    check(`"${what}" is caught`, r.dirty.some((w) => w.includes(what)), r.dirty.join(' | '));
   }
-  check('a count is caught', r.dirty.some((w) => w.includes('counts')));
-  check('an expired date is caught', r.dirty.some((w) => w.includes('expire')));
-  check('a by-hand claim is caught', r.dirty.some((w) => w.includes('how the work')));
 }
 
 /* ── the bakers are the same code in both places ───────────────────────── */

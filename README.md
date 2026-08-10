@@ -1,10 +1,9 @@
 # portfolio
 
 Edward Penna — IT support and cybersecurity portfolio, built as a console-style
-home menu. Hand-written HTML, CSS and ES modules. No framework, no bundler, no
-build step.
+home menu. HTML, CSS and ES modules. No framework, no bundler, no build step.
 
-**Live:** <https://wardoep.github.io/portfolio/>
+**Live:** <https://penna.lol/>
 
 ---
 
@@ -47,11 +46,11 @@ can inspect exactly what Pages will serve.
 Every GitHub-derived field lives inside a single `gh` object. The sync script
 **replaces `.gh` wholesale and touches nothing else.** Everything outside `gh` —
 `title`, `blurb`, `folder`, `icon`, `order`, `featured`, `stack`, `highlights`,
-`note` — is hand-written by definition and unreachable by the script.
+`note` — is author-owned by definition and unreachable by the script.
 
 Projects are joined on `ghId`, the GitHub node ID, **never on the repo name.** A
 name-based join treats a rename as delete-then-create and silently destroys the
-hand-written copy. Renames push the old slug onto `renamedFrom` so existing
+author-owned copy. Renames push the old slug onto `renamedFrom` so existing
 links keep resolving.
 
 Other deliberate behaviours:
@@ -69,7 +68,7 @@ bake their names and descriptions into a publicly served JSON file.
 ## Checks
 
 ```bash
-./publish.sh                      # all ten pre-flight checks
+./publish.sh                      # every pre-flight check
 node scripts/check-contrast.mjs   # WCAG ratios computed through the tint blend
 ```
 
@@ -83,10 +82,10 @@ Every one of those corresponds to a bug that is invisible locally.
 ## Layout
 
 ```
-index.html          the whole site — menu shell, hand-written panels, SVG sprite, avatar
+index.html          the whole site — menu shell, panels, SVG sprite, avatar
 resume.html         standalone printable résumé. No JS, no webfont. THIS is the URL for applications.
 404.html            the only file that hardcodes /portfolio/ — see the comment inside
-data/projects.json  20 repos + the channel list: hand-written fields and a
+data/projects.json  the repo list and the channel list: author-owned fields and a
                     machine-owned `gh` block
 assets/css/         tokens · menu · panels
 assets/js/          site · router · grid · dock · panels · settings · util

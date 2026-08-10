@@ -13,7 +13,7 @@
  * both Enter and Space, so there is no keyboard handler here.
  */
 
-import { el, icon, reduceMotion } from './util.js';
+import { el, icon, reduceMotion, safeUrl, isPublished } from './util.js';
 import * as router from './router.js';
 
 let data = null;
@@ -35,7 +35,7 @@ let revealed = false;
 
 /* ── data helpers ─────────────────────────────────────────────────────── */
 const projectsIn = (folderId) =>
-  data.projects.filter((p) => p.folder === folderId && !p.hidden && p.status !== 'missing');
+  data.projects.filter((p) => p.folder === folderId && isPublished(p));
 
 const channelProjects = (c) => (c.folders || []).flatMap(projectsIn);
 
@@ -345,7 +345,10 @@ export function init(payload) {
        channel already, and now for a project too, so a card added by hand can
        point at the repo it is about. */
     const p = (data.projects || []).find((x) => x.id === btn.dataset.card);
-    const jump = (c && c.href) || (p && p.href);
+    /* safeUrl, as panels.js:387 already does for the same data. An href comes
+       from a free-text field in the editor and nothing upstream validates it,
+       so without this a card could carry javascript: and run on click. */
+    const jump = safeUrl((c && c.href) || (p && p.href));
     if (jump) { location.href = jump; return; }
     router.go(btn.dataset.route, btn);
   });

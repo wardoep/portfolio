@@ -7,3 +7,4 @@ __pycache__/
 preview-*.html
 board.html
 .admin-pw
+.private-patterns

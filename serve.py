@@ -39,8 +39,11 @@ BLOCKED = (".git", "scripts", "notes", "data/.cache", "serve.py", "publish.sh", 
 # password is enforced here and not in the editor: a client-side check is
 # theatre, since anyone can curl the endpoint directly.
 #
-# The site published to penna.lol has no such endpoint, so the admin panel there
-# cannot mount at all. There is nothing to guess, steal, or leave logged in.
+# The site published to penna.lol has no such endpoint, so nothing there can be
+# written through this path. The panel itself DOES mount there — it commits to
+# GitHub with a token instead — so the sentence that used to sit here, claiming
+# the editor could not exist on the published site, was false from the moment
+# that feature shipped.
 ADMIN_PREFIX = "__admin/"
 PW_FILE = ROOT / ".admin-pw"
 

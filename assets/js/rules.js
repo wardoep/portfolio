@@ -15,19 +15,32 @@
  */
 
 /* check 6 — details that must never reach a public, permanently-archived URL.
-   Split the same way publish.sh splits them, so this file does not match itself
-   when check 6 greps the tree.
+ *
+ * SHAPES, NOT VALUES. This file is served from penna.lol like every other file
+ * on the branch, so a real number written here would be published by the rule
+ * meant to suppress it. Writing it split across character classes — 797[1] —
+ * is not a redaction either: it defeats grep, which is the tool that would have
+ * caught it, and stays perfectly legible to the person you are hiding it from.
+ * That is not a hypothetical; it is what this list used to do.
+ *
+ * The exact values live in .private-patterns, which is gitignored and therefore
+ * never served. publish.sh check 6 reads them and fails when the file is absent.
+ *
+ * For anything with a shape this is STRONGER than naming the value: it catches
+ * a new phone number, which a denylist of the old one never could. For a place
+ * name, which has no shape, it is weaker — that one is publish.sh's alone, and
+ * saying so here is better than implying this file covers it. */
 
-   Exported because the test needs to prove these fire, and the only safe way to
-   do that is to rebuild a matching string FROM the pattern at runtime. Every
-   file on this branch — tests included — is served from penna.lol, so a probe
-   typed out as a literal would publish the very details this list exists to
-   keep off the site. */
-export const PRIVATE = [
-  [/721[-\s]?797[1]/, 'a phone number'],
-  [/\byaho[o]\.com\b/i, 'the old email address'],
-  [/\bSt\.? Jame[s]\b/i, 'a home town'],
+/* Naming the published address discloses nothing: it is already on the
+   homepage, in the résumé and in the JSON-LD, deliberately. It is here so that
+   every OTHER address reads as the mistake it would be. */
+const PUBLISHED_EMAIL = 'pennaeddie1@gmail.com';
+
+const SHAPES = [
+  [/(?:\+?1[-. ]*)?\(?\d{3}\)?[-. ]*\d{3}[-. ]*\d{4}/, 'something shaped like a phone number'],
 ];
+
+const EMAIL = /[\w.+-]+@[\w-]+\.[\w.-]+/gi;
 
 /* check 14 — copy that has to be maintained by hand every time a repo is pushed.
    NOTE the wording of the message this produces, and of this comment: check 14
@@ -76,8 +89,16 @@ export function check(files) {
          editor cannot fix. */
       if (path.includes('.gh.') || path.endsWith('.gh')) continue;
 
-      for (const [re, what] of PRIVATE) {
+      for (const [re, what] of SHAPES) {
         if (re.test(s)) add(`${file} ${path}`, `contains ${what}`, s.slice(0, 70));
+      }
+      /* Any address that is not the one published on purpose. Matching the
+         shape and subtracting the known-good address catches an old address,
+         a personal alias and a typo alike, without naming any of them. */
+      for (const found of s.match(EMAIL) || []) {
+        if (found.toLowerCase() !== PUBLISHED_EMAIL) {
+          add(`${file} ${path}`, 'contains an email address that is not the published one', found);
+        }
       }
       const c = s.match(COUNTS);
       if (c) add(`${file} ${path}`, 'counts the work — it goes stale on the next push', c[0]);

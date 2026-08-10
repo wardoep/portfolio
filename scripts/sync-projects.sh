@@ -12,8 +12,9 @@
 # allowlist that silently drifts the moment someone adds a field.
 #
 # --visibility public is MANDATORY, not tidiness. The gh token carries `repo`
-# scope, so an unfiltered listing returns the private haydn repo and would bake
-# its name and description into a file served publicly.
+# scope, so an unfiltered listing returns private repositories too, and would
+# bake their names and descriptions into a file served publicly. Naming one of
+# them here would do that job for it, which is why this comment does not.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 

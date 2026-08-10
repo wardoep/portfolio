@@ -404,9 +404,9 @@
 
 
 
-<!-- The editor mounts here, and only on localhost: assets/js/admin.js is
-     fetched only after the local write endpoint answers a probe. On the
-     published site nothing is loaded and typing "admin" does nothing. -->
+<!-- The editor mounts here. It is fetched only on the #/admin route, so an
+     ordinary visit never loads it — but it does exist on the published site,
+     where it commits to GitHub with a token rather than writing to disk. -->
 <div data-admin-host></div>
 
 <div class="sr-only" role="status" aria-live="polite" data-announce></div>
@@ -441,7 +441,6 @@
       <li><a href="https://github.com/wardoep/hermes-personal-assistant">hermes-personal-assistant</a> — architecture for a self-hosted assistant stack.</li>
       <li><a href="https://github.com/wardoep/twitch-clips-bot">twitch-clips-bot</a> — Discord bot on systemd, OAuth2, yt-dlp.</li>
       <li><a href="https://github.com/wardoep/ai-shorts-pipeline">ai-shorts-pipeline</a> — TTS, captions, b-roll and ffmpeg with cost guards.</li>
-      <li><a href="https://github.com/wardoep/btc-backtest-lab">btc-backtest-lab</a> — event-driven backtester with out-of-sample validation.</li>
     </ul>
   </div>
 </noscript>

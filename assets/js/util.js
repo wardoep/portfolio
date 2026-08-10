@@ -20,6 +20,16 @@ export function safeUrl(raw) {
   return (u.protocol === 'https:' || u.protocol === 'http:') ? u.href : null;
 }
 
+/* Is this project meant to be on the public site at all?
+ *
+ * ONE definition, because there used to be two. The grid filtered on hidden and
+ * status; the deep-link route did a bare find() and filtered on neither. So a
+ * repo that went private vanished from the wall while #/project/<slug> still
+ * built a full panel for it — description, dates and a "View on GitHub" button
+ * pointing at a repository nobody could open. Anything that decides whether a
+ * project is shown calls this. */
+export const isPublished = (p) => !!p && !p.hidden && p.status !== 'missing';
+
 export function text(el, value) {
   el.textContent = value == null ? '' : String(value);
   return el;

@@ -729,46 +729,6 @@
       "title": "Shorts Pipeline"
     },
     {
-      "ghId": "R_kgDOTZ6ksQ",
-      "id": "btc-backtest-lab",
-      "renamedFrom": [],
-      "blurb": "Event-driven backtester with out-of-sample validation and a live paper test.",
-      "folder": "builds",
-      "icon": "chart-line",
-      "featured": false,
-      "hidden": false,
-      "stack": [
-        "Python",
-        "pandas",
-        "systemd"
-      ],
-      "highlights": [
-        "Event-driven engine with a strategy leaderboard",
-        "Out-of-sample validation, because in-sample results prove nothing",
-        "Hourly forward paper test run by a systemd timer"
-      ],
-      "linkLabel": "View on GitHub",
-      "note": "",
-      "order": 50,
-      "status": "missing",
-      "firstSeen": "2026-08-05",
-      "gh": {
-        "name": "btc-backtest-lab",
-        "description": "Event-driven BTC backtester: strategy leaderboard, out-of-sample validation, Pine export, live forward paper test",
-        "language": "Python",
-        "stars": 0,
-        "pushedAt": "2026-07-16T02:54:32Z",
-        "createdAt": "2026-07-16T02:54:29Z",
-        "url": "https://github.com/wardoep/btc-backtest-lab",
-        "homepageUrl": "",
-        "defaultBranch": "master",
-        "isArchived": false,
-        "topics": []
-      },
-      "lastSeen": "2026-08-09",
-      "title": "Backtester"
-    },
-    {
       "ghId": "R_kgDOTujCEQ",
       "id": "portfolio",
       "renamedFrom": [],

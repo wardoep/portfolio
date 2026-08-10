@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
-# publish.sh — pre-flight checks, then a dist/ copy of exactly what ships.
+# publish.sh — pre-flight checks, then a dist/ copy of the site proper.
 #
-# This is NOT the deploy step. Pages serves the branch, so what you commit is
-# what ships. dist/ exists only so you can eyeball the published tree,
-# and the checks exist because every one of them corresponds to a bug that is
+# This is NOT the deploy step. Pages serves the BRANCH, so what you commit is
+# what ships — and that is more than dist/ contains. tests/, scripts/, notes/,
+# README.md and this file are all live URLs too. dist/ is the site proper, not
+# the published surface, and eyeballing it will not show you everything a
+# visitor can reach. Every check below therefore scans the tree, not dist/.
+#
+# The checks exist because every one of them corresponds to a bug that is
 # invisible locally and obvious in production.
 set -euo pipefail
 cd "$(dirname "$0")"
@@ -49,9 +53,33 @@ else
 fi
 
 # 6 — personal details that must never reach a public, permanently-archived URL.
-#     The patterns are split so this script does not match itself.
-LEAK="721-797[1]|yaho[o]\.com|St Jame[s]"
-if grep -rnE "$LEAK" . --exclude-dir=.git --exclude-dir=dist --exclude=publish.sh 2>/dev/null; then
+#
+#     THE VALUES ARE NOT IN THIS FILE. They used to be, on one line right here,
+#     and this script is itself a live URL — so the gate published the list it
+#     was guarding. The workaround made it worse: writing 797[1] rather than the
+#     digits defeats grep, which is the only tool that would have caught it,
+#     while staying perfectly legible to whoever you are hiding it from.
+#
+#     They live in .private-patterns (gitignored, like .admin-pw) or arrive as
+#     $PRIVATE_PATTERNS in CI. An empty list means the gate is OFF, and that is
+#     the one thing this check may never be quiet about: unlike check 17, where
+#     a missing file honestly means there is nothing to leak yet, a missing list
+#     here means we cannot tell. So it fails rather than skips.
+PATFILE=$(mktemp)
+DEOB=$(mktemp)
+trap 'rm -f "$PATFILE" "$DEOB"' EXIT
+if [ -n "${PRIVATE_PATTERNS:-}" ]; then
+  printf '%s\n' "$PRIVATE_PATTERNS" | grep -vE '^[[:space:]]*(#|$)' > "$PATFILE" || true
+elif [ -f .private-patterns ]; then
+  grep -vE '^[[:space:]]*(#|$)' .private-patterns > "$PATFILE" || true
+fi
+# No --exclude=publish.sh any more. That exclusion existed only because the
+# values were on the line above; now that they are gone, this file is in scope
+# like every other, which is how it should have been all along.
+if [ ! -s "$PATFILE" ]; then
+  bad "no private-pattern list — create .private-patterns or set PRIVATE_PATTERNS; without it this gate is off"
+elif grep -rnEf "$PATFILE" . --exclude-dir=.git --exclude-dir=dist \
+       --exclude-dir=__pycache__ --exclude=.private-patterns 2>/dev/null; then
   bad "personal contact detail found"
 else
   ok "no leaked personal details"
@@ -203,7 +231,11 @@ STRIP = re.compile(r"<!--.*?-->|<script\b.*?</script>|<style\b.*?</style>", re.S
 TAG = re.compile(r"<[^>]+>")
 
 bad = []
-for f in ("index.html", "resume.html", "404.html"):
+# README.md is in this list because it is a published URL like everything else
+# on the branch, and it is where the counts this check exists to prevent
+# actually survived: "all ten pre-flight checks" and "20 repos", both wrong,
+# both invisible to a check that only read the three HTML files.
+for f in ("index.html", "resume.html", "404.html", "README.md"):
     p = pathlib.Path(f)
     if not p.exists():
         continue
@@ -251,7 +283,7 @@ fi
 #      those failure modes matter, so this checks the host AND that nothing
 #      still hardcodes the old /portfolio/ prefix.
 SITE_URL="https://penna.lol"
-stray=$(grep -rn "wardoep\.github\.io" index.html resume.html 404.html assets/ data/ 2>/dev/null || true)
+stray=$(grep -rn "wardoep\.github\.io" index.html resume.html 404.html README.md assets/ data/ 2>/dev/null || true)
 if [ -n "$stray" ]; then
   bad "an absolute URL still points at the old Pages host: $(echo "$stray" | head -1)"
 else
@@ -317,6 +349,54 @@ if [ -f .admin-pw ]; then
 else
   ok "no .admin-pw on this machine — nothing to leak"
 fi
+
+# 18 — the same values, but with obfuscation undone first.
+#
+#      This is check 6's lesson rather than a rule of its own. A one-character
+#      character class beside digits or letters — 797[1], Jame[s] — is not a
+#      redaction. It is a redaction-shaped thing that a reader reverses on
+#      sight, and the test suite once shipped a function that did it
+#      mechanically, published at the same origin. So: apply that same
+#      transformation to every tracked file and run check 6's patterns over the
+#      result. Collapse [x] to x, drop an optional class like [-\s]? entirely,
+#      and see whether a private value falls out.
+#
+#      Deliberately NOT a grep for a bare character class: that matches body[0]
+#      in half the files here, and a check people learn to ignore is worse than
+#      no check at all.
+if [ -s "$PATFILE" ]; then
+  obf=""
+  for f in $(git ls-files); do
+    case "$f" in *.png|*.ico|*.jpg|*.woff2|*.pdf|*.gif) continue ;; esac
+    [ -f "$f" ] || continue
+    if sed -E 's/\[[^][]*\]\?//g; s/\[([A-Za-z0-9])\]/\1/g' "$f" 2>/dev/null \
+       | grep -qEf "$PATFILE" 2>/dev/null; then
+      obf="$obf $f"
+    fi
+  done
+  obf=$(echo "$obf" | xargs || true)
+  [ -z "$obf" ] && ok "no obfuscated private values in published source" \
+                || bad "a character class is hiding a private value from check 6:$obf"
+fi
+
+# 19 — the <noscript> fallback lists repositories by hand.
+#
+#      Nothing generates it and nothing else reads it, so check 16 — which
+#      proves index.html still matches data/content.json — cannot see it drift.
+#      That is exactly how a repository that had been made private kept its
+#      name, its description and a working link on the homepage after it was
+#      taken off the wall: the JSON was updated and the fallback markup was not.
+#      Crawlers and readers without JS see this block and nothing else, so it is
+#      the last place that should be allowed to go stale.
+nsbad=""
+for slug in $(grep -oE 'github\.com/wardoep/[A-Za-z0-9_.-]+' index.html | cut -d/ -f3 | sort -u); do
+  jq -e --arg s "$slug" \
+     '.projects[] | select(.id == $s and (.hidden | not) and .status != "missing")' \
+     data/projects.json >/dev/null 2>&1 || nsbad="$nsbad $slug"
+done
+nsbad=$(echo "$nsbad" | xargs || true)
+[ -z "$nsbad" ] && ok "every repo linked from <noscript> is still published" \
+                || bad "<noscript> links a repo projects.json does not publish:$nsbad"
 
 echo
 [ "$fail" -eq 0 ] || { echo "pre-flight failed."; exit 1; }

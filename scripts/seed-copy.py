@@ -198,16 +198,6 @@ COPY = {
             "Quota pre-flight checks and budget tracking, so a bug can't run up a bill",
         ],
     ),
-    "btc-backtest-lab": dict(
-        folder="builds", icon="chart-line", order=50,
-        blurb="Event-driven backtester with out-of-sample validation and a live paper test.",
-        stack=["Python", "pandas", "systemd"],
-        highlights=[
-            "Event-driven engine with a strategy leaderboard",
-            "Out-of-sample validation, because in-sample results prove nothing",
-            "Hourly forward paper test run by a systemd timer",
-        ],
-    ),
     "wardoep": dict(
         folder="builds", icon="profile", order=90,
         blurb="My GitHub profile README — the index to everything here.",
@@ -246,7 +236,6 @@ TITLES = {
     "hermes-personal-assistant":    "Hermes",
     "twitch-clips-bot":             "Clips Bot",
     "ai-shorts-pipeline":           "Shorts Pipeline",
-    "btc-backtest-lab":             "Backtester",
     "wardoep":                      "Profile README",
     "portfolio":                    "This Site",
 }

@@ -199,4 +199,43 @@ console.log('\nTHE RESUME KEEPS ITS FACE');
     /system|Segoe|Helvetica|Arial|sans-serif/i.test(f), f.slice(0, 60));
 }
 
-done('the face, the toggle, the bar and the clock all behave.');
+/* ── a hidden project is hidden everywhere, not just on the wall ───────── */
+console.log('\nDEEP LINKS RESPECT VISIBILITY');
+{
+  /* The grid filtered on hidden/status and the deep-link route did not, so a
+     repository that was made private disappeared from the menu while
+     #/project/<slug> still built a full panel for it — description, dates and
+     a "View on GitHub" button aimed at a repo nobody could open. A deep link is
+     shareable and crawlable, so it has to answer the same question the wall
+     answers. Both now go through isPublished() in util.js. */
+  const probe = async (slug) => {
+    await load('#/project/' + slug);
+    await wait(600);
+    return JSON.parse(await ev(`JSON.stringify({
+      built: !!document.getElementById('p-project-${slug}'), hash: location.hash })`));
+  };
+
+  const hiddenSlug = await ev(`(async () => {
+    const d = await (await fetch('data/projects.json')).json();
+    const p = d.projects.find((x) => x.hidden || x.status === 'missing');
+    return p ? p.id : '';
+  })()`);
+  const shownSlug = await ev(`(async () => {
+    const d = await (await fetch('data/projects.json')).json();
+    const p = d.projects.find((x) => !x.hidden && x.status !== 'missing');
+    return p ? p.id : '';
+  })()`);
+
+  if (hiddenSlug) {
+    const h = await probe(hiddenSlug);
+    check(`a hidden project builds no panel (${hiddenSlug})`, !h.built, JSON.stringify(h));
+    check('and the router sends it home instead', h.hash === '#/', h.hash);
+  } else {
+    check('a hidden project builds no panel', true, 'skipped — nothing hidden in the data');
+  }
+
+  const s = await probe(shownSlug);
+  check(`a published project still opens (${shownSlug})`, s.built, JSON.stringify(s));
+}
+
+done('the face, the toggle, the bar, the clock and the deep links all behave.');

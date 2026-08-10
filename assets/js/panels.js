@@ -1,6 +1,6 @@
 /* panels.js — opening, closing, focus trapping, and the project templates. */
 
-import { el, icon, safeUrl, announce, copyText, asset, reduceMotion } from './util.js';
+import { el, icon, safeUrl, announce, copyText, asset, reduceMotion, isPublished } from './util.js';
 import * as router from './router.js';
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])';
@@ -433,7 +433,10 @@ function panelForRoute(r) {
   if (r.name === 'project') {
     const p = data.projects.find((x) => x.id === r.arg
       || (x.renamedFrom || []).includes(r.arg));
-    return p ? buildProject(p) : null;
+    /* isPublished, not a truthiness check. A deep link is a URL anyone can
+       share or a crawler can find, so it has to answer the same question the
+       wall answers — otherwise hiding a tile hides nothing. */
+    return isPublished(p) ? buildProject(p) : null;
   }
   /* 'menu' never reaches here — a channel swaps the stage rather than opening
      a panel, and the router handler below sends it to the grid instead. */
