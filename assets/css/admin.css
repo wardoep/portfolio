@@ -1,10 +1,11 @@
-/* admin.css — the editor. Loaded only when the editor mounts, which only
- * happens on localhost, so none of this reaches a visitor.
+/* admin.css — the editor. Loaded only when the editor is opened, so it never
+ * reaches an ordinary visitor.
  *
  * Deliberately plain. It borrows the site's tokens so it is not jarring, but it
  * is a tool, not a design: dense, legible, and readable at 2am. The one thing it
  * takes seriously is that the save state must be impossible to misread — the
- * bar says what is unsaved, by filename.
+ * bar says what is unsaved, by filename, and turns red the moment a save is
+ * refused.
  */
 
 .admin {
@@ -139,3 +140,6 @@
 }
 .alock__t { margin: 0; font-size: 15px; letter-spacing: .08em; }
 .alock__err { margin: 0; min-height: 1.2em; font-size: var(--fs-micro); color: #b00020; }
+/* Shown once, the first time the editor runs away from the desk and has to be
+   given a token to commit with. */
+.alock__hint { margin: 0; font-size: var(--fs-micro); line-height: 1.55; color: var(--ink-2); }

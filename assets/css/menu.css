@@ -729,18 +729,3 @@ body:not(.is-sub) .chan__label {
 
 
 .noscript { max-width: 46rem; margin: 40px auto; padding: 0 20px; }
-
-
-/* A note to whoever is running the dev server — see the editor route in
-   site.js. Never shown on the published site. */
-.hint {
-  position: fixed; left: 50%; bottom: calc(var(--dock-h) + 14px);
-  transform: translateX(-50%);
-  z-index: 1400;
-  margin: 0; padding: 9px 16px;
-  max-width: min(92vw, 44rem);
-  font-size: var(--fs-small); line-height: 1.5; text-align: center;
-  color: var(--card-projects-ink);
-  background: var(--card-projects);
-  border: 2px solid var(--card-rule); border-radius: var(--r-sm);
-}

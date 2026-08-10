@@ -157,4 +157,43 @@ console.log('\nTYPING THE WORD');
     (await ev(`location.hash`)) === before, await ev(`location.hash`));
 }
 
+/* ── the rules refuse a bad save ───────────────────────────────────────────
+ * The editor can publish straight to the repo from penna.lol, where publish.sh
+ * is not in the way until CI runs. These are what stand between a typo and a
+ * permanently-archived public URL, so they are checked in the browser, on the
+ * real module, not just in node. */
+console.log('\nTHE RULES');
+{
+  const found = await ev(`(async () => {
+    const rules = await import('./assets/js/rules.js');
+    const content = await (await fetch('data/content.json')).json();
+    const clean = rules.check({ 'content.json': content }).length;
+    const bad = JSON.parse(JSON.stringify(content));
+    bad.panels.find((p) => p.id === 'about').body[0].html =
+      'Ring [redacted] about my 13 labs, built by hand, exam scheduled March 2020.';
+    return JSON.stringify({ clean, dirty: rules.check({ 'content.json': bad }).map((f) => f.why) });
+  })()`);
+  const r = JSON.parse(found);
+  check('the live content passes its own rules', r.clean === 0, String(r.clean));
+  check('a phone number is caught', r.dirty.some((w) => w.includes('phone')), r.dirty.join(' | '));
+  check('a count is caught', r.dirty.some((w) => w.includes('counts')));
+  check('an expired date is caught', r.dirty.some((w) => w.includes('expire')));
+  check('a by-hand claim is caught', r.dirty.some((w) => w.includes('how the work')));
+}
+
+/* ── the bakers are the same code in both places ───────────────────────── */
+console.log('\nONE SET OF GENERATORS');
+{
+  /* If the browser and the terminal templated differently, a save from
+     penna.lol and a local bake would write different bytes from identical data,
+     and check 16 would fail on whichever ran second. */
+  const same = await ev(`(async () => {
+    const { applyPanels } = await import('./assets/js/bake.js');
+    const doc = await (await fetch('data/content.json')).json();
+    const html = await (await fetch('index.html')).text();
+    return applyPanels(html, doc) === html;
+  })()`);
+  check('baking the live content in the browser reproduces index.html exactly', same);
+}
+
 done('the editor works and the lock holds.');

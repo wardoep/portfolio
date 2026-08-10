@@ -1,20 +1,40 @@
-/* admin.js — the editor. Lazy-loaded: nothing here reaches a visitor.
+/* admin.js — the editor. Lazy-loaded, so a visitor never downloads it.
  *
- * It only exists where the local write endpoint answers. On penna.lol the probe
- * 404s and this module is never even fetched, so there is no editor to find, no
- * credential to steal and nothing to leave logged in. The password is the second
- * lock; not being reachable is the first.
+ * TWO BACKENDS, and it picks the safer one automatically:
  *
- * The password is checked HERE for the UI and by serve.py for every write. Only
- * the second one counts — anyone can curl the endpoint — which is why the test
- * for it uses curl rather than driving this screen.
+ *   local   serve.py --admin is answering, i.e. you are at the desk. Writes
+ *           straight to disk with no credential at all, and ./deploy.sh still
+ *           runs all twenty checks before anything ships. Preferred whenever
+ *           it is available.
+ *   github  anywhere else, including penna.lol. Commits to the repository with
+ *           a token that the password decrypts.
  *
- * Everything is edited as data. The generators turn data into HTML; this never
- * writes markup, so no amount of clicking can produce a broken page. The worst
- * it can do is save copy you did not mean, and ./deploy.sh still has to agree
- * before that reaches anyone.
+ * WHAT GUARDS A GITHUB SAVE. rules.js runs first and refuses outright — it
+ * mirrors the checks that matter most, including the one that stops a phone
+ * number or a home town reaching a permanently-archived public URL. What it
+ * CANNOT check from a browser: contrast ratios, icons existing in the sprite,
+ * resume.pdf matching its source, and projects.json being in step with GitHub.
+ * Those still only run on ./deploy.sh here, or in CI once .github/workflows
+ * lands — so a local deploy remains the last word.
+ *
+ * THE PASSWORD DOES REAL WORK in github mode: it is the key the token is sealed
+ * with (see gh.js), so what sits in localStorage is useless without it and
+ * "wrong password" and "cannot decrypt" are the same event. Locally it is
+ * checked by serve.py, which is the only check that counts there since anyone
+ * can curl the endpoint.
+ *
+ * Everything is edited as DATA. This module never writes markup by hand — the
+ * generators in bake.js turn data into HTML, and they are the same functions
+ * the local scripts use, so a save from a browser and a bake from a terminal
+ * produce identical bytes.
+ *
+ * And nothing publishes without passing rules.js first, which mirrors the parts
+ * of publish.sh that can run in a browser. publish.sh remains the authority.
  */
 import { el } from './util.js';
+import * as gh from './gh.js';
+import * as rules from './rules.js';
+import { applyPanels, applyResume } from './bake.js';
 
 const API = new URL('__admin/', location.href.split('#')[0]).href;
 const KEY = 'pf-admin-key';
@@ -27,12 +47,21 @@ let iconIds = [];
 const key = () => { try { return sessionStorage.getItem(KEY) || ''; } catch { return ''; } };
 const setKey = (v) => { try { sessionStorage.setItem(KEY, v); } catch { /* private mode */ } };
 
-/* ── is there an endpoint at all? ─────────────────────────────────────── */
-export async function available() {
+/* ── which backend? ────────────────────────────────────────────────────────
+ * local  — serve.py --admin is answering. No credential, writes straight to
+ *          disk, and every gate still runs on ./deploy.sh. The better path.
+ * github — anywhere else. Commits to the repo with a token the password
+ *          decrypts, and CI runs the checks after the fact.
+ * The local endpoint wins whenever it exists, so being at the desk is
+ * automatically the safer mode without having to remember anything. */
+let mode = 'github';
+
+export async function whichBackend() {
   try {
     const r = await fetch(API + 'ping', { cache: 'no-store' });
-    return r.ok;
-  } catch { return false; }
+    if (r.ok) return 'local';
+  } catch { /* not running locally — that is the normal case on penna.lol */ }
+  return 'github';
 }
 
 async function load() {
@@ -318,27 +347,89 @@ function paintBar() {
   bar.classList.toggle('is-dirty', dirty.size > 0);
 }
 
-async function save() {
-  const status = host.querySelector('[data-abar]');
-  const files = { 'content.json': state.content, 'projects.json': state.projects, 'resume.json': state.resume };
+const FILES = () => ({
+  'content.json': state.content,
+  'projects.json': state.projects,
+  'resume.json': state.resume,
+});
+
+function say(msg, bad = false) {
+  const n = host.querySelector('[data-abar]');
+  if (!n) return;
+  n.textContent = msg;
+  n.classList.toggle('is-bad', bad);
+}
+
+/* Everything the editor could publish, checked before it can. These mirror
+   publish.sh; they are not a replacement for it, but they turn "find out from a
+   red build in two minutes" into "find out while you are typing it". */
+function blockers() {
+  const found = rules.check(FILES());
+  if (!found.length) return null;
+  return found.map((f) => `${f.where}: ${f.why}${f.quote ? ` — “${f.quote}”` : ''}`);
+}
+
+async function saveLocal() {
   for (const f of [...dirty]) {
-    status.textContent = `saving ${f}…`;
+    say(`saving ${f}…`);
     const r = await fetch(API + f, {
       method: 'PUT',
       headers: { 'X-Admin-Key': key(), 'Content-Type': 'application/json' },
-      body: JSON.stringify(files[f]),
+      body: JSON.stringify(FILES()[f]),
     });
     const out = await r.json().catch(() => ({}));
-    if (!r.ok) {
-      status.textContent = `FAILED on ${f}: ${out.error || r.status}`;
-      status.classList.add('is-bad');
-      return;
-    }
+    if (!r.ok) { say(`failed on ${f}: ${out.error || r.status}`, true); return false; }
     dirty.delete(f);
   }
-  status.classList.remove('is-bad');
+  say('saved — reload to see it, then ./deploy.sh to publish');
+  return true;
+}
+
+/* One commit carrying the JSON AND the HTML it bakes to. Committing the JSON
+   alone would leave the repo briefly inconsistent — Pages could rebuild between
+   the two and serve a half-applied edit — and would fail publish.sh check 16
+   until something ran the generators. */
+async function saveGithub(token) {
+  const files = {};
+  for (const f of dirty) files[`data/${f}`] = JSON.stringify(FILES()[f], null, 2) + '\n';
+
+  if (dirty.has('content.json')) {
+    say('baking index.html…');
+    files['index.html'] = applyPanels(await gh.readFile(token, 'index.html'), state.content);
+  }
+  if (dirty.has('resume.json')) {
+    say('baking resume.html…');
+    files['resume.html'] = applyResume(await gh.readFile(token, 'resume.html'), state.resume);
+  }
+
+  say('committing…');
+  const sha = await gh.commit(token, files, 'Edit content from the admin panel');
+  dirty.clear();
+  const note = files['resume.html']
+    ? ' — the résumé PDF is stale until CI or ./deploy.sh re-renders it'
+    : '';
+  say(`published ${sha.slice(0, 7)} — live in about a minute${note}`);
+  return true;
+}
+
+async function save() {
+  const stop = blockers();
+  if (stop) {
+    say(`refused: ${stop[0]}`, true);
+    /* Everything, not just the first — fixing them one build at a time is how
+       people give up on a gate. */
+    console.warn('admin: refused to publish\n' + stop.join('\n'));
+    alert('Not saved. This would fail the build:\n\n' + stop.join('\n'));
+    return;
+  }
+  if (!dirty.size) { say('nothing to save'); return; }
+  try {
+    if (mode === 'local') await saveLocal();
+    else await saveGithub(await gh.unlock(key()));
+  } catch (e) {
+    say(String(e.message || e), true);
+  }
   paintBar();
-  status.textContent = 'saved — reload to see it, then ./deploy.sh to publish';
 }
 
 function render() {
@@ -379,46 +470,93 @@ function shell() {
   return wrap;
 }
 
-/* ── the password gate ─────────────────────────────────────────────────── */
-function askPassword(onOk) {
+/* ── the gate ──────────────────────────────────────────────────────────────
+ * Two shapes. Locally the password is just checked against serve.py. On
+ * penna.lol the password IS the key: it decrypts the stored GitHub token, so a
+ * wrong password cannot produce one. Nothing is stored in plain text, and
+ * "wrong password" and "cannot decrypt" are the same event.
+ */
+function gate(onOk) {
   const wrap = el('div', 'admin admin--lock');
   const form = el('form', 'alock');
   form.appendChild(el('p', 'alock__t', 'Editor'));
-  const input = document.createElement('input');
-  input.type = 'password';
-  input.className = 'af__input';
-  input.placeholder = 'password';
-  input.autocomplete = 'current-password';
-  form.appendChild(input);
+
+  const pw = document.createElement('input');
+  pw.type = 'password'; pw.className = 'af__input';
+  pw.placeholder = 'password'; pw.autocomplete = 'current-password';
+  form.appendChild(pw);
+
+  /* First run in github mode: there is no token yet, so ask for one and seal it
+     with the password. Asked for once, never shown again. */
+  const needToken = mode === 'github' && !gh.hasToken();
+  let tok = null;
+  if (needToken) {
+    form.appendChild(el('p', 'alock__hint',
+      'First time here. Paste a GitHub token with Contents: read and write on ' +
+      'this repository. It is encrypted with the password above and stored only ' +
+      'in this browser.'));
+    tok = document.createElement('input');
+    tok.type = 'password'; tok.className = 'af__input';
+    tok.placeholder = 'github token'; tok.autocomplete = 'off';
+    form.appendChild(tok);
+  }
+
   const err = el('p', 'alock__err');
   form.appendChild(err);
   const go = el('button', 'abtn abtn--go', 'Unlock');
   go.type = 'submit';
   form.appendChild(go);
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    /* Verified by trying a real write the server can reject — there is no
-       "check my password" endpoint, because that would be a free oracle. */
-    const r = await fetch(API + 'content.json', {
-      method: 'PUT',
-      headers: { 'X-Admin-Key': input.value, 'Content-Type': 'application/json' },
-      body: JSON.stringify(state.content),
-    });
-    if (r.ok) { setKey(input.value); onOk(); return; }
-    err.textContent = 'Wrong password.';
-    input.select();
+    err.textContent = '';
+    go.disabled = true;
+    try {
+      if (mode === 'local') {
+        /* Verified by attempting a real write the server can reject. There is
+           deliberately no "is this password right" endpoint — that would be a
+           free oracle for guessing. */
+        const r = await fetch(API + 'content.json', {
+          method: 'PUT',
+          headers: { 'X-Admin-Key': pw.value, 'Content-Type': 'application/json' },
+          body: JSON.stringify(state.content),
+        });
+        if (!r.ok) throw new Error('Wrong password.');
+      } else if (needToken) {
+        const who = await gh.whoami(tok.value.trim());
+        await gh.saveToken(tok.value.trim(), pw.value);
+        console.info(`admin: token accepted for ${who}`);
+      } else {
+        const token = await gh.unlock(pw.value);
+        if (!token) throw new Error('Wrong password.');
+        await gh.whoami(token);      /* also catches an expired token */
+      }
+      setKey(pw.value);
+      onOk();
+    } catch (ex) {
+      err.textContent = String(ex.message || ex);
+      pw.select();
+    } finally {
+      go.disabled = false;
+    }
   });
+
   wrap.appendChild(form);
   host.appendChild(wrap);
-  input.focus();
+  pw.focus();
 }
 
 export async function mount(node) {
   host = node;
   host.textContent = '';
+  mode = await whichBackend();
   await load();
   const start = () => { host.textContent = ''; host.appendChild(shell()); render(); paintBar(); };
-  if (key()) start(); else askPassword(start);
+  /* A remembered password is not enough in github mode — it still has to
+     actually decrypt a token that still works. */
+  if (mode === 'local' && key()) start();
+  else if (mode === 'github' && key() && await gh.unlock(key())) start();
+  else gate(start);
 }
 
 export function unmount() {

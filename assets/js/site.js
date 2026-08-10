@@ -116,44 +116,15 @@ async function main() {
     }
   });
 
-  /* A transient line at the foot of the screen. Deliberately not announce():
-     this is a note to the one person who can act on it, not something a screen
-     reader on the public site should ever hear. */
-  const hint = (msg) => {
-    document.querySelector('.hint')?.remove();
-    const n = document.createElement('p');
-    n.className = 'hint';
-    n.textContent = msg;
-    document.body.appendChild(n);
-    setTimeout(() => n.remove(), 6000);
-  };
-
   /* ── the editor ─────────────────────────────────────────────────────────
    * Lazy in two senses: the module is only fetched when the route is hit, AND
    * only if the local write endpoint answers first. A visitor on penna.lol
    * never downloads a byte of it, and there is no editor there to find. */
   let admin = null;
   const adminHost = document.querySelector('[data-admin-host]');
-  const localBase = location.href.split('#')[0];
   router.onRoute(async (r) => {
     if (r.name !== 'admin') { admin?.unmount(); return; }
     if (!adminHost) return;
-    try {
-      const probe = await fetch(new URL('__admin/ping', localBase).href, { cache: 'no-store' });
-      if (!probe.ok) throw new Error('no local editor');
-    } catch {
-      /* On the published site this is the normal case and staying quiet is the
-         point — there should be no hint that an editor exists.
-
-         On localhost it means the server was started without --admin, and there
-         silence is indistinguishable from a bug. It read as one: "when i type
-         admin nothing is happening". So say so, but only where saying so gives
-         nothing away. */
-      const local = ['localhost', '127.0.0.1', '[::1]', ''].includes(location.hostname);
-      if (local) hint('Editor needs the write endpoint. Restart with:  ./serve.sh --admin');
-      router.home();
-      return;
-    }
     if (!admin) {
       const link = document.createElement('link');
       link.rel = 'stylesheet';
