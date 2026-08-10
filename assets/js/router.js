@@ -27,6 +27,9 @@ export function parse(hash) {
   /* A channel is a MENU LEVEL, not an overlay: it swaps what the stage shows.
      Kept as its own route name so isPanelRoute can tell the difference. */
   if (head === 'projects' || head === 'builds') return { name: 'menu', arg: head };
+  /* The editor. Not a panel and not a menu level — it takes the whole screen
+     and only exists when the local write endpoint answers. */
+  if (head === 'admin') return { name: 'admin', arg: null };
   if (['about', 'skills', 'resume', 'now', 'contact', 'settings'].includes(head)) {
     return { name: head, arg: null };
   }
@@ -38,7 +41,8 @@ export const route = () => current;
 /* Is a PANEL open? A menu level is not one — it is the stage showing something
    else, so treating it as a panel would inert the menu and raise a scrim behind
    its own tiles. */
-export const isPanelRoute = (r = current) => r.name !== 'home' && r.name !== 'menu';
+export const isPanelRoute = (r = current) =>
+  r.name !== 'home' && r.name !== 'menu' && r.name !== 'admin';
 
 /* Is the stage showing a sub-menu rather than the root? */
 export const isMenuRoute = (r = current) => r.name === 'menu';

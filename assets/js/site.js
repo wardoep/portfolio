@@ -116,6 +116,46 @@ async function main() {
     }
   });
 
+  /* ── the editor ─────────────────────────────────────────────────────────
+   * Lazy in two senses: the module is only fetched when the route is hit, AND
+   * only if the local write endpoint answers first. A visitor on penna.lol
+   * never downloads a byte of it, and there is no editor there to find. */
+  let admin = null;
+  const adminHost = document.querySelector('[data-admin-host]');
+  const localBase = location.href.split('#')[0];
+  router.onRoute(async (r) => {
+    if (r.name !== 'admin') { admin?.unmount(); return; }
+    if (!adminHost) return;
+    try {
+      const probe = await fetch(new URL('__admin/ping', localBase).href, { cache: 'no-store' });
+      if (!probe.ok) throw new Error('no local editor');
+    } catch {
+      /* On the published site this is the normal case, not an error worth
+         showing. Typing the word simply does nothing there. */
+      router.home();
+      return;
+    }
+    if (!admin) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = asset('assets/css/admin.css');
+      document.head.appendChild(link);
+      admin = await import(asset('assets/js/admin.js'));
+    }
+    admin.mount(adminHost);
+  });
+
+  /* Type the word anywhere on the menu. Ignored while a field has focus, so it
+     cannot fire while you are typing into the editor it opens. */
+  let typed = '';
+  addEventListener('keydown', (e) => {
+    if (e.key.length !== 1 || e.metaKey || e.ctrlKey || e.altKey) return;
+    const t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+    typed = (typed + e.key.toLowerCase()).slice(-5);
+    if (typed === 'admin') { typed = ''; router.go('admin'); }
+  });
+
   router.start();
 
   /* Reboot returns to the start screen, which is the only thing on the page

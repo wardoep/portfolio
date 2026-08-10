@@ -43,6 +43,10 @@ if ! up "http://127.0.0.1:$CDP/json/version"; then
 fi
 
 SUITES=("$@")
+# admin is NOT in the default set: it needs the write endpoint, which means a
+# second server started with --admin, and it edits real files. Run it on purpose:
+#   python3 serve.py 8099 --admin &
+#   PF_BASE=http://127.0.0.1:8099/portfolio/ node tests/admin-test.mjs
 [ ${#SUITES[@]} -eq 0 ] && SUITES=(flicker chrome fit perf)
 
 fail=0

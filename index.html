@@ -65,7 +65,7 @@
 </script>
 </head>
 
-<body>
+<body data-card-text="off">
 
 <a class="skip" href="#main">Skip to content</a>
 
@@ -404,6 +404,11 @@
 </button>
 
 
+
+<!-- The editor mounts here, and only on localhost: assets/js/admin.js is
+     fetched only after the local write endpoint answers a probe. On the
+     published site nothing is loaded and typing "admin" does nothing. -->
+<div data-admin-host></div>
 
 <div class="sr-only" role="status" aria-live="polite" data-announce></div>
 

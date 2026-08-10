@@ -100,6 +100,14 @@ function panelHtml(p) {
 let html = readFileSync(join(ROOT, 'index.html'), 'utf8');
 let replaced = 0;
 
+/* The one home-screen setting, baked onto <body> rather than fetched. A whole
+   HTTP request for one boolean would be silly, and an attribute is already
+   correct before the first paint — no flash of cards that then lose their
+   subtitle. */
+const cardText = doc.home?.cardText ? 'on' : 'off';
+html = html.replace(/<body(?: data-card-text="(?:on|off)")?>/,
+                    `<body data-card-text="${cardText}">`);
+
 for (const p of doc.panels) {
   const open = `<section class="panel" id="p-${p.id}"`;
   const start = html.indexOf(open);

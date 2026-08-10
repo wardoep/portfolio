@@ -294,6 +294,30 @@ node scripts/bake-resume.mjs --check >/dev/null 2>&1 \
   && ok "resume.html matches data/resume.json" \
   || bad "resume.html is out of date — run: node scripts/bake-resume.mjs"
 
+# 17 — the editor's password must never reach a tracked file.
+#
+#      This repository is public. A password committed here is readable on
+#      github.com and served from penna.lol; it would be a label, not a secret.
+#      A hash would be no better — a short known phrase falls to a wordlist.
+#
+#      So it lives in .admin-pw, which .gitignore covers, and this reads the
+#      value FROM that file rather than containing it. The literal therefore
+#      never enters the repo, not even inside the check that hunts for it. On a
+#      fresh clone .admin-pw is absent and the check skips, which is correct:
+#      there is nothing to leak yet.
+if [ -f .admin-pw ]; then
+  pw=$(tr -d '[:space:]' < .admin-pw)
+  if [ -n "$pw" ] && git grep -qIF -- "$pw" -- . ':!.admin-pw' 2>/dev/null; then
+    bad "the admin password appears in a tracked file: $(git grep -lIF -- "$pw" -- . ':!.admin-pw' | head -1)"
+  elif git ls-files --error-unmatch .admin-pw >/dev/null 2>&1; then
+    bad ".admin-pw is tracked by git — it must stay ignored"
+  else
+    ok "the admin password is not in any tracked file"
+  fi
+else
+  ok "no .admin-pw on this machine — nothing to leak"
+fi
+
 echo
 [ "$fail" -eq 0 ] || { echo "pre-flight failed."; exit 1; }
 

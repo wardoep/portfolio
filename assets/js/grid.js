@@ -168,11 +168,14 @@ function render() {
        nothing else. The blurb still lives on the hover caption and in the
        channel itself, so nothing is lost — it just is not all on screen at
        once. */
+    /* data-card-text is baked into <body> from content.json, so the setting
+       costs no extra request and is already correct before the first paint. */
+    const withText = document.body.dataset.cardText === 'on';
     tiles = channels().map((c) => tile({
       id: c.id,
       iconId: 'i-' + (c.icon || 'default'),
       label: c.label,
-      sub: '',
+      sub: withText ? (c.kind || c.blurb || '') : '',
       chips: [],
       caption: captionForChannel(c),
       route: c.id,

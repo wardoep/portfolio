@@ -1,0 +1,141 @@
+/* admin.css — the editor. Loaded only when the editor mounts, which only
+ * happens on localhost, so none of this reaches a visitor.
+ *
+ * Deliberately plain. It borrows the site's tokens so it is not jarring, but it
+ * is a tool, not a design: dense, legible, and readable at 2am. The one thing it
+ * takes seriously is that the save state must be impossible to misread — the
+ * bar says what is unsaved, by filename.
+ */
+
+.admin {
+  position: fixed; inset: 0; z-index: 2000;
+  display: flex; flex-direction: column;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-pix);
+}
+
+.admin__bar {
+  flex: none;
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 10px 16px;
+  background: var(--tile);
+  border-bottom: 3px solid var(--ink);
+}
+.admin__title { font-size: 15px; letter-spacing: .08em; }
+.admin__tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.admin__status {
+  margin-left: auto;
+  font-size: var(--fs-small); color: var(--ink-3);
+}
+.admin__status.is-dirty { color: var(--ink); font-weight: 800; }
+.admin__status.is-bad { color: #b00020; font-weight: 800; }
+
+.admin__body {
+  flex: 1 1 auto; min-height: 0;
+  overflow-y: auto;
+  padding: 18px 16px 80px;
+  max-width: 70rem; width: 100%; margin-inline: auto;
+}
+
+.abtn {
+  padding: 6px 12px;
+  font: inherit; font-size: var(--fs-small);
+  color: var(--ink); background: var(--tile);
+  border: 2px solid var(--ink); border-radius: var(--r-sm);
+  cursor: pointer; text-decoration: none;
+  display: inline-flex; align-items: center;
+}
+.abtn:hover { background: var(--ground-lift); }
+.abtn.is-on { background: var(--ink); color: var(--tile); }
+.abtn--go { background: var(--ink); color: var(--tile); font-weight: 800; }
+.abtn--go:hover { background: var(--ink-2); }
+.abtn--icon { padding: 4px 8px; line-height: 1; }
+
+.anote {
+  margin: 0 0 14px;
+  font-size: var(--fs-small); color: var(--ink-2); line-height: 1.6;
+  max-width: 62ch;
+}
+.ah3 {
+  margin: 22px 0 8px;
+  font-size: var(--fs-small); letter-spacing: .12em; color: var(--ink-3);
+}
+
+.acard {
+  border: 2px solid var(--ink);
+  border-radius: var(--r-sm);
+  background: var(--tile);
+  margin-bottom: 10px;
+}
+.acard__head {
+  padding: 10px 14px;
+  cursor: pointer; font-size: var(--fs-small); letter-spacing: .06em;
+}
+.acard[open] > .acard__head { border-bottom: 1px solid var(--rule); font-weight: 800; }
+.acard > *:not(summary) { margin: 12px 14px; }
+
+.af { display: block; margin-bottom: 12px; }
+.af--row { display: flex; align-items: center; gap: 8px; }
+.af__label {
+  display: block; margin-bottom: 4px;
+  font-size: var(--fs-micro); letter-spacing: .1em;
+  color: var(--ink-3); text-transform: uppercase;
+}
+.af--row .af__label { margin: 0; text-transform: none; letter-spacing: .02em; color: var(--ink); }
+.af__input {
+  width: 100%;
+  padding: 7px 9px;
+  font: inherit; font-size: var(--fs-small); line-height: 1.5;
+  color: var(--ink); background: var(--ground-lift);
+  border: 1px solid var(--ink-3); border-radius: 4px;
+  resize: vertical;
+}
+.af__input:focus { outline: 2px solid var(--ink); outline-offset: 1px; }
+
+.ablock {
+  border-left: 3px solid var(--rule);
+  padding-left: 12px;
+}
+.ablock--sub { border-left-color: var(--ink-3); margin-top: 12px; }
+.ablock__type {
+  display: inline-block; margin-bottom: 6px;
+  font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.alist { margin-bottom: 12px; }
+.alist__row { display: flex; gap: 6px; align-items: flex-start; margin-bottom: 6px; }
+.alist__tools { display: flex; flex-direction: column; gap: 3px; flex: none; }
+
+/* The picker shows every glyph in the sprite and nothing else — publish.sh
+   check 9 fails the build on an icon that does not exist, so being unable to
+   choose one is the point. */
+.apick {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(38px, 1fr));
+  gap: 4px;
+  max-height: 132px; overflow-y: auto;
+  padding: 6px;
+  border: 1px solid var(--ink-3); border-radius: 4px;
+  background: var(--ground-lift);
+}
+.apick__i {
+  display: grid; place-items: center;
+  aspect-ratio: 1;
+  background: none; border: 1px solid transparent; border-radius: 4px;
+  color: var(--ink-2); cursor: pointer;
+}
+.apick__i:hover { border-color: var(--ink-3); color: var(--ink); }
+.apick__i.is-on { background: var(--ink); color: var(--tile); border-color: var(--ink); }
+
+/* ── the lock ──────────────────────────────────────────────────────────── */
+.admin--lock { display: grid; place-items: center; }
+.alock {
+  display: grid; gap: 10px;
+  width: min(300px, 90vw);
+  padding: 22px;
+  background: var(--tile);
+  border: 3px solid var(--ink); border-radius: var(--r-sm);
+}
+.alock__t { margin: 0; font-size: 15px; letter-spacing: .08em; }
+.alock__err { margin: 0; min-height: 1.2em; font-size: var(--fs-micro); color: #b00020; }
