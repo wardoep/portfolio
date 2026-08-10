@@ -29,9 +29,35 @@ ROOT = Path(__file__).resolve().parent
 MOUNT = "/portfolio"
 DEFAULT_PORT = 8091
 
-# Never serve these, even locally — it keeps the dev server honest about what
-# the published site actually contains.
-BLOCKED = (".git", "scripts", "notes", "data/.cache", "serve.py", "publish.sh", "deploy.sh")
+# What the site proper consists of — an ALLOWLIST, because the denylist that
+# used to be here failed in the way denylists fail. It named .git, scripts,
+# notes, serve.py, publish.sh and deploy.sh, and it did not name .admin-pw. So
+# `curl http://<host>:8091/portfolio/.admin-pw` returned the admin password in
+# clear, and the only reason that was not remotely catastrophic is that it takes
+# a second lock to matter.
+#
+# Naming what may be served cannot fail that way: a new file is invisible until
+# somebody adds it here, which is the safe direction for a server whose document
+# root is a git working tree full of credentials, notes and scripts.
+#
+# NOTE this is the LOCAL surface, and Pages currently serves the whole branch,
+# so it is deliberately SMALLER than what production exposes. Do not read a 404
+# here as proof that a file is not public.
+SHIPPED = ("index.html", "404.html", "resume.html", ".nojekyll", "CNAME",
+           "assets/", "data/")
+
+
+def shipped(rel):
+    """Is this path part of the site proper?"""
+    if rel in ("", "/"):
+        return True
+    # A dotfile is never content. .nojekyll is the one exception and is named
+    # in SHIPPED above; everything else starting with a dot — .admin-pw,
+    # .private-patterns, .gitignore, .git/ — is refused before any other test.
+    if any(part.startswith(".") for part in rel.split("/") if part) \
+       and rel not in SHIPPED:
+        return False
+    return rel.startswith(SHIPPED)
 
 # ── the admin write endpoint ────────────────────────────────────────────────
 # Off unless --admin is passed, and then bound to 127.0.0.1 only. This is the
@@ -198,7 +224,7 @@ class Handler(SimpleHTTPRequestHandler):
             return
 
         rel = self._rel()
-        if rel.startswith(BLOCKED):
+        if not shipped(rel):
             self.send_error(HTTPStatus.NOT_FOUND, "Not Found")
             return
 
@@ -237,7 +263,13 @@ def main():
     ap.add_argument("port", nargs="?", type=int, default=DEFAULT_PORT)
     ap.add_argument("--admin", action="store_true",
                     help="enable the editor's write endpoint (localhost only)")
+    ap.add_argument("--lan", action="store_true",
+                    help="bind 0.0.0.0 so a phone on the LAN can reach the preview")
     args = ap.parse_args()
+
+    if args.lan and args.admin:
+        sys.exit("--lan and --admin together would put the write endpoint on the "
+                 "network. Preview on the LAN, edit on this machine.")
 
     if busy(args.port):
         sys.exit(f"port {args.port} is already listening — pick another, e.g. ./serve.sh {args.port + 1}")
@@ -247,11 +279,15 @@ def main():
     # connection blocks every other request, and a browser opening several in
     # parallel fills the accept backlog and wedges the server completely — it
     # keeps listening while answering nothing, which looks exactly like a crash.
-    # 0.0.0.0 normally, so a phone on the LAN or a forwarded port can reach the
-    # preview. NOT in admin mode: the write endpoint binds to loopback only, so
-    # the editor is unreachable from anything but this machine. The password is
-    # the second lock, not the first.
-    host = "127.0.0.1" if args.admin else "0.0.0.0"
+    # Loopback by DEFAULT, and 0.0.0.0 only when asked for with --lan.
+    #
+    # It used to be the other way round: every run without --admin bound every
+    # interface, and the banner advertised it as a feature. The document root is
+    # a git working tree, so that offered anyone on the network the repository,
+    # the scripts, the notes and — until the allowlist above — .admin-pw itself.
+    # A LAN preview is a real need, but it is an occasional one, and the default
+    # for a server like this should be the safe end.
+    host = "0.0.0.0" if args.lan else "127.0.0.1"
     httpd = ThreadingHTTPServer((host, args.port), partial(Handler, directory=str(ROOT)))
     httpd.daemon_threads = True
     httpd.admin = args.admin
@@ -261,8 +297,9 @@ def main():
     print(f"  -> {url}")
     if args.admin:
         print(f"  -> {url}#/admin   (editor on — bound to 127.0.0.1 only)")
-    else:
-        print(f"  -> http://<this-host>:{args.port}{MOUNT}/   (LAN / forwarded port)")
+    if args.lan:
+        print(f"  -> http://<this-host>:{args.port}{MOUNT}/   (LAN — anyone who can "
+              f"reach this host can read the site)")
     print("  ctrl-c to stop\n")
     try:
         httpd.serve_forever()

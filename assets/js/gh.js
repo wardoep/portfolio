@@ -88,9 +88,40 @@ async function call(token, path, init = {}) {
   return r.status === 204 ? null : r.json();
 }
 
+/* Who the token belongs to — and, more importantly, how much it can do.
+ *
+ * /user succeeds for EVERY token GitHub issues, so "it worked" said nothing at
+ * all about blast radius. The gate accepted anything this call did not reject,
+ * which meant a classic PAT carrying `repo` — read and write on every private
+ * repository the account can reach — was sealed into a browser vault on a
+ * public website, and the only hint that this was wrong was a sentence in the
+ * paste field asking nicely for something narrower.
+ *
+ * A classic PAT announces its scopes in a response header. A fine-grained one
+ * sends nothing there, which is exactly the case we want, so an empty header is
+ * a pass and a populated one is refused by name. */
+const WIDE = /^(repo|admin:|delete_repo|workflow|write:org|user|gist)/;
+
 export async function whoami(token) {
   const r = await fetch('https://api.github.com/user', { headers: hdrs(token) });
   if (!r.ok) throw new Error(`that token was rejected (${r.status})`);
+
+  const scopes = (r.headers.get('x-oauth-scopes') || '').split(/,\s*/).filter(Boolean);
+  const wide = scopes.filter((s) => WIDE.test(s));
+  if (wide.length) {
+    throw new Error(
+      `that token carries ${wide.join(', ')} — far more than this needs, and it is about ` +
+      `to be stored in a browser. Make a fine-grained token limited to ${OWNER}/${REPO} ` +
+      `with Contents: read and write, and paste that instead.`);
+  }
+
+  /* And prove it can actually write HERE, rather than discovering it cannot at
+     commit time with a half-finished edit on screen. */
+  const repo = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}`, { headers: hdrs(token) });
+  if (!repo.ok) throw new Error(`that token cannot see ${OWNER}/${REPO} (${repo.status})`);
+  if (!(await repo.json()).permissions?.push) {
+    throw new Error(`that token can read ${OWNER}/${REPO} but not write to it`);
+  }
   return (await r.json()).login;
 }
 

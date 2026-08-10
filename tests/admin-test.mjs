@@ -47,6 +47,26 @@ const EXPECTED = [
 const { ev, send, wait, load, count, errors } = await connect({ width: 1440, height: 900 });
 const { check, done } = reporter();
 
+/* The suite drives a real editor against real files, so it snapshots the one
+   file it can change and puts it back at the end.
+
+   This is not belt and braces. The in-place-edit section types into the About
+   panel and leaves it unsaved, and the section after it clicks Save; the only
+   thing that kept that edit out of data/content.json was the save failing. The
+   moment it stopped failing for the expected reason, "EDITED IN PLACE" was
+   written to the file and baked into index.html. A test that depends on a save
+   failing must not also depend on it never succeeding. */
+const CONTENT_BEFORE = await (await fetch(BASE + 'data/content.json?x=' + Date.now())).text();
+const restoreContent = async () => {
+  const r = await fetch(API + 'content.json', {
+    method: 'PUT',
+    headers: { 'X-Admin-Key': PW, 'Content-Type': 'application/json' },
+    body: CONTENT_BEFORE,
+  });
+  if (!r.ok) console.error('  !! could not restore data/content.json — check `git diff` before committing');
+  return r.ok;
+};
+
 /* ── the lock, from outside the browser UI ─────────────────────────────── */
 console.log('\nTHE LOCK');
 {
@@ -228,10 +248,22 @@ console.log('\nEDITING IN PLACE');
  * and save", where the error was the absence of one. */
 console.log('\nA FAILED SAVE EXPLAINS ITSELF');
 {
-  await ev(`sessionStorage.setItem('pf-admin-key', 'definitely-wrong')`);
+  /* The save is made to fail at the network, not by planting a bad credential.
+     The password used to sit in sessionStorage where a test could overwrite it;
+     it is a module-scoped variable now, precisely so nothing outside the module
+     can reach it — including this test. Refusing the request is a truer
+     simulation anyway: an expired token and a dropped connection both land
+     here, and neither involves a wrong key. */
+  await ev(`(() => {
+    window.__realFetch = window.fetch;
+    window.fetch = (u, o) => (String(u).includes('__admin/') || String(u).includes('api.github.com'))
+      ? Promise.resolve(new Response('{"error":"token rejected"}', { status: 403 }))
+      : window.__realFetch(u, o);
+  })()`);
   await ev(`[...document.querySelectorAll('.abtn')].find((b) => b.textContent === 'Save').click()`);
   await wait(1500);
   const msg = await ev(`document.querySelector('[data-abar]').textContent`);
+  await ev(`window.fetch = window.__realFetch`);
   check('the reason survives the repaint', /key|token|failed/i.test(msg), msg);
   check('and it is not just the dirty-file list', !/^unsaved:/.test(msg), msg);
 }
@@ -240,7 +272,7 @@ console.log('\nA FAILED SAVE EXPLAINS ITSELF');
 console.log('\nTYPING THE WORD');
 {
   await load('');
-  await ev(`sessionStorage.removeItem('pf-admin-key')`);
+  /* nothing to clear any more — the password never leaves the module */
   await load('');
   /* Real key events through the input pipeline, not a synthetic hash change —
      the trigger was never tested this way and "when i type admin nothing is
@@ -307,6 +339,14 @@ console.log('\nONE SET OF GENERATORS');
     return applyPanels(html, doc) === html;
   })()`);
   check('baking the live content in the browser reproduces index.html exactly', same);
+}
+
+/* ── put the site back ─────────────────────────────────────────────────── */
+{
+  const ok = await restoreContent();
+  const now = await (await fetch(BASE + 'data/content.json?x=' + Date.now())).text();
+  check('the suite leaves data/content.json exactly as it found it',
+    ok && now === CONTENT_BEFORE);
 }
 
 done('the editor works and the lock holds.');

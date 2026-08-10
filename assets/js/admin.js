@@ -40,15 +40,28 @@ import * as rules from './rules.js';
 import { applyPanels, applyResume } from './bake.js';
 
 const API = new URL('__admin/', location.href.split('#')[0]).href;
-const KEY = 'pf-admin-key';
 
 let state = null;      /* { content, projects, resume } */
 let dirty = new Set(); /* which files need writing */
 let host = null;
 let iconIds = [];
 
-const key = () => { try { return sessionStorage.getItem(KEY) || ''; } catch { return ''; } };
-const setKey = (v) => { try { sessionStorage.setItem(KEY, v); } catch { /* private mode */ } };
+/* The password, for as long as this page is open and not one moment longer.
+ *
+ * It used to live in sessionStorage under 'pf-admin-key' — in clear, in the
+ * same browser, at the same origin as the AES-GCM vault it decrypts. gh.js
+ * derives a 310k-iteration PBKDF2 key and seals the token properly, and all of
+ * that bought nothing: anyone who could read localStorage could read the
+ * password beside it and unseal it in a line. A lock is not a lock while the
+ * key is taped to it.
+ *
+ * A module-scoped variable is not secret from a debugger either — nothing in a
+ * browser is — but it dies with the tab instead of outliving it by months, and
+ * it is never written anywhere a synced profile, a backup or an extension can
+ * find it. The cost is re-typing the password after a reload, which for a
+ * credential that can commit to a public repository is the right trade. */
+let secret = '';
+const key = () => secret;
 
 /* ── which backend? ────────────────────────────────────────────────────────
  * local  — serve.py --admin is answering. No credential, writes straight to
@@ -793,6 +806,23 @@ function gate(onOk) {
   go.type = 'submit';
   form.appendChild(go);
 
+  /* The way out. gh.forgetToken has existed since the vault did and nothing
+     ever called it, so there was no way to sign out of a borrowed browser and
+     no way to clear a token that had been revoked upstream — the editor would
+     just keep failing at commit time with no route back to the paste field.
+     Offered only when there is something to forget. */
+  if (mode === 'github' && gh.hasToken()) {
+    const drop = el('button', 'alock__forget', 'Forget the token on this device');
+    drop.type = 'button';
+    drop.addEventListener('click', () => {
+      gh.forgetToken();
+      secret = '';
+      unmount();
+      mount(host);            /* comes back asking for a token, not a password */
+    });
+    form.appendChild(drop);
+  }
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     err.textContent = '';
@@ -817,7 +847,7 @@ function gate(onOk) {
         if (!token) throw new Error('Wrong password.');
         await gh.whoami(token);      /* also catches an expired token */
       }
-      setKey(pw.value);
+      secret = pw.value;
       onOk();
     } catch (ex) {
       err.textContent = String(ex.message || ex);
@@ -840,6 +870,30 @@ export async function mount(node) {
   host = node;
   host.textContent = '';
   mode = await whichBackend();
+
+  /* Two refusals before anything asks for a credential.
+   *
+   * Not a secure context: crypto.subtle does not exist over plain http, so the
+   * vault cannot be opened or sealed — but the password and token fields would
+   * still render, and a token typed into them would already have crossed the
+   * wire in clear before anything failed. penna.lol currently answers on http
+   * as well as https, so this is reachable by typing the address without the
+   * scheme, not just by contrivance.
+   *
+   * Framed: the only thing worth clickjacking here is Save. frame-ancestors is
+   * a header-only directive and GitHub Pages will not set headers, so this one
+   * line is the whole defence available. */
+  if (mode === 'github' && !window.isSecureContext) {
+    host.appendChild(el('p', 'alock__err',
+      'The editor needs a secure context — open this page over https. '
+      + 'A token pasted over http would cross the network in clear.'));
+    mounted = false;
+    return;
+  }
+  if (window.top !== window.self) {
+    mounted = false;
+    return;
+  }
   await load();
   const start = () => {
     host.textContent = '';
@@ -850,8 +904,10 @@ export async function mount(node) {
        while editing — the URL is not a mode any more, the bar is. */
     router.home();
   };
-  /* A remembered password is not enough in github mode — it still has to
-     actually decrypt a token that still works. */
+  /* Nothing is remembered across a reload, by design — see `secret` above. If
+     the editor was already unlocked earlier in this page's life, reopening it
+     does not ask again; a fresh load always does. github mode additionally has
+     to still decrypt a token that still works. */
   if (mode === 'local' && key()) start();
   else if (mode === 'github' && key() && await gh.unlock(key())) start();
   else gate(start);

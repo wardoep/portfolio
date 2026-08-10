@@ -143,6 +143,16 @@
 /* Shown once, the first time the editor runs away from the desk and has to be
    given a token to commit with. */
 .alock__hint { margin: 0; font-size: var(--fs-micro); line-height: 1.55; color: var(--ink-2); }
+/* The way back out of a borrowed browser, or past a token the account has since
+   revoked. Deliberately quiet — it throws away a credential, so it should not
+   sit next to Unlock looking like the other half of a pair. */
+.alock__forget {
+  margin: 0; padding: 0; align-self: center;
+  background: none; border: 0; cursor: pointer;
+  font: inherit; font-size: var(--fs-micro); color: var(--ink-2);
+  text-decoration: underline; text-underline-offset: 3px;
+}
+.alock__forget:hover { color: var(--ink); }
 
 /* ══ EDITING THE SITE ITSELF ═══════════════════════════════════════════════
  * The editor is a bar over the real page, not a screen replacing it. So the
