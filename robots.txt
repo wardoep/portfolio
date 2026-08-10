@@ -1,0 +1,31 @@
+# robots.txt — an interim measure, and a weak one.
+#
+# GitHub Pages serves this whole branch, so notes/, tests/, scripts/, serve.py,
+# publish.sh and README.md are all live URLs at penna.lol. None of them are
+# meant to be part of the site. The real fix is to stop publishing them at all —
+# deploying a built dist/ from Actions instead of letting Pages serve the branch
+# — and that is a repository settings change waiting on the TLS certificate to
+# finish reissuing.
+#
+# Until then this at least keeps them out of search results, which is the
+# realistic harm: someone searching a name and finding the authoring notes
+# rather than the site. Be clear about what it is not — robots.txt is a request,
+# honoured by the big crawlers and ignored by everything else, and it stops
+# nobody who types the path. Nothing secret is protected by this file, and
+# nothing secret may ever rely on it.
+
+User-agent: *
+Disallow: /notes/
+Disallow: /tests/
+Disallow: /scripts/
+Disallow: /dist/
+Disallow: /publish.sh
+Disallow: /deploy.sh
+Disallow: /serve.py
+Disallow: /serve.sh
+Disallow: /README.md
+
+# The site proper is welcome.
+Allow: /$
+Allow: /resume.html
+Allow: /assets/

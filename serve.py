@@ -44,7 +44,7 @@ DEFAULT_PORT = 8091
 # so it is deliberately SMALLER than what production exposes. Do not read a 404
 # here as proof that a file is not public.
 SHIPPED = ("index.html", "404.html", "resume.html", ".nojekyll", "CNAME",
-           "assets/", "data/")
+           "robots.txt", "assets/", "data/")
 
 
 def shipped(rel):
