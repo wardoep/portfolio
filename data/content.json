@@ -1,0 +1,226 @@
+{
+  "_comment": "Panel copy and home-screen settings. Edited by the admin panel; baked into index.html by scripts/bake-panels.mjs. Do not hand-edit index.html panels.",
+  "home": {
+    "cardText": false
+  },
+  "panels": [
+    {
+      "id": "about",
+      "title": "About",
+      "icon": "i-person",
+      "tint": "var(--card-projects)",
+      "note": " Was five paragraphs and 230 words. It named a count of labs, so it went\n         out of date on every push, and it was built out of the constructions\n         that give generated text away: \"Not from tutorials — from a backup\n         that…\", a three-clause list, \"The other half of the job is people.\"\n         Nothing here needs editing when the next repo lands. ",
+      "body": [
+        {
+          "type": "lead",
+          "html": "I build IT labs and write each one up so someone else could follow it. One's an osTicket helpdesk with SLAs and email piping that I've worked tickets through. There's usually another one half-built."
+        },
+        {
+          "type": "p",
+          "html": "I've had a Linux server at home for a couple of years and it has to stay up. My first restic restore drill didn't restore anything. I fixed it and wrote down what I'd missed."
+        },
+        {
+          "type": "p",
+          "html": "I'm after my first full-time job in desktop support or helpdesk. Degree's in cybersecurity from SUNY Albany and I'm studying for Network+. I did a summer at Broadridge on access reviews and audit prep, and before that I volunteered in IT at Stony Brook Hospital, mostly logins and broken hardware."
+        },
+        {
+          "type": "cta",
+          "items": [
+            {
+              "label": "Read the résumé",
+              "href": "resume.html",
+              "primary": true
+            },
+            {
+              "label": "What I'm learning",
+              "href": "#/now"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "skills",
+      "title": "Skills",
+      "icon": "i-sliders",
+      "tint": "var(--card-projects)",
+      "body": [
+        {
+          "type": "lead",
+          "html": "Everything here is in active use on my own systems or in a lab on this site — not a list of things I've read about."
+        },
+        {
+          "type": "skills",
+          "groups": [
+            {
+              "heading": "Support &amp; systems",
+              "items": [
+                "Windows troubleshooting",
+                "Help-desk / end-user support",
+                "Hardware &amp; software diagnosis",
+                "Ticket-based support (osTicket)",
+                "System configuration",
+                "Technical documentation"
+              ]
+            },
+            {
+              "heading": "OS &amp; infrastructure",
+              "items": [
+                "Ubuntu / Linux Server administration",
+                "Virtual machines (VMware, VirtualBox)",
+                "Docker &amp; Docker Compose",
+                "Nginx reverse proxy / TLS",
+                "systemd services &amp; timers"
+              ]
+            },
+            {
+              "heading": "Networking &amp; security",
+              "items": [
+                "TCP/IP, network troubleshooting",
+                "SSH &amp; secure remote access",
+                "Active Directory (lab)",
+                "Linux hardening (CIS, Lynis)",
+                "SIEM (Wazuh)",
+                "Vulnerability scanning (Nessus)"
+              ]
+            },
+            {
+              "heading": "Scripting &amp; tools",
+              "items": [
+                "PowerShell",
+                "Bash",
+                "Python",
+                "Git &amp; GitHub",
+                "Prometheus &amp; Grafana",
+                "restic (backup / DR)",
+                "Tailscale"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "now",
+      "title": "Now / Learning",
+      "icon": "i-spark",
+      "tint": "var(--card-builds)",
+      "body": [
+        {
+          "type": "lead",
+          "html": "Studying for <strong>CompTIA Network+</strong>."
+        },
+        {
+          "type": "p",
+          "html": "Alongside it I'm working through the gap between \"I built this once\" and \"I could run this for someone else.\" Recent things that changed how I work:"
+        },
+        {
+          "type": "beats",
+          "items": [
+            "<strong>An untested backup is not a backup.</strong> The restore drill in the backup lab is logged for a reason — the first one I ran didn't work.",
+            "<strong>The ticket is the deliverable.</strong> Fixing it is half the job; the other half is a note the next person can actually use. The helpdesk lab has five worked tickets and the KB article each one produced.",
+            "<strong>Give out the smallest permission that works.</strong> The AD lab delegates password resets to a helpdesk group and nothing else — the boundary I'd be working inside on day one.",
+            "<strong>Write it down while it hurts.</strong> Every runbook here exists because I'd already had to rediscover the same fix twice."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "resume",
+      "title": "Résumé",
+      "icon": "i-doc",
+      "tint": "var(--card-resume)",
+      "body": [
+        {
+          "type": "lead",
+          "html": "A plain, printable résumé — no styling to fight, no JavaScript, safe for an applicant tracking system."
+        },
+        {
+          "type": "cta",
+          "items": [
+            {
+              "label": "Open the résumé",
+              "href": "resume.html",
+              "primary": true
+            },
+            {
+              "label": "Download PDF",
+              "href": "assets/doc/resume.pdf",
+              "download": true,
+              "icon": "i-download"
+            },
+            {
+              "label": "LinkedIn",
+              "href": "https://www.linkedin.com/in/edward-penna-469096245",
+              "external": true,
+              "icon": "i-external"
+            }
+          ]
+        },
+        {
+          "type": "h3",
+          "text": "The short version"
+        },
+        {
+          "type": "beats",
+          "items": [
+            "B.S. Cybersecurity, University at Albany, May 2025. Studying for CompTIA Network+.",
+            "IT Support Volunteer, Stony Brook Hospital (summer 2023) — login, access, hardware and software issues, tracked through tickets.",
+            "Summer Consultant, Broadridge (2024) — information security: access reviews and audit preparation.",
+            "Documented labs covering osTicket helpdesk, Active Directory, PowerShell, Docker, monitoring, backup/DR and security operations.",
+            "A self-hosted Linux server running production-style services with real uptime requirements."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "contact",
+      "title": "Contact",
+      "icon": "i-chat",
+      "tint": "var(--card-resume)",
+      "body": [
+        {
+          "type": "lead",
+          "html": "Open to desktop support, IT support and helpdesk roles."
+        },
+        {
+          "type": "p",
+          "html": "Email me and I'll reply the same day. Happy to walk through any of the labs on\n       this site on a call — including the parts that didn't work the first time."
+        },
+        {
+          "type": "address",
+          "email": "pennaeddie1@gmail.com",
+          "hint": "Click to copy"
+        },
+        {
+          "type": "links",
+          "items": [
+            {
+              "icon": "i-mail",
+              "href": "mailto:pennaeddie1@gmail.com",
+              "label": "pennaeddie1@gmail.com"
+            },
+            {
+              "icon": "i-spark",
+              "href": "#/now",
+              "label": "What I'm learning right now",
+              "open": "now"
+            },
+            {
+              "icon": "i-github",
+              "href": "https://github.com/wardoep",
+              "label": "github.com/wardoep",
+              "external": true
+            },
+            {
+              "icon": "i-linkedin",
+              "href": "https://www.linkedin.com/in/edward-penna-469096245",
+              "label": "LinkedIn",
+              "external": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

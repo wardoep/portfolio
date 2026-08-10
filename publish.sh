@@ -276,6 +276,24 @@ else
   ok "every absolute URL agrees with $SITE_URL"
 fi
 
+# 16 — the HTML is generated, so prove it still matches its source.
+#
+#      index.html's panels come from data/content.json and resume.html's body
+#      from data/resume.json. Both are committed artifacts, which means they can
+#      drift: edit the JSON and forget to bake, or hand-edit the HTML and have
+#      the next bake silently throw the edit away.
+#
+#      This is the same provenance idea as check 12 (resume.pdf pinned to a hash
+#      of resume.html), applied one level up. Editing the HTML by hand is not
+#      forbidden — it just has to lose, loudly, at the point of publishing.
+node scripts/bake-panels.mjs --check >/dev/null 2>&1 \
+  && ok "index.html matches data/content.json" \
+  || bad "index.html is out of date — run: node scripts/bake-panels.mjs"
+
+node scripts/bake-resume.mjs --check >/dev/null 2>&1 \
+  && ok "resume.html matches data/resume.json" \
+  || bad "resume.html is out of date — run: node scripts/bake-resume.mjs"
+
 echo
 [ "$fail" -eq 0 ] || { echo "pre-flight failed."; exit 1; }
 

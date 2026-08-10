@@ -1,0 +1,127 @@
+{
+  "_comment": "The résumé page. Edited by the admin panel; baked into resume.html by scripts/bake-resume.mjs, which also invalidates resume.pdf. Do not hand-edit resume.html.",
+  "name": "Edward J. Penna",
+  "role": "Desktop Support / IT Support",
+  "contact": [
+    {
+      "href": "mailto:pennaeddie1@gmail.com",
+      "label": "pennaeddie1@gmail.com"
+    },
+    {
+      "href": "https://www.linkedin.com/in/edward-penna-469096245",
+      "label": "linkedin.com/in/edward-penna"
+    },
+    {
+      "href": "https://github.com/wardoep",
+      "label": "github.com/wardoep"
+    }
+  ],
+  "sections": [
+    {
+      "heading": "Summary",
+      "type": "prose",
+      "html": "Recent SUNY Albany cybersecurity graduate with hands-on experience supporting end users,\ntroubleshooting hardware and software issues, and working with ticket-based support. Backs that\nexperience with a hands-on homelab portfolio spanning Windows/Active Directory administration,\nLinux, Docker, monitoring, backup/DR, and security operations — all documented as reproducible\nrunbooks on GitHub. Strong at resolving login and system-access issues, diagnosing desktop\nproblems, and communicating clearly with non-technical users."
+    },
+    {
+      "heading": "Experience",
+      "type": "entries",
+      "spaced": true,
+      "entries": [
+        {
+          "title": "IT Support Volunteer — Stony Brook Hospital",
+          "when": "06/2023 – 08/2023",
+          "bullets": [
+            "Provided technical support to end users by resolving login, system access, hardware, and software issues in a healthcare environment.",
+            "Worked with tickets to track issues and support technical resolution follow-up.",
+            "Diagnosed and troubleshot basic desktop and user-side technical problems while communicating clearly with non-technical staff.",
+            "Assisted users with day-to-day technical issues while maintaining a responsive, customer-focused support approach."
+          ]
+        },
+        {
+          "title": "Summer Consultant — Broadridge",
+          "when": "05/2024 – 08/2024",
+          "bullets": [
+            "Reviewed user access controls and supporting documentation to ensure accuracy, compliance, and proper system access.",
+            "Worked with attention to detail on documentation and process validation in a professional team setting.",
+            "Assisted with audit preparation, risk analysis, and process improvement in a structured enterprise environment."
+          ]
+        },
+        {
+          "title": "Sales Associate — Lowe's",
+          "when": "05/2022 – 08/2022",
+          "bullets": [
+            "Assisted customers directly while balancing accuracy, speed, and attention to detail.",
+            "Used Zebra devices for inventory checks, item lookup, restocking workflows, and organized task execution.",
+            "Helped maintain accurate item placement and product availability by locating items and verifying shelf organization."
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "Technical Skills",
+      "type": "deflist",
+      "items": [
+        {
+          "term": "Support &amp; Systems",
+          "desc": "Windows troubleshooting, help-desk / end-user support, hardware &amp; software diagnosis, ticket-based support, system configuration, technical documentation"
+        },
+        {
+          "term": "OS &amp; Infrastructure",
+          "desc": "Ubuntu / Linux Server administration, virtual machines (VMware, VirtualBox), Docker &amp; Docker Compose, Nginx reverse proxy / TLS, systemd services &amp; timers"
+        },
+        {
+          "term": "Networking &amp; Security",
+          "desc": "TCP/IP, network troubleshooting, SSH &amp; secure remote access, Active Directory (lab), Linux hardening, SIEM (Wazuh), vulnerability scanning (Nessus)"
+        },
+        {
+          "term": "Scripting &amp; Tools",
+          "desc": "PowerShell, Bash, Python, Git &amp; GitHub, Prometheus &amp; Grafana, restic (backup / DR), Tailscale"
+        }
+      ]
+    },
+    {
+      "heading": "Projects",
+      "type": "entries",
+      "spaced": true,
+      "entries": [
+        {
+          "title": "IT &amp; Security Homelab Portfolio",
+          "when": "<a href=\"https://github.com/wardoep\">github.com/wardoep</a>",
+          "note": "A growing set of hands-on IT, sysadmin, and SOC labs, each built and documented as a reproducible runbook with its configuration in version control.",
+          "bullets": [
+            "<strong>Active Directory / Windows network lab:</strong> stood up a Windows Server domain (corp.lab), joined a client workstation, created and managed domain user accounts, and worked through logged break/fix troubleshooting drills.",
+            "<strong>Docker self-hosted stack:</strong> deployed multi-service Docker Compose environments on Ubuntu Server (Portainer, Nginx Proxy Manager with TLS, Uptime Kuma) behind a reverse proxy, with scripted named-volume backups.",
+            "<strong>Monitoring &amp; observability:</strong> Prometheus, Grafana (dashboards-as-code), and Alertmanager with node_exporter metrics, PromQL alert rules, and alert routing.",
+            "<strong>Windows/AD administration toolkit:</strong> authored PowerShell scripts for system inventory, event-log triage, health reporting, and user on/off-boarding.",
+            "<strong>Backup &amp; disaster recovery:</strong> 3-2-1 backups with restic, automated on a systemd schedule with retention policies and tested restore drills.",
+            "<strong>Security operations:</strong> Wazuh SIEM with custom detection rules, a Nessus vulnerability-management workflow, a Cowrie SSH honeypot with a Python log analyzer, phishing triage with a Python IOC extractor, and CIS-based Linux hardening measured with Lynis."
+          ]
+        },
+        {
+          "title": "AI Infrastructure &amp; Automation",
+          "bullets": [
+            "Deployed and maintained self-hosted automation tools on a Linux VPS, including setup, configuration, and ongoing troubleshooting of bot, connectivity, and network issues to keep services running reliably.",
+            "Used Tailscale for secure remote access and private networking to hosted services."
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "Education &amp; Certification",
+      "type": "entries",
+      "spaced": false,
+      "entries": [
+        {
+          "title": "B.S. Cybersecurity — University at Albany, SUNY",
+          "when": "09/2021 – 05/2025",
+          "where": "CompTIA Network+ — in progress"
+        }
+      ]
+    }
+  ],
+  "footer": {
+    "text": "Every project above is public, with write-ups:",
+    "href": "https://github.com/wardoep",
+    "label": "github.com/wardoep"
+  }
+}
