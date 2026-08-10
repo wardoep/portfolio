@@ -19,7 +19,7 @@ import { readFileSync } from 'node:fs';
 const PW = readFileSync(new URL('../.admin-pw', import.meta.url), 'utf8').trim();
 const API = BASE + '__admin/';
 
-const { ev, wait, load, count, errors } = await connect({ width: 1440, height: 900 });
+const { ev, send, wait, load, count, errors } = await connect({ width: 1440, height: 900 });
 const { check, done } = reporter();
 
 /* ── the lock, from outside the browser UI ─────────────────────────────── */
@@ -121,6 +121,40 @@ console.log('\nTHE EDITOR');
   await ev(`document.querySelector('[data-atab="projects"]').click()`);
   await wait(400);
   check('projects are listed for editing', (await ev(`document.querySelectorAll('.acard').length`)) > 5);
+}
+
+/* ── the typed trigger ─────────────────────────────────────────────────── */
+console.log('\nTYPING THE WORD');
+{
+  await load('');
+  await ev(`sessionStorage.removeItem('pf-admin-key')`);
+  await load('');
+  /* Real key events through the input pipeline, not a synthetic hash change —
+     the trigger was never tested this way and "when i type admin nothing is
+     happening" is exactly the report that finds out. */
+  for (const ch of 'admin') {
+    const code = 'Key' + ch.toUpperCase();
+    const vk = ch.toUpperCase().charCodeAt(0);
+    await send('Input.dispatchKeyEvent', { type: 'keyDown', key: ch, text: ch, code, windowsVirtualKeyCode: vk });
+    await send('Input.dispatchKeyEvent', { type: 'keyUp', key: ch, code, windowsVirtualKeyCode: vk });
+    await wait(70);
+  }
+  await wait(1200);
+  check('typing the word opens the editor',
+    (await ev(`location.hash`)) === '#/admin' && (await count('.admin')) === 1);
+
+  /* And it must not fire while you are typing INTO the editor. */
+  await wait(300);
+  const before = await ev(`location.hash`);
+  await ev(`(() => { const i = document.querySelector('.af__input'); if (i) i.focus(); })()`);
+  for (const ch of 'admin') {
+    const code = 'Key' + ch.toUpperCase();
+    await send('Input.dispatchKeyEvent', { type: 'keyDown', key: ch, text: ch, code, windowsVirtualKeyCode: ch.toUpperCase().charCodeAt(0) });
+    await send('Input.dispatchKeyEvent', { type: 'keyUp', key: ch, code, windowsVirtualKeyCode: ch.toUpperCase().charCodeAt(0) });
+    await wait(50);
+  }
+  check('and does not re-fire while a field has focus',
+    (await ev(`location.hash`)) === before, await ev(`location.hash`));
 }
 
 done('the editor works and the lock holds.');
