@@ -15,9 +15,34 @@
  */
 import { connect, reporter, BASE } from './cdp.mjs';
 import { readFileSync } from 'node:fs';
+import { PRIVATE } from '../assets/js/rules.js';
 
 const PW = readFileSync(new URL('../.admin-pw', import.meta.url), 'utf8').trim();
 const API = BASE + '__admin/';
+
+/* A string this file must never contain, built from the rule meant to catch it.
+ *
+ * Pages serves the whole branch, so tests/ is as public as index.html —
+ * https://penna.lol/tests/admin-test.mjs is a live URL. Typing a real phone
+ * number here to prove the rule catches phone numbers would publish it, and
+ * splitting the digits across two literals only hides them from publish.sh's
+ * grep, not from anyone reading the file. So the probe is derived: strip a
+ * pattern back to the plainest text that still matches it.
+ *
+ * The rules keep their secrets in character classes (`797[1]`) precisely so the
+ * source never spells them out; this reverses that, in memory, at run time. */
+const probeFor = (re) => re.source
+  .replace(/\\b/g, '')            /* a word boundary is not a character */
+  .replace(/\[[^\]]*\]\?/g, '')   /* an optional class: leave it out entirely */
+  .replace(/\\.\?/g, '')          /* an optional literal: likewise */
+  .replace(/\[(.)\]/g, '$1')      /* a one-character class IS that character */
+  .replace(/\\(.)/g, '$1');       /* and unescape whatever is left */
+
+const PROBES = PRIVATE.map(([re, what]) => [probeFor(re), what]);
+/* Every private rule, plus a count, a by-hand claim and a date that has gone
+   past — one sentence that should trip six rules at once. */
+const BAD_SENTENCE = `Ring ${PROBES[0][0]} or ${PROBES[1][0]}, ${PROBES[2][0]} `
+  + 'about my 13 labs, built by hand, exam scheduled March 2020.';
 
 const { ev, send, wait, load, count, errors } = await connect({ width: 1440, height: 900 });
 const { check, done } = reporter();
@@ -169,13 +194,16 @@ console.log('\nTHE RULES');
     const content = await (await fetch('data/content.json')).json();
     const clean = rules.check({ 'content.json': content }).length;
     const bad = JSON.parse(JSON.stringify(content));
-    bad.panels.find((p) => p.id === 'about').body[0].html =
-      'Ring [redacted] about my 13 labs, built by hand, exam scheduled March 2020.';
+    bad.panels.find((p) => p.id === 'about').body[0].html = ${JSON.stringify(BAD_SENTENCE)};
     return JSON.stringify({ clean, dirty: rules.check({ 'content.json': bad }).map((f) => f.why) });
   })()`);
   const r = JSON.parse(found);
   check('the live content passes its own rules', r.clean === 0, String(r.clean));
-  check('a phone number is caught', r.dirty.some((w) => w.includes('phone')), r.dirty.join(' | '));
+  /* Each private rule by name, so adding one to rules.js without a working
+     pattern shows up here rather than passing on the strength of the others. */
+  for (const [, what] of PROBES) {
+    check(`${what} is caught`, r.dirty.some((w) => w.includes(what)), r.dirty.join(' | '));
+  }
   check('a count is caught', r.dirty.some((w) => w.includes('counts')));
   check('an expired date is caught', r.dirty.some((w) => w.includes('expire')));
   check('a by-hand claim is caught', r.dirty.some((w) => w.includes('how the work')));

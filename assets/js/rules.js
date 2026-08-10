@@ -16,8 +16,14 @@
 
 /* check 6 — details that must never reach a public, permanently-archived URL.
    Split the same way publish.sh splits them, so this file does not match itself
-   when check 17 greps the tree. */
-const PRIVATE = [
+   when check 6 greps the tree.
+
+   Exported because the test needs to prove these fire, and the only safe way to
+   do that is to rebuild a matching string FROM the pattern at runtime. Every
+   file on this branch — tests included — is served from penna.lol, so a probe
+   typed out as a literal would publish the very details this list exists to
+   keep off the site. */
+export const PRIVATE = [
   [/721[-\s]?797[1]/, 'a phone number'],
   [/\byaho[o]\.com\b/i, 'the old email address'],
   [/\bSt\.? Jame[s]\b/i, 'a home town'],
