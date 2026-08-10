@@ -20,6 +20,13 @@ let data = null;
 let host = null;
 let titleNode = null;
 let level = { kind: 'root' };
+/* The editor adds a card by putting a + tile at the end of the wall. It has to
+   be rendered HERE rather than appended to the DOM afterwards, because
+   shapeFor() and centreLastRow() both work off the count: a tile added behind
+   the layout's back left every derived number one short, and the lone card on
+   the last row — shifted 1.5 columns to centre it — landed exactly on top of
+   the +. Measured as one overlapping pair at every viewport. */
+let editing = false;
 /* The wall is built before the start screen lets go. Playing the entrance on
    render would run it under an opaque overlay — which is exactly the bug that
    was fixed once already and that this rewrite reintroduced. Nothing animates
@@ -184,6 +191,17 @@ function render() {
 
   tiles.forEach((t) => host.appendChild(t));
 
+  /* Counted, not appended afterwards — see the note on `editing` above. */
+  if (editing && sub) {
+    const add = tile({
+      id: '__add', iconId: 'i-default', label: 'ADD',
+      sub: '', chips: [], reserveChips: false, caption: '', route: '__add',
+    });
+    add.classList.add('ed-add');
+    host.appendChild(add);
+    tiles.push(add);
+  }
+
   const { cols, rows } = shapeFor(tiles.length);
   host.style.setProperty('--cols', String(cols));
   host.style.setProperty('--rows', String(rows));
@@ -282,6 +300,14 @@ export function showChannel(id) {
 
 export const currentLevel = () => level;
 
+/* Turned on by the editor. Only ever adds a slot one level down: the home
+   screen keeps its three cards. */
+export function setEditing(on) {
+  if (editing === !!on) return;
+  editing = !!on;
+  render();
+}
+
 /* Focus a tile by id, AFTER a render. The panel's own focus restoration runs
    before the grid rebuilds, so anything it focused has already been thrown away
    by the time the new tiles exist — which is how closing a project left focus
@@ -315,7 +341,12 @@ export function init(payload) {
     if (!btn) return;
     e.preventDefault();
     const c = channelById(btn.dataset.card);
-    if (c && c.href) { location.href = c.href; return; }
+    /* A card may go straight out instead of opening its page — true for a
+       channel already, and now for a project too, so a card added by hand can
+       point at the repo it is about. */
+    const p = (data.projects || []).find((x) => x.id === btn.dataset.card);
+    const jump = (c && c.href) || (p && p.href);
+    if (jump) { location.href = jump; return; }
     router.go(btn.dataset.route, btn);
   });
 

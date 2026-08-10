@@ -143,3 +143,155 @@
 /* Shown once, the first time the editor runs away from the desk and has to be
    given a token to commit with. */
 .alock__hint { margin: 0; font-size: var(--fs-micro); line-height: 1.55; color: var(--ink-2); }
+
+/* ══ EDITING THE SITE ITSELF ═══════════════════════════════════════════════
+ * The editor is a bar over the real page, not a screen replacing it. So the
+ * site keeps its own layout and only shrinks by the height of the bar —
+ * --edit-bar is subtracted from the grid's height maths, or the wall would be
+ * 46px too tall and the bottom row would clip. */
+:root { --edit-bar: 0px; }
+body[data-editing] { --edit-bar: 46px; margin-top: var(--edit-bar); }
+@media (min-width: 901px) { body[data-editing] { height: calc(100dvh - var(--edit-bar)); } }
+
+.aroot { position: static; }
+
+.abar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 2100;
+  height: var(--edit-bar);
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 12px;
+  background: var(--ink); color: var(--tile);
+  font-family: var(--font-pix);
+}
+.abar__title { font-size: 13px; letter-spacing: .1em; }
+.abar__hint { font-size: var(--fs-micro); opacity: .6; }
+.abar .abtn { background: transparent; color: var(--tile); border-color: var(--tile); }
+.abar .abtn:hover { background: rgb(255 255 255 / .14); }
+.abar .abtn.is-on, .abar .abtn--go { background: var(--tile); color: var(--ink); }
+.abar .admin__status { margin-left: auto; color: rgb(255 255 255 / .7); }
+.abar .admin__status.is-dirty { color: #ffd479; }
+.abar .admin__status.is-bad { color: #ff8b8b; }
+
+/* the forms, when Raw is on: a sheet under the bar rather than a takeover */
+.admin { top: var(--edit-bar); }
+.admin[hidden] { display: none; }
+
+/* ── what you can click ──────────────────────────────────────────────────
+ * Dashed until you point at it. A solid outline on everything at once turns
+ * the page into a wireframe and you stop being able to judge the design you
+ * are editing. */
+/* Nothing outlined until you point at it. Dashing every editable box at once
+   turned the page into a wireframe, and you cannot judge a design you cannot
+   see — which is the whole reason the editor sits on the real site. */
+body[data-editing] .ed-text { cursor: text; }
+body[data-editing] .ed-text:hover {
+  outline: 2px solid var(--sel-deep);
+  outline-offset: 2px;
+  background: rgb(120 120 120 / .10);
+  border-radius: 3px;
+}
+body[data-editing] .ed-text.is-editing {
+  outline: 2px solid var(--sel-deep);
+  background: var(--tile);
+  cursor: text;
+}
+
+/* per-block controls, only while the block is under the pointer */
+.ed-tools {
+  position: absolute; top: -12px; right: 0;
+  display: none; gap: 2px;
+  z-index: 5;
+}
+body[data-editing] .ed-block:hover > .ed-tools { display: flex; }
+.ed-tool {
+  width: 22px; height: 22px;
+  display: grid; place-items: center;
+  font: inherit; font-size: 12px; line-height: 1;
+  background: var(--ink); color: var(--tile);
+  border: 0; border-radius: 4px; cursor: pointer;
+}
+.ed-tool:hover { background: var(--sel-deep); }
+
+/* A pencil rather than making the whole card open the editor: a plain click
+   still has to navigate, or you could not reach the things inside a channel. */
+.ed-pencil {
+  position: absolute; top: 6px; right: 6px;
+  width: 24px; height: 24px;
+  display: none; place-items: center;
+  font-size: 13px; line-height: 1;
+  background: var(--ink); color: var(--tile);
+  border: 0; border-radius: 50%; cursor: pointer;
+  z-index: 4;
+}
+body[data-editing] .chan:hover > .ed-pencil { display: grid; }
+
+.ed-add .chan {
+  border-style: dashed;
+  opacity: .75;
+}
+.ed-add .chan__art { background: transparent; color: var(--card-ink); font-size: 26px; }
+
+/* ── the popup ─────────────────────────────────────────────────────────── */
+.ed-modal {
+  position: fixed; inset: 0; z-index: 2200;
+  display: grid; place-items: center;
+  background: rgb(0 0 0 / .55);
+  padding: 20px;
+}
+.ed-modal__box {
+  width: min(680px, 96vw); max-height: 88vh;
+  display: flex; flex-direction: column;
+  background: var(--ground); color: var(--ink);
+  border: 3px solid var(--ink); border-radius: var(--r-sm);
+  font-family: var(--font-pix);
+}
+.ed-modal__t {
+  margin: 0; padding: 12px 16px;
+  font-size: 14px; letter-spacing: .08em;
+  background: var(--tile); border-bottom: 2px solid var(--ink);
+}
+.ed-modal__body { padding: 16px; overflow-y: auto; }
+.ed-modal__foot {
+  padding: 10px 16px; border-top: 1px solid var(--rule);
+  display: flex; justify-content: flex-end;
+}
+.ed-frame {
+  width: 100%; height: 62vh;
+  border: 2px solid var(--ink); border-radius: 4px;
+  background: #fff;
+}
+
+/* ── delete one pill, without a popup ─────────────────────────────────────
+ * Removing a button used to be: hover the block, find the pencil, open the
+ * popup, find the row, press Remove. Five steps for the commonest edit there
+ * is. */
+.ed-x {
+  position: absolute; top: -7px; right: -7px;
+  width: 18px; height: 18px;
+  display: none; place-items: center;
+  font: inherit; font-size: 10px; line-height: 1;
+  background: var(--ink); color: var(--tile);
+  border: 2px solid var(--ground); border-radius: 50%;
+  cursor: pointer; z-index: 6;
+}
+body[data-editing] .cta-row .btn:hover > .ed-x,
+body[data-editing] .links li:hover > .ed-x,
+body[data-editing] .ed-x:hover { display: grid; }
+
+/* Always visible, so an empty panel is not a dead end. */
+.ed-addtext {
+  display: block; width: 100%;
+  margin-top: 14px; padding: 8px;
+  font: inherit; font-size: var(--fs-small);
+  color: var(--ink-3); background: transparent;
+  border: 2px dashed var(--rule); border-radius: var(--r-sm);
+  cursor: pointer;
+}
+.ed-addtext:hover { color: var(--ink); border-color: var(--ink-3); }
+
+/* The + tile is a real card rendered by grid.js, so it inherits the wall's
+   size and position; only its skin says "this one is not content". */
+.ed-add .chan { border-style: dashed; opacity: .7; }
+.ed-add .chan__art { background: transparent; color: var(--card-ink); }
+.ed-add .chan__art .ico { display: none; }
+.ed-add .chan__art::after { content: '+'; font-size: 30px; line-height: 1; }

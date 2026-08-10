@@ -123,7 +123,11 @@ async function main() {
   let admin = null;
   const adminHost = document.querySelector('[data-admin-host]');
   router.onRoute(async (r) => {
-    if (r.name !== 'admin') { admin?.unmount(); return; }
+    /* No unmount on a route change. Editing a panel means OPENING it, which is
+       a route change — so tearing the editor down here made every panel
+       impossible to edit: you navigated to the thing you wanted to change and
+       the editor vanished on the way. The editor now lives until Close. */
+    if (r.name !== 'admin') return;
     if (!adminHost) return;
     if (!admin) {
       const link = document.createElement('link');

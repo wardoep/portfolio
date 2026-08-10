@@ -41,7 +41,7 @@ const linkItem = (l) => {
   return `      <li><a ${attrs}>${ico(l.icon)}${l.label}${tail}</a></li>`;
 };
 
-function block(b) {
+export function blockHtml(b) {
   switch (b.type) {
     case 'lead':  return `    <p class="lead">${b.html}</p>`;
     case 'p':     return `    <p>${b.html}</p>`;
@@ -64,8 +64,15 @@ function block(b) {
   }
 }
 
-function panelHtml(p) {
+/* The inner HTML of a panel body, on its own. The editor re-renders a panel in
+   place after every edit using exactly this, so what is on screen while you type
+   is the markup that will ship — not a preview of it. */
+export function panelBodyHtml(p) {
   const note = p.note ? `    <!--${p.note}-->\n` : '';
+  return note + p.body.map(blockHtml).join('\n');
+}
+
+function panelHtml(p) {
   return [
     `<section class="panel" id="p-${p.id}" role="dialog" aria-modal="true" aria-labelledby="h-${p.id}" tabindex="-1" hidden>`,
     `  <div class="panel__bar">`,
@@ -73,7 +80,7 @@ function panelHtml(p) {
     `    <h2 id="h-${p.id}">${p.title}</h2>`,
     `  </div>`,
     `  <div class="panel__body prose">`,
-    note + p.body.map(block).join('\n'),
+    panelBodyHtml(p),
     `  </div>`,
     `  <div class="panel__foot">`,
     `    <button class="panel__back" type="button" data-close>${ico('i-arrow-l')}Back</button>`,

@@ -111,6 +111,11 @@ console.log('\nSAVE REACHES THE PAGE');
 /* ── the editor in the browser ─────────────────────────────────────────── */
 console.log('\nTHE EDITOR');
 {
+  /* From a known state. A remembered password skips the gate, so a suite that
+     inherited one from a previous run "passed" the lock without ever seeing
+     it — the checks below would have been measuring nothing. */
+  await load();
+  await ev(`sessionStorage.removeItem('pf-admin-key'); localStorage.removeItem('pf-admin-vault')`);
   await load();
   check('no JavaScript errors on the normal page', errors.length === 0,
     errors.slice(0, 2).join(' | ').slice(0, 140));
@@ -120,7 +125,7 @@ console.log('\nTHE EDITOR');
   await load('#/admin');
   await wait(900);
   check('the password gate appears first', (await count('.alock')) === 1);
-  check('and the editor itself is not mounted yet', (await count('.admin__bar')) === 0);
+  check('and the editor itself is not mounted yet', (await count('.abar')) === 0);
 
   await ev(`(() => {
     const f = document.querySelector('.alock');
@@ -128,14 +133,26 @@ console.log('\nTHE EDITOR');
     f.requestSubmit();
   })()`);
   await wait(900);
-  check('the right password unlocks it', (await count('.admin__bar')) === 1);
-  check('all four tabs are there', (await count('[data-atab]')) === 4);
+  check('the right password unlocks it', (await count('.abar')) === 1);
+  check('it edits the real site, not a copy of it',
+    (await ev(`document.body.dataset.editing`)) === '1');
+  check('text on the page is marked editable', (await count('.ed-text')) > 30,
+    String(await count('.ed-text')));
+  check('every card gets a pencil', (await count('.ed-pencil')) === 3);
+  /* Raw is the escape hatch for fields with nothing on the page to click —
+     hidden, order, featured, folder. */
+  await ev(`[...document.querySelectorAll('.abtn')].find((b) => b.textContent === 'Raw').click()`);
+  await wait(400);
+  check('Raw reveals the forms', (await count('[data-atab]')) === 4);
+  await ev(`[...document.querySelectorAll('.abtn')].find((b) => b.textContent === 'Raw').click()`);
+  await wait(400);
 
   /* The picker must not be able to choose an icon the sprite lacks — publish.sh
      check 9 fails the build on exactly that, so an editor that could pick one
      would be handing you a broken commit. */
-  await ev(`document.querySelector('[data-atab="panels"]').click()`);
-  await wait(400);
+  await ev(`document.querySelector('.chan .ed-pencil').click()`);
+  await wait(500);
+  check('the card pencil opens a popup', (await count('.ed-modal')) === 1);
   const bad = await ev(`(() => {
     const ids = [...document.querySelectorAll('.sprite g[id^="i-"]')].map((g) => g.id);
     return [...document.querySelectorAll('.apick__i')]
@@ -143,9 +160,80 @@ console.log('\nTHE EDITOR');
   })()`);
   check('the icon picker only offers glyphs that exist', bad.length === 0, String(bad));
 
-  await ev(`document.querySelector('[data-atab="projects"]').click()`);
-  await wait(400);
-  check('projects are listed for editing', (await ev(`document.querySelectorAll('.acard').length`)) > 5);
+  await ev(`document.querySelector('.ed-modal .abtn--go').click()`);
+  await wait(300);
+
+  /* + only one level down, by choice: the home screen keeps its three cards. */
+  check('no + on the home screen', (await count('.ed-add')) === 0);
+  await ev(`location.hash = '#/projects'`);
+  await wait(1200);
+  check('a + appears inside a channel', (await count('.ed-add')) === 1);
+  await ev(`location.hash = '#/'`);
+  await wait(800);
+}
+
+/* ── nothing the editor draws may end up in your content ───────────────────
+ * The block toolbar lives INSIDE the block it decorates, so reading innerHTML
+ * on commit picked it up. clean() unwraps unknown tags, so the + and ✕ buttons
+ * would have been appended to the paragraph as literal characters and saved. */
+console.log('\nTHE SANITISER');
+{
+  const s = JSON.parse(await ev(`(async () => {
+    const m = await import('./assets/js/admin-live.js');
+    return JSON.stringify({
+      script: m.clean('hi<script>alert(1)<\\/script>'),
+      style:  m.clean('a<style>*{x}<\\/style>b'),
+      strong: m.clean('a <strong>b</strong> c'),
+      bold:   m.clean('a <b>b</b> c'),
+      attrs:  m.clean('<a href="/x" onclick="bad()">l</a>'),
+      tools:  m.clean('text<div class="ed-tools"><button>+</button><button>✕</button></div>'),
+    });
+  })()`));
+  check('a pasted script does not survive', !s.script.includes('script'), s.script);
+  check('a pasted stylesheet does not survive', !s.style.includes('style'), s.style);
+  check('bold text survives', s.strong.includes('<strong>'), s.strong);
+  check('<b> is normalised to <strong>', s.bold.includes('<strong>') && !/<b>/.test(s.bold), s.bold);
+  check('an onclick is stripped but href is kept',
+    !s.attrs.includes('onclick') && s.attrs.includes('href'), s.attrs);
+  check('the editor own furniture is deleted, not unwrapped', s.tools === 'text', s.tools);
+}
+
+/* ── click a paragraph, change it, and see it land ─────────────────────── */
+console.log('\nEDITING IN PLACE');
+{
+  await ev(`document.querySelector('.user').click()`);
+  await wait(1000);
+  const r = JSON.parse(await ev(`(async () => {
+    const p = document.querySelector('#p-about .ed-text');
+    p.click();
+    await new Promise((x) => setTimeout(x, 200));
+    const wasEditable = p.getAttribute('contenteditable') === 'true';
+    p.innerHTML = 'EDITED IN PLACE';
+    p.dispatchEvent(new FocusEvent('blur'));
+    await new Promise((x) => setTimeout(x, 400));
+    const el = document.querySelector('#p-about .ed-text');
+    const c = el.cloneNode(true);
+    c.querySelectorAll('.ed-tools').forEach((n) => n.remove());
+    return JSON.stringify({ wasEditable, now: c.innerHTML.trim() });
+  })()`));
+  check('clicking text makes it editable', r.wasEditable);
+  check('and the edit lands in the re-rendered DOM', r.now === 'EDITED IN PLACE', r.now.slice(0, 40));
+  check('the bar says which file is unsaved',
+    (await ev(`document.querySelector('[data-abar]').textContent`)).includes('content.json'));
+}
+
+/* ── a failed save must leave its reason on screen ─────────────────────────
+ * It did not: say() put the message up and paintBar() overwrote it a line
+ * later with the dirty-file list. Reported as "getting this error when i try
+ * and save", where the error was the absence of one. */
+console.log('\nA FAILED SAVE EXPLAINS ITSELF');
+{
+  await ev(`sessionStorage.setItem('pf-admin-key', 'definitely-wrong')`);
+  await ev(`[...document.querySelectorAll('.abtn')].find((b) => b.textContent === 'Save').click()`);
+  await wait(1500);
+  const msg = await ev(`document.querySelector('[data-abar]').textContent`);
+  check('the reason survives the repaint', /key|token|failed/i.test(msg), msg);
+  check('and it is not just the dirty-file list', !/^unsaved:/.test(msg), msg);
 }
 
 /* ── the typed trigger ─────────────────────────────────────────────────── */

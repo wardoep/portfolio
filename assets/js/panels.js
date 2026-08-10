@@ -382,7 +382,9 @@ function buildProject(p) {
   panel.appendChild(body);
 
   /* the outbound action belongs in the foot beside Back, not buried in prose */
-  const url = safeUrl(p.gh && p.gh.url);
+  /* p.url first: a card added by hand has no `gh` object at all — it is not a
+     GitHub repo — so without this fallback its panel would show no link. */
+  const url = safeUrl(p.url || (p.gh && p.gh.url));
   let action = null;
   if (url) {
     action = el('a', 'btn btn--primary');

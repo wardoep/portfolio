@@ -132,7 +132,17 @@ await load();
     await send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: box.x, y: box.y, button: 'left', clickCount: 1 });
     await wait(900);
   });
-  check('the menu actually swapped', (await count('.chan')) === 13, String(await count('.chan')));
+  /* Derived, not hardcoded. This said 13, which was true until a repo went
+     private and the wall became 12 — a performance suite failing because of a
+     GitHub visibility change is a false alarm that teaches you to ignore it. */
+  const want = await ev(`(async () => {
+    const d = await (await fetch('data/projects.json')).json();
+    const c = d.channels.find((x) => x.id === 'projects');
+    return d.projects.filter((p) => (c.folders || []).includes(p.folder)
+      && !p.hidden && p.status !== 'missing').length;
+  })()`);
+  check('the menu actually swapped', (await count('.chan')) === want,
+    `${await count('.chan')} tiles, data says ${want}`);
 
   const p = JSON.parse(await ev(`(() => {
     const r = document.querySelector('.chan').getBoundingClientRect();
