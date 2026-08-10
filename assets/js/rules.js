@@ -42,6 +42,19 @@ const SHAPES = [
 
 const EMAIL = /[\w.+-]+@[\w-]+\.[\w.-]+/gi;
 
+/* Markup the bakers will strip.
+ *
+ * bake.js is the enforcement — it sanitises on the way out, so nothing here can
+ * reach the published HTML whatever this says. This exists so the editor
+ * complains while you are typing rather than silently dropping half of what you
+ * pasted, which is the more confusing failure.
+ *
+ * Deliberately a risk test rather than `sanitize(s) !== s`: sanitising also
+ * turns a bare & into &amp;, so comparing would flag every blurb with an
+ * ampersand in it, and a rule that cries wolf is a rule people switch off. */
+const MARKUP_RISK =
+  /<\s*(?!\/?(?:strong|em|b|i|code|br|abbr|a)\b)[a-zA-Z]|\son[a-z]+\s*=|(?:href|src)\s*=\s*["']?\s*(?:javascript|data|vbscript):/i;
+
 /* check 14 — copy that has to be maintained by hand every time a repo is pushed.
    NOTE the wording of the message this produces, and of this comment: check 14
    scans string literals in assets/js/*.js, so a rule that named the phrase it
@@ -100,6 +113,8 @@ export function check(files) {
           add(`${file} ${path}`, 'contains an email address that is not the published one', found);
         }
       }
+      const mk = s.match(MARKUP_RISK);
+      if (mk) add(`${file} ${path}`, 'has markup the bakers will strip', mk[0]);
       const c = s.match(COUNTS);
       if (c) add(`${file} ${path}`, 'counts the work — it goes stale on the next push', c[0]);
       const h = s.match(BY_HAND);

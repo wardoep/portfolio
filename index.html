@@ -9,6 +9,26 @@
 
 <!-- Absolute, because scrapers do not resolve relative og: values. If this ever
      moves to a custom domain, these four URLs and 404.html are what break. -->
+<!-- Content-Security-Policy, as a meta tag because GitHub Pages serves no
+     headers and offers no way to add any.
+
+     The point of it is connect-src. bake.js sanitises markup on the way into
+     this file, so injected script should never arrive — but if it ever does,
+     connect-src is what stops it posting the editor's GitHub token to somebody
+     else's server. Defence in depth, not the primary defence.
+
+     script-src carries one hash per inline block, INCLUDING the JSON-LD one:
+     browsers apply script-src to every script element whatever its type, and an
+     unhashed block is dropped silently, taking the structured data with it.
+     publish.sh check 21 recomputes these on every build, because a stale hash
+     blanks the page's scripts with no error anyone would notice.
+
+     style-src keeps 'unsafe-inline' deliberately — the badge tints are inline
+     style attributes and the resume carries its stylesheet inline. Inline styles
+     execute no script. frame-ancestors is header-only and cannot be set here at
+     all, so admin.js refuses to run inside a frame instead. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'none'; object-src 'none'; form-action 'none'; img-src 'self'; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'sha256-f80iw9EDBgbMKDrPJHrjhc9Fdi0HS47uFjZ3LdHnc+c=' 'sha256-QNvJoipIfAgKeoQnx9kpi/m4EsOCALG3YNuRaqnmjAI='; connect-src 'self' https://api.github.com">
+
 <link rel="canonical" href="https://penna.lol/">
 
 <script type="application/ld+json">

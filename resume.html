@@ -3,6 +3,26 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Content-Security-Policy, as a meta tag because GitHub Pages serves no
+     headers and offers no way to add any.
+
+     The point of it is connect-src. bake.js sanitises markup on the way into
+     this file, so injected script should never arrive — but if it ever does,
+     connect-src is what stops it posting the editor's GitHub token to somebody
+     else's server. Defence in depth, not the primary defence.
+
+     script-src carries one hash per inline block, INCLUDING the JSON-LD one:
+     browsers apply script-src to every script element whatever its type, and an
+     unhashed block is dropped silently, taking the structured data with it.
+     publish.sh check 21 recomputes these on every build, because a stale hash
+     blanks the page's scripts with no error anyone would notice.
+
+     style-src keeps 'unsafe-inline' deliberately — the badge tints are inline
+     style attributes and the resume carries its stylesheet inline. Inline styles
+     execute no script. frame-ancestors is header-only and cannot be set here at
+     all, so admin.js refuses to run inside a frame instead. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'none'; object-src 'none'; form-action 'none'; img-src 'self'; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'sha256-u+/sSbp/sF6ACrCVp6kzluov3nvZDJUWtexi5DNhbag='; connect-src 'self' https://api.github.com">
+
 <title>Edward Penna — Résumé</title>
 <meta name="description" content="Edward J. Penna — Desktop Support / IT Support. B.S. Cybersecurity, University at Albany. Résumé.">
 <meta name="author" content="Edward Penna">

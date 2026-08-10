@@ -300,7 +300,7 @@ fi
 # Every absolute URL that IS present must agree with SITE_URL. A canonical
 # pointing one place and og:url another is worse than either alone.
 wrong=$(grep -rhoE 'https://[a-z0-9.-]+' index.html resume.html 2>/dev/null \
-        | grep -vE "^(${SITE_URL}|https://schema\.org|https://github\.com|https://www\.linkedin\.com)$" \
+        | grep -vE "^(${SITE_URL}|https://schema\.org|https://github\.com|https://www\.linkedin\.com|https://api\.github\.com)$" \
         | sort -u || true)
 if [ -n "$wrong" ]; then
   bad "an unexpected absolute host in shipped markup: $(echo "$wrong" | head -1)"
@@ -397,6 +397,87 @@ done
 nsbad=$(echo "$nsbad" | xargs || true)
 [ -z "$nsbad" ] && ok "every repo linked from <noscript> is still published" \
                 || bad "<noscript> links a repo projects.json does not publish:$nsbad"
+
+# 20 — nothing executable may reach the baked HTML.
+#
+#      The backstop for bake.js's sanitiser. Check 16 proves index.html matches
+#      data/content.json, which is a statement about faithfulness and not about
+#      safety: markup injected into the JSON produces HTML that faithfully
+#      contains it, and check 16 signs that off as correct. So this one asks the
+#      different question — is there anything in the shipped pages that can run?
+#
+#      The two inline scripts are named because they are the site's own: the
+#      theme resolver, which has to run before first paint, and the JSON-LD.
+#      Counted by subtraction rather than a negative lookahead, which -E does
+#      not have: every <script>, minus the ones that load a file.
+#      Comments are stripped first. The CSP note explains what script-src does,
+#      and a check that counts a tag named in prose as a tag is a check that
+#      fails on its own documentation.
+NOCOMMENT=$(mktemp); trap 'rm -f "$PATFILE" "$DEOB" "$NOCOMMENT"' EXIT
+python3 - index.html resume.html 404.html > "$NOCOMMENT" <<'PYEOF'
+import re, sys, pathlib
+for f in sys.argv[1:]:
+    p = pathlib.Path(f)
+    if p.exists():
+        print(re.sub(r'<!--.*?-->', '', p.read_text(), flags=re.S))
+PYEOF
+allscripts=$(grep -ohE '<script\b' "$NOCOMMENT" 2>/dev/null | wc -l)
+srcscripts=$(grep -ohE '<script[^>]*[[:space:]]src=' "$NOCOMMENT" 2>/dev/null | wc -l)
+inline=$(( allscripts - srcscripts ))
+#      -i throughout: HTML attribute names are case-insensitive, so ONERROR=
+#      runs exactly as well as onerror= and a case-sensitive grep would wave it
+#      straight through.
+handlers=$(grep -oniE '<[a-zA-Z][^>]*[[:space:]]on[a-z]+[[:space:]]*=' "$NOCOMMENT" 2>/dev/null || true)
+schemes=$(grep -oniE '(href|src)[[:space:]]*=[[:space:]]*"?[[:space:]]*(javascript|vbscript|data:text/html):' "$NOCOMMENT" 2>/dev/null || true)
+if [ -n "$handlers" ]; then
+  bad "an inline event handler in shipped HTML: $(echo "$handlers" | head -1)"
+elif [ -n "$schemes" ]; then
+  bad "a script-bearing URL scheme in shipped HTML: $(echo "$schemes" | head -1)"
+elif [ "$inline" -gt 3 ]; then
+  bad "$inline inline <script> blocks in shipped HTML — expected at most 3, so one arrived from somewhere"
+else
+  ok "nothing executable in the baked HTML beyond the site's own $inline inline scripts"
+fi
+
+# 21 — every inline script's CSP hash must match the script it is guarding.
+#
+#      This check is the reason the CSP is safe to ship at all. A hash that no
+#      longer matches does not warn, does not degrade and does not appear in any
+#      test that reads the DOM: the browser silently refuses to run the block,
+#      so the theme resolver stops running and the page flashes the wrong colour
+#      before settling, or the structured data quietly stops existing. Nobody
+#      notices until a visitor mentions it.
+#
+#      Editing a baked page is normal here — the theme script lives in the part
+#      of index.html the bakers do not touch — so the hash WILL go stale, and it
+#      has to fail loudly the moment it does.
+csp=$(python3 - <<'PY'
+import re, hashlib, base64, pathlib
+bad = []
+for f in ("index.html", "resume.html", "404.html"):
+    p = pathlib.Path(f)
+    if not p.exists():
+        continue
+    s = p.read_text()
+    m = re.search(r'http-equiv="Content-Security-Policy" content="([^"]*)"', s)
+    s = re.sub(r'<!--.*?-->', '', s, flags=re.S)   # prose naming a tag is not a tag
+    if not m:
+        bad.append(f"{f}: no Content-Security-Policy")
+        continue
+    declared = set(re.findall(r"'sha256-[A-Za-z0-9+/=]+'", m.group(1)))
+    actual = {
+        "'sha256-" + base64.b64encode(hashlib.sha256(b.encode()).digest()).decode() + "'"
+        for b in re.findall(r'<script\b(?![^>]*\ssrc=)[^>]*>(.*?)</script>', s, re.S | re.I)
+    }
+    for h in actual - declared:
+        bad.append(f"{f}: an inline script has no matching hash — it will not run")
+    for h in declared - actual:
+        bad.append(f"{f}: a declared hash matches no script — stale, remove it")
+print("\n".join(bad))
+PY
+)
+[ -z "$csp" ] && ok "every inline script matches its CSP hash" \
+              || bad "CSP hash drift: $(echo "$csp" | head -1)"
 
 echo
 [ "$fail" -eq 0 ] || { echo "pre-flight failed."; exit 1; }
