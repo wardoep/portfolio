@@ -24,6 +24,20 @@ const acc = new WeakMap();
 let ctx = null;        /* { state, mark, iconIds } */
 let observer = null;
 let editing = null;    /* the element currently open for editing */
+let finishOpen = null; /* its commit function, so furniture can close it first */
+
+/* Commit whatever box is open before an editor control acts on the document.
+ *
+ * Measured: with a paragraph open and something typed into it, clicking another
+ * block's ✕ spliced that block out and re-rendered the panel body — destroying
+ * the focused contenteditable and throwing the typing away. A marker typed into
+ * the box was gone from both the DOM and the JSON afterwards.
+ *
+ * skipRender is passed because the caller re-renders immediately after; letting
+ * finish() do it too would detach the caller's own node mid-handler. */
+function commitOpenEdit() {
+  if (finishOpen) finishOpen(true, true);
+}
 
 /* ── what may survive a paste ─────────────────────────────────────────────
  * The JSON legitimately holds a little inline HTML — the bold in "Studying for
@@ -111,6 +125,7 @@ function bindPanel(p) {
         x.addEventListener('mousedown', (e) => { e.preventDefault(); e.stopPropagation(); });
         x.addEventListener('click', (e) => {
           e.preventDefault(); e.stopPropagation();
+          commitOpenEdit();
           b.items.splice(j, 1);
           ctx.mark('content.json');
           rerenderPanelOf(node);
@@ -129,6 +144,7 @@ function bindPanel(p) {
     add.type = 'button';
     add.addEventListener('click', (e) => {
       e.preventDefault(); e.stopPropagation();
+      commitOpenEdit();
       p.body.push({ type: 'p', html: 'New text.' });
       ctx.mark('content.json');
       quiet(() => { host.innerHTML = panelBodyHtml(p); });
@@ -208,23 +224,28 @@ function open(node, e) {
   node.focus({ preventScroll: true });
   placeCaret(node, e);
 
-  const finish = (commit) => {
+  /* skipRender is for a caller that is ABOUT to re-render anyway — see
+     commitOpenEdit. Re-rendering here as well would replace the panel body, and
+     the caller's own node would be detached before it got to use it. */
+  const finish = (commit, skipRender) => {
     node.removeEventListener('keydown', onKey);
     node.removeEventListener('blur', onBlur);
     node.removeEventListener('paste', onPaste);
     node.removeAttribute('contenteditable');
     node.classList.remove('is-editing');
     editing = null;
+    finishOpen = null;
     const next = commit ? clean(node.innerHTML) : before;
     if (commit && next !== before) {
       a.set(next);
       ctx.mark(a.file);
       if (a.after) a.after();
-      else if (node.closest('.panel')) rerenderPanelOf(node);
+      else if (!skipRender && node.closest('.panel')) rerenderPanelOf(node);
     } else {
       node.innerHTML = before;
     }
   };
+  finishOpen = finish;
   const onKey = (e) => {
     if (e.key === 'Escape') { e.preventDefault(); finish(false); }
     /* Enter is a LINE BREAK. It used to commit, which meant you could not put a
@@ -268,7 +289,11 @@ function blockTools(node) {
     const b = el('button', 'ed-tool', label);
     b.type = 'button'; b.title = title;
     b.addEventListener('mousedown', (e) => { e.preventDefault(); e.stopPropagation(); });
-    b.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); fn(); });
+    b.addEventListener('click', (e) => {
+      e.preventDefault(); e.stopPropagation();
+      commitOpenEdit();     /* never re-render a panel out from under live typing */
+      fn();
+    });
     bar.appendChild(b);
   };
 
@@ -303,6 +328,14 @@ export function annotate() {
      edited — measured as one keystroke adding three characters, because "+"
      and "✕" came back with it. Nothing structural changes while you type, so
      annotation waits for the commit. */
+  /* Self-heal. If the node that was being edited has been removed from the
+     document — a re-render, a panel swap — then `editing` is pointing at a
+     corpse, and returning here would leave the page permanently unbound: no
+     .ed-text, no toolbars, and open() refusing every click until a reload.
+     Chrome does fire blur when a focused element is detached, so this is a
+     backstop rather than the main path, but the failure it prevents is total
+     and the check is one line. */
+  if (editing && !document.contains(editing)) { editing = null; finishOpen = null; }
   if (editing) return;
   quiet(() => {
     for (const p of ctx.state.content.panels) bindPanel(p);
@@ -322,6 +355,7 @@ export function annotate() {
       b.type = 'button'; b.title = 'Edit this card';
       b.addEventListener('click', (e) => {
         e.preventDefault(); e.stopPropagation();
+        commitOpenEdit();
         ctx.openCardEditor(node.dataset.edCard);
       });
       node.appendChild(b);
@@ -358,6 +392,10 @@ export function leave() {
   document.removeEventListener('click', onClick, true);
   observer?.disconnect();
   observer = null;
+  /* Reset, or Close-then-reopen inherits a stale `editing` and annotate() is a
+     no-op for the rest of the page's life. */
+  editing = null;
+  finishOpen = null;
   delete document.body.dataset.editing;
   for (const n of document.querySelectorAll('.ed-tools, .ed-pencil, .ed-x, .ed-addtext')) n.remove();
   for (const n of document.querySelectorAll('.ed-text, .ed-block, .ed-card')) {
@@ -376,6 +414,24 @@ function onClick(e) {
     ctx.addProject();
     return;
   }
+  /* The editor's own furniture handles its own clicks — get out of the way.
+   *
+   * blockTools appends its bar INSIDE the block, so on a text block the ✕ and +
+   * are children of the very .ed-text this handler is looking for. closest()
+   * matched the paragraph, the capture-phase stopPropagation below killed the
+   * event before it ever reached the button's listener, and open() then removed
+   * the toolbar. Measured: blocks 5 -> 5, confirm() called zero times, the
+   * paragraph left is-editing. The ✕ did nothing and the + did nothing.
+   *
+   * Returning WITHOUT preventDefault is deliberate: the click has to carry on to
+   * the button. It cannot leak into the site from there, because every one of
+   * these buttons calls preventDefault and stopPropagation in its own handler.
+   *
+   * The pill ✕ never had this problem — it lives in an <a>/<li> of a cta/links
+   * block, and those are edited through the popup, so they are never .ed-text.
+   * That asymmetry is exactly why the suite passed while the feature did not. */
+  if (e.target.closest?.('.ed-tools, .ed-tool, .ed-x, .ed-pencil, .ed-addtext')) return;
+
   const t = e.target.closest?.('.ed-text');
   if (!t || editing === t) return;
   /* Capture phase: stop the site acting on the click — a paragraph inside a
