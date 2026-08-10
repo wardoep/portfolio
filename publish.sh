@@ -56,7 +56,7 @@ fi
 #
 #     THE VALUES ARE NOT IN THIS FILE. They used to be, on one line right here,
 #     and this script is itself a live URL — so the gate published the list it
-#     was guarding. The workaround made it worse: writing 797[1] rather than the
+#     was guarding. The workaround made it worse: writing 555[0] rather than the
 #     digits defeats grep, which is the only tool that would have caught it,
 #     while staying perfectly legible to whoever you are hiding it from.
 #
@@ -353,7 +353,7 @@ fi
 # 18 — the same values, but with obfuscation undone first.
 #
 #      This is check 6's lesson rather than a rule of its own. A one-character
-#      character class beside digits or letters — 797[1], Jame[s] — is not a
+#      character class beside digits or letters — 555[0], Smit[h] — is not a
 #      redaction. It is a redaction-shaped thing that a reader reverses on
 #      sight, and the test suite once shipped a function that did it
 #      mechanically, published at the same origin. So: apply that same

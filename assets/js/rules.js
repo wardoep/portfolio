@@ -18,7 +18,7 @@
  *
  * SHAPES, NOT VALUES. This file is served from penna.lol like every other file
  * on the branch, so a real number written here would be published by the rule
- * meant to suppress it. Writing it split across character classes — 797[1] —
+ * meant to suppress it. Writing it split across character classes — 555[0] —
  * is not a redaction either: it defeats grep, which is the tool that would have
  * caught it, and stays perfectly legible to the person you are hiding it from.
  * That is not a hypothetical; it is what this list used to do.
