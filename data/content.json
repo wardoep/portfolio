@@ -188,12 +188,6 @@
               "label": "pennaeddie1@gmail.com"
             },
             {
-              "icon": "i-spark",
-              "href": "#/now",
-              "label": "What I'm learning right now",
-              "open": "now"
-            },
-            {
               "icon": "i-github",
               "href": "https://github.com/wardoep",
               "label": "github.com/wardoep",
